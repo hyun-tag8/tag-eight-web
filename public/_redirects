@@ -25,3 +25,10 @@
 /zh-tw/journal  /zh-tw/insight  301
 
 # 대표 메시지·팀·会社概要 를 COMPANY 로 분리 (2026-08-17)
+#
+# ⚠️ 여기에 `/about#people  /company#people  301` 을 넣지 말 것.
+#    Cloudflare Pages 는 소스 경로의 #앵커를 지원하지 않는다.
+#    `#people` 을 무시하고 /about 전체를 리다이렉트해버려서
+#    일본어 ABOUT 페이지가 통째로 접근 불가가 된다.
+#    (2026-08-20 배포 검수에서 발견. 로컬 빌드에서는 _redirects 가 동작하지 않아 잡히지 않았다)
+#    앵커 단위 이동이 필요하면 페이지 안에서 JS 로 처리한다.
