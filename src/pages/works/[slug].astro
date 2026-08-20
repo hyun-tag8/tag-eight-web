@@ -1,0 +1,17 @@
+---
+import Base from '../../layouts/Base.astro';
+import CaseDetail from '../../sections/CaseDetail.astro';
+import { getCases } from '../../data/cases';
+import { t } from '../../data/i18n';
+
+export function getStaticPaths() {
+  return getCases('ja').map((item) => ({ params: { slug: item.slug }, props: { item } }));
+}
+
+const { item } = Astro.props;
+const lang = 'ja' as const;
+const title = `${item.title}｜WORKS｜TAG EIGHT`;
+---
+<Base lang={lang} title={title} description={item.essence} path={`/works/${item.slug}`}>
+  <CaseDetail lang={lang} item={item} />
+</Base>

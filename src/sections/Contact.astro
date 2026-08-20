@@ -1,0 +1,120 @@
+---
+import T from '../components/T.astro';
+import { company } from '../data/company';
+import { t, langMeta, type Lang } from '../data/i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = t[lang];
+const f = d.contact.f;
+
+/* 폼 전송처 — Cloudflare Pages Function (functions/api/contact.ts).
+   담당자 통지 + 문의자 자동응답 2통을 보낸다.
+   ⚠ Cloudflare Pages 에 배포된 뒤에만 동작한다. 로컬 `astro dev` 에서는 404 다. */
+const FORM_ACTION = '/api/contact';
+
+/* 전송 실패 시 ?e=1(입력 오류) / ?e=2(서버 오류) 로 되돌아온다 */
+const errCode = Astro.url.searchParams.get('e');
+---
+<section class="sec sec--flush page-head">
+  <div class="wrap">
+    <p class="label">{d.contact.eyebrow}</p>
+    <p class="muted" style="font-size:var(--step-1)">{d.contact.kicker}</p>
+    <h1 class="h-lg" style="margin-top:1rem">
+      {d.contact.head.map((l) => <span style="display:block">{l}</span>)}
+    </h1>
+    <p class="lead" style="margin-top:2.25rem"><T text={d.contact.sub} lang={lang} /></p>
+  </div>
+</section>
+
+<!-- 오피스 — 실재하는 회사라는 증거. 이 사진만은 실제 사무실이다 -->
+<figure class="office">
+  <img
+    src="/img/office.webp"
+    srcset="/img/office-sm.webp 800w, /img/office.webp 1223w"
+    sizes="100vw"
+    width="1223" height="816"
+    alt="" loading="lazy" decoding="async"
+  />
+</figure>
+
+<!-- 직접 연락 — 폼을 쓰기 싫은 사람을 위해 위에 둔다 -->
+<section class="sec">
+  <div class="wrap split" style="align-items:start">
+    <div class="split__aside" data-aside><p class="label">{d.contact.directLabel}</p></div>
+    <div class="spec" style="max-width:42rem">
+      <div class="spec__row">
+        <span class="spec__key">Email</span>
+        <span><a class="link" href={`mailto:${company.email}`}>{company.email}</a></span>
+      </div>
+      <div class="spec__row">
+        <span class="spec__key">Tel</span>
+        <span>{company.tel}</span>
+      </div>
+      <div class="spec__row">
+        <span class="spec__key">Address</span>
+        <span>{company.addressJa}</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 폼 — 항목을 최소로. 허들을 낮춘다 -->
+<section class="sec">
+  <div class="wrap split" style="align-items:start">
+    <div class="split__aside" data-aside><p class="label">{d.contact.formLabel}</p></div>
+
+    <form class="cform" method="POST" action={FORM_ACTION || undefined}>
+      <input type="hidden" name="_lang" value={langMeta[lang].htmlLang} />
+      {/* 봇 트랩. 사람에게는 보이지 않는다 */}
+      <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="cform__trap" aria-hidden="true" />
+
+      <div class="cform__row">
+        <label for="cf-company">{f.company} <span class="cform__req">{f.required}</span></label>
+        <input id="cf-company" name="company" type="text" required autocomplete="organization" />
+      </div>
+
+      <div class="cform__row">
+        <label for="cf-name">{f.name} <span class="cform__req">{f.required}</span></label>
+        <input id="cf-name" name="name" type="text" required autocomplete="name" />
+      </div>
+
+      <div class="cform__row">
+        <label for="cf-email">{f.email} <span class="cform__req">{f.required}</span></label>
+        <input id="cf-email" name="email" type="email" required autocomplete="email" />
+      </div>
+
+      <div class="cform__row">
+        <label for="cf-subject">{f.subject}</label>
+        <select id="cf-subject" name="subject">
+          {f.subjects.map((s) => <option value={s}>{s}</option>)}
+        </select>
+      </div>
+
+      <div class="cform__row">
+        <label for="cf-message">{f.message}</label>
+        <textarea id="cf-message" name="message" rows="5"></textarea>
+      </div>
+
+      {errCode && <p class="cform__err" role="alert">{errCode === '1' ? f.errInput : f.errServer}</p>}
+      <p class="meta cform__note">{f.note}</p>
+      <button class="cform__submit" type="submit">{f.submit} →</button>
+    </form>
+  </div>
+</section>
+
+{/* 자료청구 — 케이스 상세에는 영업 문구를 두지 않고, 요청은 이 한 곳으로 모은다 */}
+<section class="sec">
+  <div class="wrap split" style="align-items:start">
+    <div><p class="label">PDF</p></div>
+    <div>
+      <p class="h-md"><T text={d.works.requestHead} lang={lang} /></p>
+      <p class="muted" style="margin-top:1.25rem;max-width:42ch"><T text={d.works.requestBody} lang={lang} /></p>
+      <p style="margin-top:2rem">
+        <a class="btn" href={`mailto:${company.email}?subject=${encodeURIComponent(d.works.requestCta)}`}>
+          <span>{d.works.requestCta}</span><span class="btn__arrow">→</span>
+        </a>
+      </p>
+    </div>
+  </div>
+</section>

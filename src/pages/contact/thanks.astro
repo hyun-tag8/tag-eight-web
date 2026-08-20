@@ -1,0 +1,10 @@
+---
+import Base from '../../layouts/Base.astro';
+import Thanks from '../../sections/Thanks.astro';
+import { t } from '../../data/i18n';
+const lang = 'ja' as const;
+const m = t[lang].meta.contact;
+---
+<Base lang={lang} title={m.title} description={m.description} path="/contact/thanks" noindex>
+  <Thanks lang={lang} />
+</Base>

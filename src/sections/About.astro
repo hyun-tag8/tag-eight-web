@@ -1,0 +1,116 @@
+---
+import T from '../components/T.astro';
+import { t, localePath, type Lang } from '../data/i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = t[lang];
+const faces = ['kr', 'jp', 'tw'];
+const creeds = [d.philosophy.vision, d.philosophy.mission, d.philosophy.values];
+---
+{/* ABOUT = 사상. 실체(대표 메시지·팀·会社概要)는 /company 로 분리했다.
+    VISION → MISSION → VALUES 는 하나의 흐름이므로 괘선으로 끊지 않는다.
+    셋의 제목은 크기·굵기·자간을 완전히 통일한다 — 위계가 생기면 「부속」처럼 읽힌다. */}
+{creeds.map((c, i) => (
+  <section class={i === 0 ? 'sec sec--flush sec--vision' : 'sec sec--creed'}>
+    <div class="wrap">
+      <div class="creed">
+        <p class="label">{c.label}</p>
+        {i === 0
+          ? <h1 class="creed__head"><T text={c.head} lang={lang} /></h1>
+          : <h2 class="creed__head"><T text={c.head} lang={lang} /></h2>}
+        <p class="creed__en">{c.en}</p>
+        <p class="creed__body"><T text={c.body} lang={lang} /></p>
+      </div>
+
+      {i === 0 && (
+        <>
+          <div class="creed-tiles">
+            {faces.map((k, j) => (
+              <figure class="rise" data-clip={`/video/face-${k}.mp4`}>
+                <img
+                  src={`/img/about-${k}.webp`}
+                  srcset={`/img/about-${k}-sm.webp 448w, /img/about-${k}.webp 672w`}
+                  sizes="(max-width: 46rem) 33vw, 230px"
+                  width="672" height="896"
+                  alt="" loading={j === 0 ? undefined : 'lazy'} decoding="async"
+                />
+              </figure>
+            ))}
+          </div>
+          {/* AI 생성 표기 — 한국 AI기본법(2026-01-22 시행) 대응 */}
+          <p class="creed-tiles__note">{d.philosophy.aiNote}</p>
+        </>
+      )}
+    </div>
+  </section>
+))}
+
+{/* WHY — 사명의 유래. 유일한 반전 화면으로 ABOUT 을 닫는다.
+    기호는 글자가 아니라 마크라, 본문과 같은 수치면 작아 보인다. 제목의 약 2배로 세운다. */}
+<section class="why" id="why">
+  <div class="wrap">
+    <div class="why__inner">
+      <p class="label">{d.why.eyebrow}</p>
+      <div class="whyglyph">
+        <svg class="whyglyph__svg" viewBox="0 0 100 100" aria-hidden="true">
+          <path d="M34 4 L26 96 M70 4 L62 96 M6 32 L96 32 M4 66 L94 66" stroke="currentColor" stroke-width="12" fill="none" />
+        </svg>
+        <span class="whyglyph__x" aria-hidden="true">&times;</span>
+        <svg class="whyglyph__svg" viewBox="0 0 160 92" aria-hidden="true">
+          <path d="M80 46 C64 16, 24 16, 20 46 C24 76, 64 76, 80 46 C96 16, 136 16, 140 46 C136 76, 96 76, 80 46 Z"
+                stroke="currentColor" stroke-width="11" fill="none" stroke-linejoin="round" />
+        </svg>
+      </div>
+      {d.why.lines.map((block) => (
+        <p class="why__lead">{block.map((l) => <span><T text={l} lang={lang} /></span>)}</p>
+      ))}
+
+      {/* ABOUT(사상) 다음은 COMPANY(그 사상을 가진 사람들). 읽는 순서지 영업이 아니다.
+          CONTACT 로 닫지 않는 유일한 페이지 — WHY 가 이미 검정이라 CTA 섹션을 또 겹칠 수 없다. */}
+      <p class="why__cta">
+        {/* 바로 위가 「その意志を、名前に込めています。」로 끝나므로 그 이름을 그대로 버튼으로 쓴다.
+            목적지가 문구에 없으므로 aria-label 로 보완한다. */}
+        <a class="btn btn--on-dark" href={localePath(lang, '/company')} aria-label={d.nav.company}>
+          <span>TAG EIGHT</span><span class="btn__arrow">→</span>
+        </a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<script>
+  /* 인물 타일 — 호버할 때만 영상을 붙인다.
+     마우스가 있는 기기에서만. 모바일은 mp4 를 요청조차 하지 않는다. */
+  (() => {
+    const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!canHover || reduced) return;
+
+    document.querySelectorAll<HTMLElement>('.creed-tiles figure[data-clip]').forEach((fig) => {
+      let video: HTMLVideoElement | null = null;
+      fig.addEventListener('mouseenter', () => {
+        if (!video) {
+          video = document.createElement('video');
+          video.src = fig.dataset.clip!;
+          video.muted = true; video.loop = true; video.playsInline = true; video.preload = 'none';
+          video.className = 'creed-tiles__clip';
+          fig.appendChild(video);
+        }
+        video.currentTime = 0;
+        video.play().catch(() => {});
+        fig.classList.add('is-playing');
+      });
+      fig.addEventListener('mouseleave', () => {
+        fig.classList.remove('is-playing');
+        video?.pause();
+      });
+    });
+  })();
+
+  const io = new IntersectionObserver(
+    (es) => es.forEach((e) => e.isIntersecting && (e.target.classList.add('is-in'), io.unobserve(e.target))),
+    { rootMargin: '0px 0px -12% 0px' }
+  );
+  document.querySelectorAll('.rise').forEach((el) => io.observe(el));
+</script>

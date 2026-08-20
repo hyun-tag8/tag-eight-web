@@ -1,0 +1,15 @@
+---
+import Base from '../../layouts/Base.astro';
+import Privacy from '../../sections/Privacy.astro';
+import { t, type Lang } from '../../data/i18n';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'ko' } }, { params: { lang: 'zh-tw' } }];
+}
+
+const lang = Astro.params.lang as Lang;
+const p = t[lang].privacy;
+---
+<Base lang={lang} title={p.metaTitle} description={p.metaDesc} path="/privacy">
+  <Privacy lang={lang} />
+</Base>

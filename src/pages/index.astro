@@ -1,0 +1,10 @@
+---
+import Base from '../layouts/Base.astro';
+import Home from '../sections/Home.astro';
+import { t } from '../data/i18n';
+const lang = 'ja' as const;
+const m = t[lang].meta.home;
+---
+<Base lang={lang} title={m.title} description={m.description} path="/" overHero>
+  <Home lang={lang} />
+</Base>

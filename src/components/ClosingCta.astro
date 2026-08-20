@@ -1,0 +1,32 @@
+---
+/**
+ * 클로징 CTA — 검정으로 닫는다.
+ * 「まだ〜ない」로 현재를 짚고 「そこから」로 뒤집는 2박 구조.
+ * 홈 외 하위 페이지에서도 같은 문으로 닫기 위해 컴포넌트로 뺐다.
+ */
+import T from './T.astro';
+import { t, localePath, type Lang } from '../data/i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = t[lang];
+---
+<section class="sec invert closing">
+  <div class="wrap">
+    <p class="seclabel">{d.contact.eyebrow}</p>
+    <p class="closing__problem"><T text={d.contact.kicker} lang={lang} /></p>
+    <h2 class="closing__answer">
+      {d.contact.head.map((l) => <span class="jp-line"><T text={l} lang={lang} /></span>)}
+    </h2>
+    {/* 1행은 초대문 — 답과 같은 크기·흰색. 2행은 실무 안내라 한 단계 작게.
+        원고의 개행을 그대로 쓴다(문장 단위 자동 분할은 위치가 안 맞는다). */}
+    {d.contact.sub.split('\n').map((tx, i) => (
+      <p class={i === 0 ? 'closing__invite' : 'closing__note'}>
+        <T text={tx} lang={lang} />
+      </p>
+    ))}
+    <p class="closing__cta">
+      <a class="btn btn--on-dark" href={localePath(lang, '/contact')}><span>{d.nav.contact}</span><span class="btn__arrow">→</span></a>
+    </p>
+  </div>
+</section>

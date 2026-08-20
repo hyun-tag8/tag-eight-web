@@ -1,0 +1,104 @@
+---
+import { company, organizationJsonLd } from '../data/company';
+import { langMeta, localePath, type Lang } from '../data/i18n';
+import { langsFor } from '../data/cases';
+
+interface Props {
+  lang: Lang;
+  title: string;
+  description: string;
+  /** 언어 접두사를 뺀 경로. 예: '/about', '/' */
+  path: string;
+  /** true 면 robots noindex. 송신 완료 페이지 등 */
+  noindex?: boolean;
+  /** 손글씨 폰트를 로드한다. CJK 라 무거우므로 쓰는 페이지에서만 켠다 */
+  handwriting?: boolean;
+}
+
+const { lang, title, description, path, noindex = false, handwriting = false } = Astro.props;
+
+/* 손글씨 폰트는 언어마다 다르다 — 하나로 3개 문자권을 못 덮는다.
+   ja  Klee One       연필로 쓴 교과서체. 격식을 잃지 않는다
+   ko  Nanum Pen      한글 손글씨 중 가장 판독이 좋다
+   tw  LXGW WenKai TC 해서(楷書) 계열. Klee One 과 인상이 맞는다 */
+const HAND: Record<Lang, string> = {
+  ja: 'Klee+One:wght@400;600',
+  ko: 'Nanum+Pen+Script',
+  'zh-tw': 'LXGW+WenKai+TC:wght@400;700',
+};
+
+const canonical = new URL(localePath(lang, path), Astro.site ?? company.url).toString();
+
+// hreflang — 그 경로가 실제로 존재하는 언어만.
+// 없는 페이지를 가리키면 색인 오류(alternate page with 404)가 난다.
+const available = langsFor(path);
+const alternates = available.map((l) => ({
+  hreflang: langMeta[l].htmlLang,
+  href: new URL(localePath(l, path), Astro.site ?? company.url).toString(),
+}));
+
+// CJK 명조는 활성 언어 것만 불러온다. 3개를 다 불러오면 수 MB가 된다.
+const cjkFont: Record<Lang, string> = {
+  ja: 'Noto+Sans+JP:wght@200;300;400;500',
+  ko: 'Noto+Sans+KR:wght@200;300;400;500',
+  'zh-tw': 'Noto+Sans+TC:wght@200;300;400;500',
+};
+const cjkFamily: Record<Lang, string> = {
+  ja: "'Noto Sans JP'",
+  ko: "'Noto Sans KR'",
+  'zh-tw': "'Noto Sans TC'",
+};
+
+const fontHref =
+  'https://fonts.googleapis.com/css2' +
+  '?family=Inter:wght@200;300;400;500' +
+  `&family=${cjkFont[lang]}` +
+  '&display=swap';
+
+const jsonLd = JSON.stringify(organizationJsonLd());
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>{title}</title>
+{noindex && <meta name="robots" content="noindex,follow" />}
+{handwriting && (
+  <link rel="stylesheet" href={`https://fonts.googleapis.com/css2?family=${HAND[lang]}&display=swap`} />
+)}
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+
+{alternates.map((a) => <link rel="alternate" hreflang={a.hreflang} href={a.href} />)}
+{available.includes('ja') && (
+  <link
+    rel="alternate"
+    hreflang="x-default"
+    href={new URL(localePath('ja', path), Astro.site ?? company.url).toString()}
+  />
+)}
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content={company.legalNameEn} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:locale" content={langMeta[lang].htmlLang.replace('-', '_')} />
+<meta name="twitter:card" content="summary_large_image" />
+
+{/* OG 이미지 — 링크를 공유했을 때 뜨는 카드. 절대 URL 이어야 한다 */}
+<meta property="og:image" content={new URL('/og.jpg', Astro.site ?? company.url).toString()} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={company.legalNameEn} />
+<meta name="twitter:image" content={new URL('/og.jpg', Astro.site ?? company.url).toString()} />
+
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href={fontHref} />
+
+<style is:inline set:html={`:root { --cjk: ${cjkFamily[lang]}, system-ui, sans-serif; }`}></style>
+
+<script type="application/ld+json" is:inline set:html={jsonLd} />

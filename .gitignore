@@ -1,0 +1,22 @@
+# 의존성 — Cloudflare 가 빌드할 때 스스로 설치한다
+node_modules/
+
+# 빌드 결과 — Cloudflare 가 매번 새로 만든다
+dist/
+.astro/
+
+# 환경변수 — 절대 올리지 않는다 (Cloudflare 대시보드에서 설정)
+.env
+.env.*
+!.env.example
+
+# OS · 에디터
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# 로그
+npm-debug.log*
+yarn-error.log*

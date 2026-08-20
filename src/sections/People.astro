@@ -1,0 +1,29 @@
+---
+import T from '../components/T.astro';
+import { t, type Lang } from '../data/i18n';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = t[lang];
+---
+<section class="sec sec--flush page-head">
+  <div class="wrap">
+    <p class="label">{d.team.eyebrow}</p>
+    <h1 class="h-lg" style="margin-top:1.5rem"><T text={d.team.head} lang={lang} /></h1>
+    <p class="lead"><T text={d.team.sub} lang={lang} /></p>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <!-- TODO: 실제 멤버 사진이 확보되면 각 행 왼쪽에 넣는다 -->
+    <div class="member-list">
+      {d.team.members.map((m) => (
+        <article class="member">
+          <p class="member__base">{m.base}</p>
+          <p class="member__name">{m.name}</p>
+          <p class="member__role">{m.role}</p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

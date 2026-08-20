@@ -1,0 +1,25 @@
+---
+import T from '../components/T.astro';
+import { company } from '../data/company';
+import { t, type Lang } from '../data/i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = t[lang];
+const f = d.contact.f;
+const home = lang === 'ja' ? '/' : `/${lang.toLowerCase()}/`;
+---
+{/* 송신 완료. 색인하지 않는다 — 검색에서 이 페이지로 직접 들어오면 맥락이 없다 */}
+<section class="sec sec--flush page-head">
+  <div class="wrap">
+    <p class="label">{d.contact.eyebrow}</p>
+    <h1 class="h-lg" style="margin-top:1.25rem"><T text={f.thanksHead} lang={lang} /></h1>
+    <p class="lead" style="margin-top:1.5rem"><T text={f.thanksBody} lang={lang} /></p>
+    <p style="margin-top:clamp(2.5rem,6vh,4rem)">
+      <a class="link" href={home}>{f.thanksBack} →</a>
+    </p>
+    <p class="meta" style="margin-top:clamp(3rem,8vh,5rem)">
+      {company.email} / TEL {company.tel}
+    </p>
+  </div>
+</section>

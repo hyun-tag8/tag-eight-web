@@ -1,0 +1,10 @@
+---
+import Base from '../layouts/Base.astro';
+import Company from '../sections/Company.astro';
+import { t } from '../data/i18n';
+const lang = 'ja' as const;
+const m = t[lang].meta.company;
+---
+<Base lang={lang} title={m.title} description={m.description} path="/company">
+  <Company lang={lang} />
+</Base>

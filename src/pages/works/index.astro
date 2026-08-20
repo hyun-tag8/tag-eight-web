@@ -1,0 +1,10 @@
+---
+import Base from '../../layouts/Base.astro';
+import Works from '../../sections/Works.astro';
+import { t } from '../../data/i18n';
+const lang = 'ja' as const;
+const m = t[lang].meta.works;
+---
+<Base lang={lang} title={m.title} description={m.description} path="/works">
+  <Works lang={lang} />
+</Base>

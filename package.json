@@ -1,0 +1,22 @@
+{
+  "name": "tag-eight",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.3",
+    "astro": "^7.1.5",
+    "budoux": "^0.8.4"
+  },
+  "private": true,
+  "type": "module"
+}

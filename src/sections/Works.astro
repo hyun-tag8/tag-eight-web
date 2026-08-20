@@ -1,0 +1,34 @@
+---
+import T from '../components/T.astro';
+import ClosingCta from '../components/ClosingCta.astro';
+import { getCases } from '../data/cases';
+import { t, localePath, type Lang } from '../data/i18n';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = t[lang];
+const list = getCases(lang);
+---
+<section class="sec sec--flush page-head">
+  <div class="wrap">
+    <p class="label">{d.works.eyebrow}</p>
+    <h1 class="h-lg" style="margin-top:1.5rem"><T text={d.works.head} lang={lang} /></h1>
+    <p class="lead"><T text={d.works.sub} lang={lang} /></p>
+
+    {list.length === 0 ? (
+      <div class="empty" style="margin-top:clamp(3rem,8vh,5rem)">{d.works.empty}</div>
+    ) : (
+      <div class="cases" style="margin-top:clamp(3rem,8vh,5rem)">
+        {list.map((c) => (
+          <a class="case-row" href={localePath(lang, `/works/${c.slug}`)}>
+            <span class="num">{c.no}</span>
+            <span class="case-row__title"><T text={c.title} lang={lang} /></span>
+            <span class="meta">{c.category} — {c.route}</span>
+          </a>
+        ))}
+      </div>
+    )}
+    <p class="meta" style="margin-top:2.5rem;max-width:46ch">{d.works.confidential}</p>
+  </div>
+</section>
+
+<ClosingCta lang={lang} />

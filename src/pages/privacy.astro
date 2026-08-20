@@ -1,0 +1,10 @@
+---
+import Base from '../layouts/Base.astro';
+import Privacy from '../sections/Privacy.astro';
+import { t } from '../data/i18n';
+const lang = 'ja' as const;
+const p = t[lang].privacy;
+---
+<Base lang={lang} title={p.metaTitle} description={p.metaDesc} path="/privacy">
+  <Privacy lang={lang} />
+</Base>

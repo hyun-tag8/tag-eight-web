@@ -1,0 +1,20 @@
+---
+import Base from '../../../layouts/Base.astro';
+import CaseDetail from '../../../sections/CaseDetail.astro';
+import { getCases } from '../../../data/cases';
+import { LANGS, type Lang } from '../../../data/i18n';
+
+// ja는 루트 라우트가 담당. 케이스 데이터가 있는 언어만 생성한다.
+export function getStaticPaths() {
+  return LANGS.filter((l) => l !== 'ja').flatMap((lang) =>
+    getCases(lang).map((item) => ({ params: { lang, slug: item.slug }, props: { item } }))
+  );
+}
+
+const { item } = Astro.props;
+const lang = Astro.params.lang as Lang;
+const title = `${item.title}｜WORKS｜TAG EIGHT`;
+---
+<Base lang={lang} title={title} description={item.essence} path={`/works/${item.slug}`}>
+  <CaseDetail lang={lang} item={item} />
+</Base>

@@ -1,0 +1,288 @@
+---
+import T from '../components/T.astro';
+import ClosingCta from '../components/ClosingCta.astro';
+import { getCases, destOf } from '../data/cases';
+import { company } from '../data/company';
+import { t, localePath, type Lang } from '../data/i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = t[lang];
+/* 홈에 노출할 4건. 순서·구성을 여기서만 바꾸면 된다.
+   3개 방향(台湾→韓国 / 日本→韓国 / 日本→台湾)이 모두 보이도록 07 을 포함한다.
+   전부 「→韓国」 이면 대만이 도착 시장으로 한 번도 나오지 않는다. */
+const FEATURED = ['film-festival-buzz', 'search-first-content', 'from-interest-to-action', 'region-as-story'];
+const all = getCases(lang);
+const cases = FEATURED.map((sl) => all.find((c) => c.slug === sl)).filter(Boolean) as typeof all;
+
+/* 밴드 설명문에서 흰색으로 띄울 낱말. 회사명과 업종명 두 개.
+   split 에 캡처 그룹을 쓰면 구분자도 배열에 남는다. */
+const HL = /(TAG EIGHT|Creative Agency|創意代理商)/;
+
+const panels = [
+  { key: 'seoul',  label: 'KOREA',  city: 'SEOUL',  tz: 'Asia/Seoul',  zone: 'KST' },
+  { key: 'tokyo',  label: 'JAPAN',  city: 'TOKYO',  tz: 'Asia/Tokyo',  zone: 'JST' },
+  { key: 'taipei', label: 'TAIWAN', city: 'TAIPEI', tz: 'Asia/Taipei', zone: 'CST' },
+];
+const svcImg = ['think', 'create', 'activate'];
+const bg = { kr: '/img/hero-seoul-sm.webp', jp: '/img/hero-tokyo-sm.webp', tw: '/img/hero-taipei-sm.webp' };
+---
+
+<!-- 1. 히어로 — 3분할 세로 패널. 각 도시의 타임랩스 위에 아이덴티티가 서서히 떠오른다.
+     사람은 흐르고, 동상·횡단보도·바닥 글자는 움직이지 않는다. -->
+<section class="vhero">
+  <div class="vhero__panels">
+    {panels.map((p) => (
+      <figure class={`vpanel vpanel--${p.key}`} data-tz={p.tz}>
+        {/* 모바일·저사양·모션최소화 환경에서는 CSS 로 감추고 포스터만 남는다 */}
+        <video
+          class="vpanel__video"
+          autoplay muted loop playsinline
+          preload="metadata"
+          poster={`/video/${p.key}-poster.webp`}
+        >
+          <source src={`/video/${p.key}.mp4`} type="video/mp4" />
+        </video>
+        <div class="vpanel__veil"></div>
+        <figcaption class="vpanel__foot">
+          <span class="vpanel__label">{p.label}</span>
+          <span class="vpanel__time" data-clock>--:--<span class="vpanel__sec">:--</span></span>
+          <span class="vpanel__zone">{p.city}　{p.zone}</span>
+        </figcaption>
+      </figure>
+    ))}
+
+    {/* 아이덴티티 — 로드 직후 서서히 떠오른다 */}
+    <div class="vhero__overlay">
+      <h1 class="vhero__id">
+        <span class="vhero__line vhero__catch">
+          <span class="vhero__part">{d.hero.catch[0]}</span>{' '}
+          <span class="vhero__part">{d.hero.catch[1]}</span>
+        </span>
+        <span class="vh"> — </span>
+        <span class="vhero__line vhero__name">{company.legalNameEn}</span>
+      </h1>
+    </div>
+  </div>
+
+  {/* 히어로 하단 검정 밴드 — 왼쪽 선언 / 오른쪽 설명 */}
+  <div class="vhero__band">
+    <div class="wrap vband">
+      <div class="vband__left">
+        <p class="vband__lead">
+          {d.hero.lead.map((l) => <span class="jp-line"><T text={l} lang={lang} /></span>)}
+        </p>
+        <p class="vband__statement"><T text={d.hero.statement[0]} lang={lang} /></p>
+      </div>
+      <p class="vband__body">
+        {/* 「누구인가」와 「무엇인가」 두 낱말만 흰색으로 띄운다.
+            문장 처음과 끝을 잡아 괄호처럼 작동한다 */}
+        {d.hero.body.split('\n').map((l) => (
+          <span class="jp-line">
+            {l.split(HL).filter(Boolean).map((part) =>
+              HL.test(part)
+                ? <span class="vband__brand">{part}</span>
+                : <T text={part} lang={lang} />
+            )}
+          </span>
+        ))}
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- 2. WORKS — 증거가 약속보다 먼저 온다 -->
+<section class="sec">
+  <div class="wrap">
+    <p class="seclabel">{d.works.eyebrow}</p>
+    <h2 class="h-lg" style="margin-top:clamp(1.75rem,4vh,2.5rem)"><T text={d.works.head} lang={lang} /></h2>
+    <p class="secsub"><T text={d.works.sub} lang={lang} /></p>
+
+    {/* 세로 1열 리스트 — 번호 · 사진 · (분류 / 제목).
+        가로 2열 카드는 설명을 지운 뒤 비어 보였다. 사진이 들어가면서 무게가 생기고,
+        분류와 제목이 위아래로 붙어 한 덩어리로 읽힌다. */}
+    {cases.length === 0 ? (
+      <div class="empty" style="margin-top:3rem">{d.works.empty}</div>
+    ) : (
+      <div class="wgrid">
+        {cases.map((c, i) => (
+          <a class="wcard rise" href={localePath(lang, `/works/${c.slug}`)}>
+            {/* 번호는 배경 오브제. 카드마다 크게 앉혀 4분할에 리듬을 만든다 */}
+            <span class="wcard__no" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+            {/* 제목이 먼저 읽히고 분류는 그 뒤에 확인한다 — 케이스는 제목이 흥미를 만든다 */}
+            <h3 class="wcard__title"><T text={c.title} lang={lang} /></h3>
+            <p class="wcard__meta">
+              <span class="wcard__cat">{c.category}</span>
+              <span class="wcard__route">{c.route}</span>
+            </p>
+          </a>
+        ))}
+      </div>
+    )}
+    <p style="margin-top:clamp(2.5rem,6vh,3.5rem)"><a class="btn" href={localePath(lang, '/works')}><span>{d.nav.works}</span><span class="btn__arrow">→</span></a></p>
+  </div>
+</section>
+
+<!-- 3. CLIENTS — 실명 대신 영역으로 -->
+<section class="sec invert">
+  <div class="wrap">
+    <p class="seclabel">{d.sectors.eyebrow}</p>
+    <h2 class="h-lg" style="margin-top:clamp(1.75rem,4vh,2.5rem)"><T text={d.sectors.head} lang={lang} /></h2>
+    <p class="secsub sector__lead">
+      {d.sectors.sub.split(/(?<=[。.？?！!])\s*/).filter(Boolean).map((t) => (
+        <span class="jp-line"><T text={t} lang={lang} /></span>
+      ))}
+    </p>
+
+    <div class="sectors">
+      {d.sectors.items.map((s) => (
+        <article class="sector rise">
+          <p class="sector__meta">
+            <span class="num">{s.no}</span>
+            <span class="sector__en">{s.en}</span>
+          </p>
+          <h3 class="sector__ja"><T text={s.ja} lang={lang} /></h3>
+          <p class="sector__body"><T text={s.body} lang={lang} /></p>
+        </article>
+      ))}
+    </div>
+    {/* 두 문장을 각각 한 줄로. 「。」 뒤에서 다음 문장이 이어지면 뭉쳐 보인다 */}
+    <p class="sector__note">
+      {d.sectors.note.split(/(?<=[。.？?！!])\s*/).filter(Boolean).map((t) => (
+        <span class="jp-line"><T text={t} lang={lang} /></span>
+      ))}
+    </p>
+  </div>
+</section>
+
+<!-- 4. SERVICE -->
+<section class="sec sec--flush" style="padding-block:clamp(4rem,11vh,7.5rem)">
+  <div class="wrap">
+    <p class="seclabel">{d.whatWeDo.eyebrow}</p>
+    {/* 구두점 단위로 쪼개 각 동사 사이에 숨을 준다 */}
+    <h2 class="h-lg h-lg--beats" style="margin-top:clamp(1.75rem,4vh,2.5rem)">
+      {d.whatWeDo.headHome.split(/(?<=[。.])/).filter(Boolean).map((bt) => (
+        <span class="beat"><T text={bt} lang={lang} /></span>
+      ))}
+    </h2>
+    {/* 원고의 개행을 그대로 쓴다 — 「〜まで。」 뒤에서 끊어야 두 문장이 갈린다 */}
+    <p class="secsub">
+      {d.whatWeDo.sub.split('\n').map((ln, i) => (
+        <>{i > 0 && <br />}<T text={ln} lang={lang} /></>
+      ))}
+    </p>
+  </div>
+
+  {/* 홈은 요약 — 3열로 나란히. 좌우 교대 배치는 SERVICE 페이지가 맡는다.
+      블록을 눌러 해당 위치로 이동한다 */}
+  <div class="wrap">
+    <div class="svc-grid">
+      {d.whatWeDo.blocks.map((b, i) => (
+        <a class="svc-brief rise" href={localePath(lang, `/capabilities#${svcImg[i]}`)} aria-label={`${b.no} ${b.title}`}>
+          {/* 기본은 정지 이미지. 호버할 때만 영상이 붙어 재생된다.
+              영상 첫 프레임이 이 사진과 같아서 전환에 튐이 없다.
+              터치 기기에는 아예 로드하지 않는다 — 호버가 없으니 낭비다. */}
+          <figure class="svc-brief__fig tone" data-clip={`/video/work-${svcImg[i]}.mp4`}>
+            {/* 표시폭은 모바일·데스크톱 모두 약 350px. 700w 판 하나로 2x 까지 커버된다 */}
+            <img
+              src={`/img/work-${svcImg[i]}-sm.webp`}
+              width="700" height="467"
+              alt="" loading="lazy" decoding="async"
+            />
+          </figure>
+          <p class="svc-brief__meta">
+            <span class="num">{b.no}</span>
+            <span class="svc-brief__title">{b.title}</span>
+          </p>
+          {/* 영문만으로는 무엇을 하는지 알 수 없다. CAPABILITIES 와 같은 위계로 일본어를 세운다 */}
+          <p class="svc-brief__ja"><T text={b.ja} lang={lang} /></p>
+          <p class="svc-brief__lead"><T text={b.lead} lang={lang} /></p>
+          {/* 실제 제공 업무 — 「무엇을 맡길 수 있는가」에 답하는 유일한 줄 */}
+          {/* 슬래시 나열은 줄바꿈이 지저분해진다. 세로 목록으로 세운다 */}
+          {/* 홈은 요약 — 3개. 전체 4개는 CAPABILITIES 가 맡는다 */}
+          <ul class="svc-brief__items">{b.itemsHome.map((it) => <li>{it}</li>)}</ul>
+        </a>
+      ))}
+    </div>
+
+    <p style="margin-top:clamp(2.5rem,6vh,4rem)">
+      <a class="btn" href={localePath(lang, '/capabilities')}><span>{d.nav.service}</span><span class="btn__arrow">→</span></a>
+    </p>
+  </div>
+</section>
+
+<ClosingCta lang={lang} />
+
+<script>
+  /* CAPABILITIES 카드 — 호버 시에만 영상을 붙인다.
+     · 마우스가 있는 기기에서만 동작 (모바일은 다운로드조차 하지 않는다)
+     · 모션 최소화 설정이면 비활성
+     · 영상은 첫 호버 때 한 번만 생성해 재사용한다 */
+  (() => {
+    const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!canHover || reduced) return;
+
+    document.querySelectorAll<HTMLElement>('.svc-brief__fig[data-clip]').forEach((fig) => {
+      let video: HTMLVideoElement | null = null;
+
+      const start = () => {
+        if (!video) {
+          video = document.createElement('video');
+          video.src = fig.dataset.clip!;
+          video.muted = true;
+          video.loop = true;
+          video.playsInline = true;
+          video.preload = 'none';
+          video.className = 'svc-brief__clip';
+          fig.appendChild(video);
+        }
+        video.currentTime = 0;
+        video.play().catch(() => {});
+        fig.classList.add('is-playing');
+      };
+
+      const stop = () => {
+        fig.classList.remove('is-playing');
+        video?.pause();
+      };
+
+      const card = fig.closest('.svc-brief')!;
+      card.addEventListener('mouseenter', start);
+      card.addEventListener('mouseleave', stop);
+      card.addEventListener('focusin', start);
+      card.addEventListener('focusout', stop);
+    });
+  })();
+
+
+  // 현지 시각 — 1초마다 갱신. 세 도시가 같은 초를 함께 새긴다.
+  const panelEls = document.querySelectorAll<HTMLElement>('.vpanel');
+  const fmt = new Map<string, Intl.DateTimeFormat>();
+  panelEls.forEach((p) => {
+    const tz = p.dataset.tz!;
+    fmt.set(tz, new Intl.DateTimeFormat('en-GB', {
+      timeZone: tz, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false,
+    }));
+  });
+  const tick = () => {
+    const now = new Date();
+    panelEls.forEach((p) => {
+      const el = p.querySelector('[data-clock]');
+      if (!el) return;
+      const parts = fmt.get(p.dataset.tz!)!.formatToParts(now);
+      const g = (t: string) => parts.find((x) => x.type === t)?.value ?? '--';
+      el.innerHTML = `${g('hour')}:${g('minute')}<span class="vpanel__sec">:${g('second')}</span>`;
+    });
+  };
+  tick();
+  setInterval(tick, 1000);
+
+  const io = new IntersectionObserver((es) => {
+    for (const e of es) if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
+  }, { rootMargin: '0px 0px -10% 0px' });
+  document.querySelectorAll('.rise').forEach((el, i) => {
+    (el as HTMLElement).style.transitionDelay = `${Math.min(i % 6, 5) * 70}ms`;
+    io.observe(el);
+  });
+</script>

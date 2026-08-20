@@ -1,0 +1,18 @@
+---
+import T from '../components/T.astro';
+import ClosingCta from '../components/ClosingCta.astro';
+import { t, type Lang } from '../data/i18n';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = t[lang];
+---
+<section class="sec sec--flush page-head">
+  <div class="wrap">
+    <p class="label">{d.journal.eyebrow}</p>
+    <h1 class="h-lg" style="margin-top:1.5rem"><T text={d.journal.head} lang={lang} /></h1>
+    <p class="lead"><T text={d.journal.sub} lang={lang} /></p>
+    <div class="empty" style="margin-top:clamp(3rem,8vh,5rem)">{d.journal.empty}</div>
+  </div>
+</section>
+
+<ClosingCta lang={lang} />

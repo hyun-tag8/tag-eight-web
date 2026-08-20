@@ -1,0 +1,35 @@
+---
+// 로고. 원본 .ai(2023-08-15)에서 추출한 벡터.
+//   variant="mark"   → 「#8」만. 헤더·히어로용
+//   variant="lockup" → 「#8」 + 「TAG EIGHT LLC.」. 푸터·OG용
+//
+// ⚠️ 원본 .ai의 워드마크는 「TAG EGIHT LLC.」로 철자가 뒤집혀 있었다(I·G 순서).
+//    lockup.svg는 이를 바로잡은 버전이다. 원본 .ai도 수정 권장.
+//
+// 색은 currentColor로 상속받는다. 흑백 반전은 CSS color로만 제어.
+import mark from '../assets/logo-mark.svg?raw';
+import lockup from '../assets/logo-lockup.svg?raw';
+
+interface Props {
+  variant?: 'mark' | 'lockup';
+  /** CSS 높이. 폭은 비율대로 따라온다 */
+  height?: string;
+  class?: string;
+}
+const { variant = 'mark', height = '1.6rem', class: cls = '' } = Astro.props;
+const svg = variant === 'mark' ? mark : lockup;
+---
+<span class:list={['logo', cls]} style={`--logo-h:${height}`} set:html={svg} />
+
+<style>
+  .logo {
+    display: inline-block;
+    line-height: 0;
+    color: inherit;
+  }
+  .logo :global(svg) {
+    height: var(--logo-h);
+    width: auto;
+    display: block;
+  }
+</style>

@@ -1,0 +1,15 @@
+---
+import Base from '../../layouts/Base.astro';
+import Service from '../../sections/Service.astro';
+import { t, type Lang } from '../../data/i18n';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'ko' } }, { params: { lang: 'zh-tw' } }];
+}
+
+const lang = Astro.params.lang as Lang;
+const m = t[lang].meta.service;
+---
+<Base lang={lang} title={m.title} description={m.description} path="/capabilities">
+  <Service lang={lang} />
+</Base>

@@ -1,0 +1,134 @@
+---
+import T from '../components/T.astro';
+import ClosingCta from '../components/ClosingCta.astro';
+import { company } from '../data/company';
+import { t, type Lang } from '../data/i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = t[lang];
+const c = d.companySec;
+
+/* 표에는 「누구인가·어디에 있는가·무엇을 하는가」만.
+   법인번호·등록번호는 상호 옆 괄호로 접어 행 수를 늘리지 않는다. */
+const rows = [
+  /* 法人番号 は登録番号から T を除いた同じ数字なので併記しない */
+  [c.labels.name, `${company.legalName}（${c.labels.invoiceNo} ${company.invoiceNumber}）`],
+  [c.labels.founded, company.foundedLabel],
+  [c.labels.ceo, `${company.ceo}（${company.ceoEn} / ${company.ceoTitle}）`],
+  [c.labels.capital, company.capitalLabel],
+  [c.labels.employees, `${company.employeesLabel}（${company.employeesAsOf}）`],
+  [c.labels.address, company.addressJa],
+  [c.labels.tel, company.tel],
+  [c.labels.url, company.url],
+];
+---
+{/* CEO MESSAGE — 좌 텍스트 / 우 풀블리드 인물.
+    편지가 짧아지면서 한 화면에 담긴다. 스크롤로 읽는 문서가 아니라 한 장의 지면이다. */}
+<section class="ceo" id="message">
+  <div class="ceo__body">
+    <span class="ceo__label">{d.message.eyebrow}</span>
+    <h1 class="ceo__hook">{d.message.title}</h1>
+
+    <div class="ceo__text">
+      {d.message.stanzas.map((st) => (
+        <p class={st.kind === 'believe' ? 'believe' : undefined}>
+          {st.lines.map((line, i) => (
+            <>{i > 0 && <br />}<T text={line} lang={lang} /></>
+          ))}
+        </p>
+      ))}
+    </div>
+
+    {/* AI 표기는 두지 않는다 — 얼굴은 본인이고, 일본에 이런 일반 표시 의무는 없다.
+        ABOUT 의 이미지 3장은 인물 자체가 생성물이므로 표기를 유지한다. */}
+    <p class="ceo__sign">{d.message.signLine}</p>
+  </div>
+
+  <figure class="ceo__photo">
+    <img
+      src="/img/ceo.webp"
+      srcset="/img/ceo-sm.webp 600w, /img/ceo.webp 900w"
+      sizes="(max-width: 54rem) 100vw, 56vw"
+      width="900" height="1200"
+      alt={d.message.signLine}
+      loading="eager" decoding="async"
+    />
+  </figure>
+</section>
+
+{/* PEOPLE — 선택형. 개인 색은 # 마크 / 직함 / 선택 바 세 곳에만.
+    ⚠ 한 번에 한 명만 색을 띤다. 다섯이 동시에 색이면 무채 시스템이 무너진다. */}
+<section class="sec" id="people">
+  <div class="wrap">
+    <p class="label">{d.team.eyebrow}</p>
+    <h2 class="h-md team__head" style="margin-top:1.25rem"><T text={d.team.head} lang={lang} /></h2>
+    <p class="lead">{d.team.sub}</p>
+
+    <div class="tm" style="margin-top:clamp(2rem,5vh,3rem)">
+      {d.team.members.map((m, i) => (
+        <div class="tm__stage" data-pane={i} hidden={i !== 0}>
+          <figure class="tm__photo" style={`color:${m.color}`}>
+            <svg class="tm__hash" viewBox="0 0 100 100" aria-hidden="true">
+              <path d="M34 4 L26 96 M70 4 L62 96 M6 32 L96 32 M4 66 L94 66" stroke="currentColor" stroke-width="13" fill="none" />
+            </svg>
+            <img src={`/img/member-${m.key}.webp`} width="900" height="1200"
+                 alt={m.name} loading={i === 0 ? undefined : 'lazy'} decoding="async" />
+          </figure>
+          <div>
+            <p class="tm__base">{m.base}</p>
+            <p class="tm__name">{m.name}</p>
+            <p class="tm__role" style={`color:${m.ink}`}>{m.role}</p>
+            <p class="tm__bio"><T text={m.bio} lang={lang} /></p>
+          </div>
+        </div>
+      ))}
+      <div class="tm__row">
+        {d.team.members.map((m, i) => (
+          <button class="tm__thumb" data-i={i} aria-selected={i === 0} style={`color:${m.color}`}>
+            <figure><img src={`/img/member-${m.key}.webp`} alt="" loading="lazy" decoding="async" /></figure>
+            <div class="tm__bar"></div>
+            <p class="tm__tname">{m.name}</p>
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="overview">
+  <div class="wrap">
+    <p class="label">{c.eyebrow}</p>
+    <h2 class="h-md" style="margin-top:1.25rem">{c.head}</h2>
+    <div class="spec">
+      {rows.map(([k, v]) => (
+        <div class="spec__row">
+          <span class="spec__key">{k}</span>
+          <span>{v}</span>
+        </div>
+      ))}
+      <div class="spec__row">
+        <span class="spec__key">{c.labels.business}</span>
+        {/* CAPABILITIES 의 3영역 명칭과 100% 동일. 같은 말이 두 번 나와야 회사의 정의가 된다 */}
+        <span><ul style="list-style:none">{c.business.map((b) => <li>{b}</li>)}</ul></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  /* PEOPLE — 썸네일 클릭으로 상단 인물을 바꾼다 */
+  document.querySelectorAll<HTMLButtonElement>('.tm__thumb').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const i = btn.dataset.i;
+      document.querySelectorAll<HTMLButtonElement>('.tm__thumb').forEach((x) =>
+        x.setAttribute('aria-selected', String(x === btn))
+      );
+      document.querySelectorAll<HTMLElement>('[data-pane]').forEach((pane) => {
+        pane.hidden = pane.dataset.pane !== i;
+      });
+    });
+  });
+</script>
+
+<ClosingCta lang={lang} />
