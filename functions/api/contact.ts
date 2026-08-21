@@ -10,19 +10,45 @@
  * 자동응답이 핵심이다. 일본 B2B 에서는 폼 송신 후 확인 메일이 없으면
  * 담당자가 「보내진 건가?」로 남고, 稟議 회람용 기록도 남지 않는다.
  *
- * 필요한 환경변수 (Cloudflare Pages → Settings → Environment variables)
- *   RESEND_API_KEY   Resend 의 API 키
- *   MAIL_TO          통지 수신 주소            기본값 info@tag-8.com
- *   MAIL_FROM        발신 주소(도메인 인증 필요) 기본값 TAG EIGHT <no-reply@tag-8.com>
+ * 발송사는 2곳을 지원한다. 키가 들어 있는 쪽이 자동으로 쓰인다.
  *
- * ⚠ MAIL_FROM 의 도메인은 Resend 에서 DNS 인증을 마쳐야 한다.
+ *   Brevo   BREVO_API_KEY    ← 현재 이쪽
+ *   Resend  RESEND_API_KEY
+ *
+ * 왜 2개인가 (2026-08-21)
+ * ----------------------------------------------------------------
+ * tag-8.com 의 DNS 는 Cloudflare 가 아니라 eNom(Google Workspace 리셀러)에 있다.
+ * eNom 의 Host Records 는 A / AAAA / CNAME / TXT 만 지원하고 **MX 를 만들 수 없다.**
+ * Resend 는 Return-Path 용 MX(send.tag-8.com)를 필수로 요구하므로 인증이 불가능했다.
+ *
+ * → TXT/CNAME 만으로 도메인 인증이 끝나는 발송사(Brevo)로 우회한다.
+ * → 나중에 DNS 를 Cloudflare 로 이전하면 RESEND_API_KEY 만 넣어 되돌릴 수 있다.
+ *   그때 BREVO_API_KEY 를 지우면 자동으로 Resend 로 전환된다.
+ *
+ * 필요한 환경변수 (Cloudflare Pages → Settings → Environment variables)
+ *   BREVO_API_KEY    Brevo 의 API 키              (또는 RESEND_API_KEY)
+ *   MAIL_TO          통지 수신 주소               기본값 info@tag-8.com
+ *   MAIL_FROM        발신 주소(도메인 인증 필요)   기본값 TAG EIGHT <no-reply@tag-8.com>
+ *
+ * ⚠ MAIL_FROM 의 도메인은 발송사에서 DNS 인증을 마쳐야 한다.
  *   인증 전에는 발송이 거부된다.
  */
 
 interface Env {
-  RESEND_API_KEY: string;
+  BREVO_API_KEY?: string;
+  RESEND_API_KEY?: string;
   MAIL_TO?: string;
   MAIL_FROM?: string;
+}
+
+/** 발송사에 넘기기 전의 공통 형태 */
+interface Mail {
+  fromName: string;
+  fromEmail: string;
+  to: string;
+  replyTo: string;
+  subject: string;
+  html: string;
 }
 
 type Lang = 'ja' | 'ko' | 'zh-TW';
@@ -79,13 +105,50 @@ const clean = (v: FormDataEntryValue | null, max: number) =>
 const pickLang = (v: string): Lang =>
   v === 'ko' ? 'ko' : v === 'zh-TW' || v === 'zh-Hant' ? 'zh-TW' : 'ja';
 
-async function send(key: string, payload: Record<string, unknown>) {
+/**
+ * "TAG EIGHT <no-reply@tag-8.com>" → { name, email }
+ * Brevo 는 이름과 주소를 분리해서 받는다. 꺾쇠가 없으면 전체를 주소로 본다.
+ */
+function parseFrom(v: string): { name: string; email: string } {
+  const m = v.match(/^\s*(.*?)\s*<([^>]+)>\s*$/);
+  return m ? { name: m[1] || 'TAG EIGHT', email: m[2].trim() } : { name: 'TAG EIGHT', email: v.trim() };
+}
+
+async function sendViaBrevo(key: string, m: Mail) {
+  const r = await fetch('https://api.brevo.com/v3/smtp/email', {
+    method: 'POST',
+    headers: { 'api-key': key, 'content-type': 'application/json', accept: 'application/json' },
+    body: JSON.stringify({
+      sender: { name: m.fromName, email: m.fromEmail },
+      to: [{ email: m.to }],
+      replyTo: { email: m.replyTo },
+      subject: m.subject,
+      htmlContent: m.html,
+    }),
+  });
+  if (!r.ok) throw new Error(`brevo ${r.status}: ${await r.text()}`);
+}
+
+async function sendViaResend(key: string, m: Mail) {
   const r = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
+    body: JSON.stringify({
+      from: `${m.fromName} <${m.fromEmail}>`,
+      to: [m.to],
+      reply_to: m.replyTo,
+      subject: m.subject,
+      html: m.html,
+    }),
   });
   if (!r.ok) throw new Error(`resend ${r.status}: ${await r.text()}`);
+}
+
+/** 키가 들어 있는 쪽으로 보낸다. Brevo 우선. */
+function makeSender(env: Env): (m: Mail) => Promise<void> {
+  if (env.BREVO_API_KEY) return (m) => sendViaBrevo(env.BREVO_API_KEY!, m);
+  if (env.RESEND_API_KEY) return (m) => sendViaResend(env.RESEND_API_KEY!, m);
+  throw new Error('BREVO_API_KEY / RESEND_API_KEY 둘 다 미설정');
 }
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
@@ -107,10 +170,9 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
 
     if (!company || !name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return back('/contact/?e=1');
 
-    const key = env.RESEND_API_KEY;
-    if (!key) throw new Error('RESEND_API_KEY 미설정');
+    const send = makeSender(env);
     const to = env.MAIL_TO || 'info@tag-8.com';
-    const from = env.MAIL_FROM || 'TAG EIGHT <no-reply@tag-8.com>';
+    const { name: fromName, email: fromEmail } = parseFrom(env.MAIL_FROM || 'TAG EIGHT <no-reply@tag-8.com>');
 
     const L = FIELD[lang];
     const rows = [
@@ -130,10 +192,11 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       .join('');
 
     // ① 담당자 통지 — 답장하면 문의자에게 바로 가도록 reply_to 지정
-    await send(key, {
-      from,
-      to: [to],
-      reply_to: email,
+    await send({
+      fromName,
+      fromEmail,
+      to,
+      replyTo: email,
       subject: `【サイト問い合わせ】${company} / ${name}`,
       html: `<div style="font-family:sans-serif;font-size:14px;line-height:1.8"><table>${table}</table>
         <p style="margin-top:24px;color:#adadad;font-size:12px">lang: ${lang} / ${new Date().toISOString()}</p></div>`,
@@ -141,10 +204,11 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
 
     // ② 자동응답
     const R = REPLY[lang];
-    await send(key, {
-      from,
-      to: [email],
-      reply_to: to,
+    await send({
+      fromName,
+      fromEmail,
+      to: email,
+      replyTo: to,
       subject: R.subject,
       html: `<div style="font-family:sans-serif;font-size:14px;line-height:1.9;color:#333">
         <p>${esc(R.greet(name))}</p>
