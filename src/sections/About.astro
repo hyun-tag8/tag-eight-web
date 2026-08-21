@@ -25,21 +25,34 @@ const creeds = [d.philosophy.vision, d.philosophy.mission, d.philosophy.values];
 
       {i === 0 && (
         <>
-          <div class="creed-tiles">
-            {faces.map((k, j) => (
-              <figure class="rise" data-clip={`/video/face-${k}.mp4`}>
-                <img
-                  src={`/img/about-${k}.webp`}
-                  srcset={`/img/about-${k}-sm.webp 448w, /img/about-${k}.webp 672w`}
-                  sizes="(max-width: 46rem) 33vw, 230px"
-                  width="672" height="896"
-                  alt="" loading={j === 0 ? undefined : 'lazy'} decoding="async"
-                />
-              </figure>
-            ))}
-          </div>
-          {/* AI 생성 표기 — 한국 AI기본법(2026-01-22 시행) 대응 */}
-          <p class="creed-tiles__note">{d.philosophy.aiNote}</p>
+          {/* VISION 비주얼 — 위에서 내려다본 군상 위로 선 다섯 개가 지나간다.
+              ------------------------------------------------------------
+              구 버전은 AI 인물 사진 3장(한국·일본·대만 여성)이었다.
+              모델 컷은 「우리가 이런 사람들과 일한다」로 읽히고, 인물이 AI 라
+              표시 의무(R10)도 따라붙었다. 시점을 위로 올려 군상으로 바꾸니
+              개인이 아니라 흐름이 보인다.
+
+              ⚠ 흑백으로 굽는다. CSS filter: grayscale() 을 쓰지 않는다 —
+                다른 효과와 겹치면 충돌하고, 브라우저마다 결과가 갈린다.
+                컬러판은 public/img/vision-color.webp 에 남겨뒀다.
+                되돌리려면 아래 src 를 vision-color.webp 로 바꾸기만 하면 된다.
+
+              ⚠ 컬러판의 선 5색은 임의 배색이 아니었다.
+                COMPANY 페이지 멤버 5명의 퍼스널 컬러다.
+                  #F37021 DONGHYUN LEE  / #3F8F63 YONGJUN PARK
+                  #2E6FB7 JEEHYUN YONG  / #C0417A HESTER LIN
+                  #6B7043 SHISEI AOKI
+                멤버가 바뀌면 컬러판도 다시 만들어야 한다. */}
+          <figure class="vision-band">
+            <img
+              src="/img/vision.webp"
+              width="1408" height="596"
+              alt="" loading="lazy" decoding="async"
+            />
+          </figure>
+          {/* AI 생성 표기 — 한국 AI기본법(2026-01-22 시행) 대응.
+              이 이미지는 AI 로 생성했으므로 표기를 지우면 안 된다. */}
+          <p class="vision-band__note">{d.philosophy.aiNote}</p>
         </>
       )}
     </div>
@@ -78,39 +91,3 @@ const creeds = [d.philosophy.vision, d.philosophy.mission, d.philosophy.values];
     </div>
   </div>
 </section>
-
-<script>
-  /* 인물 타일 — 호버할 때만 영상을 붙인다.
-     마우스가 있는 기기에서만. 모바일은 mp4 를 요청조차 하지 않는다. */
-  (() => {
-    const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (!canHover || reduced) return;
-
-    document.querySelectorAll<HTMLElement>('.creed-tiles figure[data-clip]').forEach((fig) => {
-      let video: HTMLVideoElement | null = null;
-      fig.addEventListener('mouseenter', () => {
-        if (!video) {
-          video = document.createElement('video');
-          video.src = fig.dataset.clip!;
-          video.muted = true; video.loop = true; video.playsInline = true; video.preload = 'none';
-          video.className = 'creed-tiles__clip';
-          fig.appendChild(video);
-        }
-        video.currentTime = 0;
-        video.play().catch(() => {});
-        fig.classList.add('is-playing');
-      });
-      fig.addEventListener('mouseleave', () => {
-        fig.classList.remove('is-playing');
-        video?.pause();
-      });
-    });
-  })();
-
-  const io = new IntersectionObserver(
-    (es) => es.forEach((e) => e.isIntersecting && (e.target.classList.add('is-in'), io.unobserve(e.target))),
-    { rootMargin: '0px 0px -12% 0px' }
-  );
-  document.querySelectorAll('.rise').forEach((el) => io.observe(el));
-</script>

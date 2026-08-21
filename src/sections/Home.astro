@@ -146,12 +146,10 @@ const bg = { kr: '/img/hero-seoul-sm.webp', jp: '/img/hero-tokyo-sm.webp', tw: '
         </article>
       ))}
     </div>
-    {/* 두 문장을 각각 한 줄로. 「。」 뒤에서 다음 문장이 이어지면 뭉쳐 보인다 */}
-    <p class="sector__note">
-      {d.sectors.note.split(/(?<=[。.？?！!])\s*/).filter(Boolean).map((t) => (
-        <span class="jp-line"><T text={t} lang={lang} /></span>
-      ))}
-    </p>
+    {/* 한 줄로 흘린다. 문장마다 끊으면 각주 두 개가 나란히 선 것처럼 보여
+        「본문」의 무게가 붙는다. 각주는 한 덩어리로 가볍게 지나가는 게 맞다.
+        폭이 좁아지면 자연스럽게 접히되, 끊기는 위치는 T(BudouX)가 잡는다. */}
+    <p class="sector__note"><T text={d.sectors.note} lang={lang} /></p>
   </div>
 </section>
 
