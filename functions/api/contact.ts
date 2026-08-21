@@ -10,31 +10,43 @@
  * 자동응답이 핵심이다. 일본 B2B 에서는 폼 송신 후 확인 메일이 없으면
  * 담당자가 「보내진 건가?」로 남고, 稟議 회람용 기록도 남지 않는다.
  *
- * 발송사는 2곳을 지원한다. 키가 들어 있는 쪽이 자동으로 쓰인다.
+ * 발송 경로는 3가지를 지원한다. 아래 우선순위로 자동 선택된다.
  *
- *   Brevo   BREVO_API_KEY    ← 현재 이쪽
- *   Resend  RESEND_API_KEY
+ *   ① Google Apps Script  GAS_URL + GAS_TOKEN   ← 현재 이쪽
+ *   ② Brevo               BREVO_API_KEY
+ *   ③ Resend              RESEND_API_KEY
  *
- * 왜 2개인가 (2026-08-21)
+ * 왜 Apps Script 인가 (2026-08-21)
  * ----------------------------------------------------------------
  * tag-8.com 의 DNS 는 Cloudflare 가 아니라 eNom(Google Workspace 리셀러)에 있다.
  * eNom 의 Host Records 는 A / AAAA / CNAME / TXT 만 지원하고 **MX 를 만들 수 없다.**
  * Resend 는 Return-Path 용 MX(send.tag-8.com)를 필수로 요구하므로 인증이 불가능했다.
+ * Brevo 는 TXT 만으로 되지만, 관리할 외부 업체가 하나 늘어난다.
  *
- * → TXT/CNAME 만으로 도메인 인증이 끝나는 발송사(Brevo)로 우회한다.
- * → 나중에 DNS 를 Cloudflare 로 이전하면 RESEND_API_KEY 만 넣어 되돌릴 수 있다.
- *   그때 BREVO_API_KEY 를 지우면 자동으로 Resend 로 전환된다.
+ * → 이미 쓰고 있는 Google Workspace 가 대신 보내게 한다.
+ *   · DNS 작업 0줄 — eNom 을 아예 건드리지 않는다
+ *   · 신규 가입 0건 — 계정·청구서·약관이 늘지 않는다
+ *   · 도달률 최고 — Google 이 자기 인프라에서 서명해 보낸다
+ *   · 발신 주소가 info@tag-8.com 그 자체가 된다
+ *
+ * 구조
+ *   방문자 → Cloudflare Function → (HTTPS) → Apps Script → Gmail 발송
+ *
+ * ⚠ 이 사이트에는 script.google.com 에 배포된 부품이 하나 있다.
+ *   소스는 docs/gas-mailer.gs, 설정 절차는 CONTACT_SETUP.md.
+ *   Workspace 계정이 사라지면 폼도 멈춘다.
  *
  * 필요한 환경변수 (Cloudflare Pages → Settings → Environment variables)
- *   BREVO_API_KEY    Brevo 의 API 키              (또는 RESEND_API_KEY)
- *   MAIL_TO          통지 수신 주소               기본값 info@tag-8.com
- *   MAIL_FROM        발신 주소(도메인 인증 필요)   기본값 TAG EIGHT <no-reply@tag-8.com>
- *
- * ⚠ MAIL_FROM 의 도메인은 발송사에서 DNS 인증을 마쳐야 한다.
- *   인증 전에는 발송이 거부된다.
+ *   GAS_URL          Apps Script 웹앱 URL (https://script.google.com/macros/s/.../exec)
+ *   GAS_TOKEN        임의의 긴 문자열. Apps Script 쪽과 같은 값이어야 한다
+ *   MAIL_TO          통지 수신 주소       기본값 info@tag-8.com
+ *   MAIL_FROM        표시용 발신자명       기본값 TAG EIGHT <no-reply@tag-8.com>
+ *                    ※ Apps Script 경로에서는 이름만 쓰이고 주소는 Workspace 계정이 된다
  */
 
 interface Env {
+  GAS_URL?: string;
+  GAS_TOKEN?: string;
   BREVO_API_KEY?: string;
   RESEND_API_KEY?: string;
   MAIL_TO?: string;
@@ -114,6 +126,31 @@ function parseFrom(v: string): { name: string; email: string } {
   return m ? { name: m[1] || 'TAG EIGHT', email: m[2].trim() } : { name: 'TAG EIGHT', email: v.trim() };
 }
 
+/**
+ * Google Apps Script 웹앱으로 넘긴다.
+ *
+ * Apps Script 는 리다이렉트(302)로 응답하는 경우가 있어 redirect:'follow' 가 필요하다.
+ * 또한 성공/실패를 HTTP 상태가 아니라 본문 JSON 으로 돌려주므로 본문까지 확인한다.
+ */
+async function sendViaGas(url: string, token: string, m: Mail) {
+  const r = await fetch(url, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    redirect: 'follow',
+    body: JSON.stringify({ token, ...m }),
+  });
+  const text = await r.text();
+  if (!r.ok) throw new Error(`gas ${r.status}: ${text.slice(0, 300)}`);
+  // 본문이 JSON 이면 ok 를 확인한다. HTML(로그인 페이지 등)이면 배포 설정이 잘못된 것이다.
+  let body: { ok?: boolean; error?: string };
+  try {
+    body = JSON.parse(text);
+  } catch {
+    throw new Error(`gas 응답이 JSON 이 아니다. 웹앱 접근 권한을 "全員" 으로 배포했는지 확인: ${text.slice(0, 200)}`);
+  }
+  if (!body.ok) throw new Error(`gas: ${body.error || '원인 불명'}`);
+}
+
 async function sendViaBrevo(key: string, m: Mail) {
   const r = await fetch('https://api.brevo.com/v3/smtp/email', {
     method: 'POST',
@@ -144,11 +181,12 @@ async function sendViaResend(key: string, m: Mail) {
   if (!r.ok) throw new Error(`resend ${r.status}: ${await r.text()}`);
 }
 
-/** 키가 들어 있는 쪽으로 보낸다. Brevo 우선. */
+/** 설정된 경로 중 우선순위가 높은 쪽으로 보낸다. Apps Script → Brevo → Resend. */
 function makeSender(env: Env): (m: Mail) => Promise<void> {
+  if (env.GAS_URL && env.GAS_TOKEN) return (m) => sendViaGas(env.GAS_URL!, env.GAS_TOKEN!, m);
   if (env.BREVO_API_KEY) return (m) => sendViaBrevo(env.BREVO_API_KEY!, m);
   if (env.RESEND_API_KEY) return (m) => sendViaResend(env.RESEND_API_KEY!, m);
-  throw new Error('BREVO_API_KEY / RESEND_API_KEY 둘 다 미설정');
+  throw new Error('GAS_URL+GAS_TOKEN / BREVO_API_KEY / RESEND_API_KEY 중 아무것도 설정되지 않았다');
 }
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
