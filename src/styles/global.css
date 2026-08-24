@@ -466,15 +466,59 @@ a { color: inherit; text-decoration: none; }
 
 .cases { border-top: 1px solid var(--rule); }
 .case-row {
-  display: grid; gap: .5rem 2rem; grid-template-columns: 1fr;
+  display: grid; gap: 1rem 1.75rem; grid-template-columns: 1fr;
   padding-block: clamp(1.5rem, 4vh, 2.5rem); border-bottom: 1px solid var(--rule);
-  transition: padding-left .35s cubic-bezier(.16,1,.3,1), opacity .25s;
+  transition: padding-left .35s cubic-bezier(.16,1,.3,1);
 }
-@media (min-width: 48rem) {
-  .case-row { grid-template-columns: 4rem minmax(0,1fr) 14rem; align-items: baseline; }
-  a.case-row:hover { padding-left: 1.25rem; opacity: .55; }
+.case-row__title { font-weight: 200; font-size: var(--step-2); line-height: 1.5; }
+
+/* 3열 — 번호 / 제목(1행) / 방향 박스
+   ------------------------------------------------------------
+   제목을 1행으로 세우려면 폭이 아니라 글자 크기로 맞춰야 한다.
+   가장 먼저 넘치는 건 한국어(최장 28자)라 상한을 ko 기준으로 잡았다.
+     실측(가장 긴 ko 케이스 10번 기준, 여유 = 열폭 − 실제 글자폭)
+       1024px  25.6px  여유 62px
+       1280px  32px    여유 151px
+       1920px  32px    여유 101px
+   ja(23자)·zh-TW(19자)는 이 안에서 자동으로 들어온다. */
+@media (min-width: 64rem) {
+  .case-row { grid-template-columns: 3rem minmax(0, 1fr) 13rem; align-items: center; gap: 1.5rem; }
+  a.case-row:hover { padding-left: 1.25rem; }
+  .case-row__title {
+    white-space: nowrap;
+    font-size: clamp(1.3rem, 2.5vw, 2rem);
+  }
 }
-.case-row__title { font-weight: 200; font-size: var(--step-2); line-height: 1.5; max-width: 28ch; }
+
+/* 방향 박스 — 호버하면 흰색에서 검정으로 뒤집힌다(.btn 과 같은 문법) */
+.case-tag {
+  justify-self: start;
+  display: flex; flex-direction: column; gap: .3rem;
+  padding: .7rem 1.05rem;
+  /* --rule(12%)은 이 크기의 박스에서 안 보인다. 「박스가 있다」로 읽히는 최소치 */
+  border: 1px solid rgba(11, 11, 10, .28);
+  background: var(--white); color: var(--ink);
+  font-family: var(--sans); font-size: var(--step--1);
+  line-height: 1.35; letter-spacing: .01em; white-space: nowrap;
+  transition: background-color .28s cubic-bezier(.22,1,.36,1),
+              color .28s cubic-bezier(.22,1,.36,1),
+              border-color .28s cubic-bezier(.22,1,.36,1);
+}
+.case-tag__cat { font-weight: 500; }
+.case-tag__route { color: var(--ink-25); }
+/* 열 폭을 13rem 으로 고정하고 박스를 꽉 채운다.
+   auto 열로 두면 박스마다 폭이 달라지고, 긴 박스가 열을 넘어 제목을 침범한다.
+   (실측: ja「キャンペーン設計・実行」박스 193px — 열이 102px 로 잡혀 겹쳤다) */
+@media (min-width: 64rem) {
+  .case-tag { justify-self: end; width: 100%; }
+}
+a.case-row:hover .case-tag {
+  background: var(--ink); border-color: var(--ink); color: var(--white);
+}
+a.case-row:hover .case-tag__route { color: rgba(255, 255, 255, .6); }
+@media (prefers-reduced-motion: reduce) {
+  .case-row, .case-tag { transition: none; }
+}
 
 /* 케이스 상세 */
 .case-hero { position: relative; height: clamp(16rem, 42vh, 26rem); overflow: hidden; background: var(--ink); }

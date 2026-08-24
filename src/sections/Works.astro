@@ -21,8 +21,15 @@ const list = getCases(lang);
         {list.map((c) => (
           <a class="case-row" href={localePath(lang, `/works/${c.slug}`)}>
             <span class="num">{c.no}</span>
+            {/* 데스크톱은 1행 고정(nowrap). 모바일에서는 접히므로
+                BudouX <wbr> 는 그대로 태운다 — nowrap 이 걸리면 무시된다. */}
             <span class="case-row__title"><T text={c.title} lang={lang} /></span>
-            <span class="meta">{c.category} — {c.route}</span>
+            {/* 방향은 「무엇을 어디로」가 한눈에 들어와야 하는 정보라 박스로 세운다.
+                호버 시 흰색 → 검정으로 반전(.btn 과 같은 문법). */}
+            <span class="case-tag">
+              <span class="case-tag__cat">{c.category}</span>
+              <span class="case-tag__route">{c.route}</span>
+            </span>
           </a>
         ))}
       </div>

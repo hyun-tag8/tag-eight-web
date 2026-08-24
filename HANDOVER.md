@@ -1,13 +1,17 @@
-# TAG EIGHT 사이트 — 인수인계 (2026-08-20)
+# TAG EIGHT 사이트 — 인수인계 (2026-08-24)
 
 ## 0. 새 대화창에서 가장 먼저 할 일
 
 ```
-1. 최신 zip 확인:  /mnt/user-data/outputs/tag-eight-web_v124.zip
-2. 소스 경로:      /home/claude/site/tag-eight 21/
+1. 최신 zip 확인:  tag-eight-web_v138.zip
+2. 로컬 경로:      ~/Downloads/tag-eight-web   (Mac mini)
 3. PRD 읽기:       PRD.md  ← 모든 결정의 근거가 여기 있다
 4. 트랜스크립트:    /mnt/transcripts/  (journal.txt 에 카탈로그)
 ```
+
+⚠️ `update.sh` 는 Downloads 안에서 **가장 최근 zip**을 집는다.
+   실행 첫 줄에 찍히는 `▶ 사용할 파일` 버전이 받은 것과 같은지 반드시 확인한다.
+   (2026-08-24, v136을 안 받은 채 v135로 빌드해 「수정이 반영 안 된다」로 헤맴)
 
 **PRD.md 가 단일 진실 소스다.** 「왜 이렇게 했는가」와 「왜 이건 안 하는가」가 전부 기록돼 있다.
 같은 논의를 반복하지 않으려면 손대기 전에 해당 섹션을 먼저 읽는다.
@@ -19,9 +23,9 @@
 | | |
 |---|---|
 | 스택 | Astro SSG + Cloudflare Pages + GitHub |
-| 언어 | ja(기본) / ko / zh-TW — 47 페이지 |
-| 소스 | `/home/claude/site/tag-eight 21/` |
-| 현재 버전 | **v124** |
+| 언어 | ja(기본) / ko / zh-TW — **58 페이지** |
+| 배포 | GitHub `hyun-tag8/tag-eight-web` → `tag-eight-web.pages.dev` (자동 배포) |
+| 현재 버전 | **v138** |
 | 로컬 확인 | `./update.sh` → `localhost:4321` (Mac mini, Node v24) |
 
 ### QA 스크립트 (`/home/claude/`)
@@ -50,16 +54,18 @@ cd /home/claude/pkg && zip -qr /mnt/user-data/outputs/tag-eight-web_v125.zip tag
 
 | # | 항목 | 비고 |
 |---|---|---|
-| 1 | **GitHub push + Cloudflare Pages 연결** | 이것만 되면 사이트가 뜬다. 대표 계정 필요 |
-| 2 | **Resend 가입 + DNS 3줄** | `CONTACT_SETUP.md` 에 절차. 폼이 여기서 살아난다 |
-| 3 | **멤버 5명 본인 확인** | AI 가공 얼굴. 특히 HESTER LIN(눈매 신규) · JEEHYUN YONG(재현도 최저) |
-| 4 | **zh-TW 원고 검토** | HESTER LIN 이 대만인 — 번체중문 전체 |
+| 1 | **zh-TW 케이스 10건 HESTER 사인오프** | v137에 초안 투입 완료. **검수 전까지 공개 보류** |
+| 2 | **멤버 5명 본인 확인** | AI 가공 얼굴. 특히 HESTER LIN(눈매 신규) · JEEHYUN YONG(재현도 최저) |
+| 3 | **애널리틱스 미설치** | 스크립트 0개. 공개 전 설치 안 하면 베이스라인이 사라진다 |
+| 4 | **도메인 tag-8.com 연결** | eNom에서 A레코드만 교체. MX 5개·SPF TXT 절대 미변경 |
+
+**완료됨** — GitHub+Cloudflare 연결(08-20) / 문의폼 GAS+Gmail 경유(08-23, Resend·Formspree 폐기) / Privacy 페이지
 
 ## 3. 🟡 진행 예정
 
 | 항목 | 상태 |
 |---|---|
-| ko / zh-TW 케이스 원고 | 새로 쓸 예정. **zh-TW 는 `cases.ts` 에 0건**(ja 10 / ko 10) |
+| zh-TW 케이스 원고 | **v137에서 10건 투입 완료**(ja 10 / ko 10 / zh-TW 10). HESTER 검수 대기 |
 | INSIGHT 페이지 | 빈 페이지 |
 | 실물 덱 전체 개정 | 사이트 확정 후 맞춘다 |
 | 케이스별 이미지 | `cases.ts` 에 `image` 필드 없음. 현재 도시 히어로 이미지 재사용 |
@@ -86,6 +92,7 @@ WHAT WE DO 3영역 명칭:
 | 위치 | 반응 대상 |
 |---|---|
 | 홈 WORKS | 분류(`メディア戦略`)에 개인색 + w500 + scale(1.12) / 루트는 scale만 |
+| **WORKS 목록** | **방향 박스(.case-tag)가 흰색 → 검정으로 반전.** 제목은 반응 없음(4.1 원칙) |
 | 홈 CAPABILITIES | 일본어 영역명에 개인색 |
 | CAPABILITIES 페이지 | 라벨 scale(1.18) + 항목에 개인색 |
 
@@ -122,6 +129,22 @@ transform           :  .3s  cubic-bezier(.22, 1, .36, 1)
 | 숫자·라틴 전용 | **음수 유지** (`.num` -0.04 / `.facts__n` -0.05) |
 
 ⚠ `.tm__bio` 만 `+0.008em` — 표준(0.02)을 주면 **2행 규칙이 깨져 3행으로 넘친다**
+
+### 4.4-b WORKS 목록 — 제목 1행 고정 (2026-08-24)
+
+```
+3열   번호 3rem │ 제목 1fr(nowrap) │ 방향 박스 13rem(고정)
+```
+
+| 왜 | |
+|---|---|
+| 제목이 2행으로 접히면 | 10행이 리듬 없이 뭉친다. 훑는 자리인데 읽는 자리가 된다 |
+| `white-space: nowrap` + `clamp(1.3rem, 2.5vw, 2rem)` | 폭이 아니라 **글자 크기**로 1행을 맞춘다 |
+| 방향 박스 열을 **고정 13rem** | `auto` 로 두면 박스마다 폭이 달라지고, 긴 박스(ja「キャンペーン設計・実行」193px)가 열(102px)을 넘어 **제목을 침범**한다 |
+| 3열 시작을 48rem → **64rem** | 그 아래에서는 1행이 성립하지 않는다. 접히게 두는 게 맞다 |
+
+**실측 여유**(가장 긴 ko 케이스 10번) — 1024px 42px / 1280px 136px / 1920px 104px
+⚠ **ko 원고를 늘리면 여기가 먼저 깨진다.** 제목 길이 상한은 계속 ko 기준.
 
 ### 4.5 클로징 CTA
 `src/components/ClosingCta.astro` — 홈 포함 5페이지 공통.
