@@ -8,11 +8,35 @@ const d = t[lang];
 const faces = ['kr', 'jp', 'tw'];
 const creeds = [d.philosophy.vision, d.philosophy.mission, d.philosophy.values];
 ---
+{/* VISION 비주얼 — 전체 폭 밴드. CAPABILITIES 와 같은 문법으로 페이지를 연다.
+    ------------------------------------------------------------
+    구 버전은 본문 안에 끼운 3열 인물 사진(AI 모델 컷)이었다.
+    모델 컷은 「우리가 이런 사람들과 일한다」로 읽힌다. 시점을 위로 올려
+    군상(群像)으로 바꾸니 개인이 아니라 흐름이 보인다.
+
+    ⚠ 선 다섯 개의 색은 임의 배색이 아니다.
+      COMPANY 페이지 멤버 5명의 퍼스널 컬러다.
+        #F37021 DONGHYUN LEE  / #3F8F63 YONGJUN PARK
+        #2E6FB7 JEEHYUN YONG  / #C0417A HESTER LIN
+        #6B7043 SHISEI AOKI
+      멤버가 바뀌면 이 이미지도 다시 만들어야 한다.
+
+    ⚠ 채도를 원본의 35% 로 낮춰 파일에 구웠다(최대 채도 179 → 63).
+      진하면 사람이 안 보이고 선만 눈에 들어온다. 배경이지 주역이 아니다.
+      CSS filter 를 쓰지 않는다 — 다른 효과와 겹치면 브라우저마다 결과가 갈린다.
+      원본 채도판은 public/img/vision-color.webp 에 남겨뒀다. */}
+<figure class="capband capband--top">
+  <img src="/img/vision-band.webp"
+       srcset="/img/vision-band-sm.webp 1100w, /img/vision-band.webp 2200w"
+       sizes="100vw" width="2200" height="931"
+       alt="" loading="eager" decoding="async" fetchpriority="high" />
+</figure>
+
 {/* ABOUT = 사상. 실체(대표 메시지·팀·会社概要)는 /company 로 분리했다.
     VISION → MISSION → VALUES 는 하나의 흐름이므로 괘선으로 끊지 않는다.
     셋의 제목은 크기·굵기·자간을 완전히 통일한다 — 위계가 생기면 「부속」처럼 읽힌다. */}
 {creeds.map((c, i) => (
-  <section class={i === 0 ? 'sec sec--flush sec--vision' : 'sec sec--creed'}>
+  <section class={i === 0 ? 'sec sec--flush page-head--band sec--vision' : 'sec sec--creed'}>
     <div class="wrap">
       <div class="creed">
         <p class="label">{c.label}</p>
@@ -22,39 +46,6 @@ const creeds = [d.philosophy.vision, d.philosophy.mission, d.philosophy.values];
         <p class="creed__en">{c.en}</p>
         <p class="creed__body"><T text={c.body} lang={lang} /></p>
       </div>
-
-      {i === 0 && (
-        <>
-          {/* VISION 비주얼 — 위에서 내려다본 군상 위로 선 다섯 개가 지나간다.
-              ------------------------------------------------------------
-              구 버전은 AI 인물 사진 3장(한국·일본·대만 여성)이었다.
-              모델 컷은 「우리가 이런 사람들과 일한다」로 읽히고, 인물이 AI 라
-              표시 의무(R10)도 따라붙었다. 시점을 위로 올려 군상으로 바꾸니
-              개인이 아니라 흐름이 보인다.
-
-              ⚠ 흑백으로 굽는다. CSS filter: grayscale() 을 쓰지 않는다 —
-                다른 효과와 겹치면 충돌하고, 브라우저마다 결과가 갈린다.
-                컬러판은 public/img/vision-color.webp 에 남겨뒀다.
-                되돌리려면 아래 src 를 vision-color.webp 로 바꾸기만 하면 된다.
-
-              ⚠ 컬러판의 선 5색은 임의 배색이 아니었다.
-                COMPANY 페이지 멤버 5명의 퍼스널 컬러다.
-                  #F37021 DONGHYUN LEE  / #3F8F63 YONGJUN PARK
-                  #2E6FB7 JEEHYUN YONG  / #C0417A HESTER LIN
-                  #6B7043 SHISEI AOKI
-                멤버가 바뀌면 컬러판도 다시 만들어야 한다. */}
-          <figure class="vision-band">
-            <img
-              src="/img/vision.webp"
-              width="1408" height="596"
-              alt="" loading="lazy" decoding="async"
-            />
-          </figure>
-          {/* AI 생성 표기 — 한국 AI기본법(2026-01-22 시행) 대응.
-              이 이미지는 AI 로 생성했으므로 표기를 지우면 안 된다. */}
-          <p class="vision-band__note">{d.philosophy.aiNote}</p>
-        </>
-      )}
     </div>
   </section>
 ))}

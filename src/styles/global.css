@@ -433,29 +433,6 @@ a { color: inherit; text-decoration: none; }
 .sec--vision { padding-bottom: clamp(1.75rem, 4vh, 2.75rem); }
 
 /* ── 인물 3장 ── */
-/* ── VISION 비주얼 — 군상 위를 지나는 다섯 개의 선 ──
-   구 버전은 3열 인물 사진(creed-tiles)이었다. 모델 컷을 걷어내고
-   위에서 내려다본 한 장의 띠로 바꿨다.
-   선 5색 = COMPANY 멤버 5명의 퍼스널 컬러. 임의 배색이 아니다. */
-.vision-band {
-  margin: clamp(2.5rem, 6vh, 4rem) auto 0;
-  max-width: 44rem;
-  overflow: hidden;
-  /* 구 3열(3:4)+틈 2개와 같은 비율. 페이지 리듬을 유지한다 */
-  aspect-ratio: 704 / 298;
-  background: #f6f4ef;
-}
-.vision-band img {
-  width: 100%; height: 100%; object-fit: cover; display: block;
-}
-
-/* AI 생성 표기 — 「찾으면 보이는」 층이지 「눈에 띄는」 층이 아니다 */
-.vision-band__note {
-  max-width: 44rem; margin: .7rem auto 0; text-align: right;
-  font-family: var(--sans); font-size: .625rem; font-weight: 300;
-  letter-spacing: .03em; color: rgba(11, 11, 10, .26);
-}
-
 /* ── WHY — 유일한 반전 화면. ABOUT 을 닫는다 ── */
 .why { background: var(--ink); color: #fff; padding-block: clamp(4.5rem, 13vh, 11rem); }
 /* 이 섹션의 유일한 텍스트 제목이므로 일반 라벨(11.52px)보다 크게.
