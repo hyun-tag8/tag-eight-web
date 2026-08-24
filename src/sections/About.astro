@@ -45,9 +45,13 @@ const creeds = [d.philosophy.vision, d.philosophy.mission, d.philosophy.values];
 
       원본은 public/img/vision-color.webp 에 남겨뒀다.
       농도를 바꾸려면 strength 값만 조정해 다시 굽는다. */}
+{/* ⚠ 파일명에 버전을 붙인다(-v133). 이미지는 _headers 에서 1년 캐시(immutable)라
+    같은 이름으로 덮어쓰면 방문자 브라우저가 옛 파일을 계속 쓴다.
+    2026-08-24 에 이것 때문에 「배포해도 반영이 안 된다」로 여러 번 헤맸다.
+    이미지를 바꿀 때는 반드시 숫자를 올리고 파일명을 새로 만든다. */}
 <figure class="capband capband--top">
-  <img src="/img/vision-band.webp"
-       srcset="/img/vision-band-sm.webp 1100w, /img/vision-band.webp 2200w"
+  <img src="/img/vision-band-v133.webp"
+       srcset="/img/vision-band-sm-v133.webp 1100w, /img/vision-band-v133.webp 2200w"
        sizes="100vw" width="2200" height="931"
        alt="" loading="eager" decoding="async" fetchpriority="high" />
 </figure>
