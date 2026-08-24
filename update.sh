@@ -48,10 +48,16 @@ done
 
 # 4) 설정 파일은 바뀐 것만 복사
 #
+#    ⚠ package-lock.json 을 반드시 포함한다.
+#      2026-08-24 까지 이게 빠져 있어서, 맥에서 npm install 할 때마다
+#      의존성 버전이 새로 해석됐다. 그 결과 제작 환경과 트리가 어긋나
+#      "Tsconfig not found astro/tsconfigs/strict" 로 로컬 빌드가 깨졌다.
+#      lock 을 같이 주고 npm ci 로 설치하면 트리가 완전히 동일해진다.
+#
 #    ⚠ update.sh 자기 자신은 여기서 덮어쓰면 안 된다.
 #      실행 중인 스크립트를 갈아치우면 bash 가 남은 부분을 엉뚱한 위치에서 읽어
 #      "unexpected EOF" 로 죽는다. 새 버전은 .new 로 받아두고 안내만 한다.
-for F in astro.config.mjs tsconfig.json .gitignore README.md DEPLOY.md PRD.md CONTACT_SETUP.md HANDOVER.md deploy.sh; do
+for F in astro.config.mjs tsconfig.json package-lock.json .gitignore README.md DEPLOY.md PRD.md CONTACT_SETUP.md HANDOVER.md deploy.sh; do
   if [ -f "${SRC_ROOT}/${F}" ] && ! cmp -s "${SRC_ROOT}/${F}" "${PROJECT_DIR}/${F}"; then
     cp "${SRC_ROOT}/${F}" "${PROJECT_DIR}/${F}"
     [ "${F}" = "deploy.sh" ] && chmod +x "${PROJECT_DIR}/${F}"
@@ -72,7 +78,9 @@ if [ -f "${SRC_ROOT}/package.json" ] && ! cmp -s "${SRC_ROOT}/package.json" "${P
   cp "${SRC_ROOT}/package.json" "${PROJECT_DIR}/package.json"
   echo ""
   echo "⚠ package.json 이 바뀌었다. 이번에는 아래를 실행해라:"
-  echo "    npm install"
+  echo "    npm ci"
+  echo "  (npm install 이 아니라 npm ci 다 — lock 파일 그대로 설치해야"
+  echo "   제작 환경과 버전이 완전히 같아진다)"
 fi
 
 if [ "${UPDATE_PENDING}" = "1" ]; then
