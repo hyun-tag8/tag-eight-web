@@ -465,59 +465,63 @@ a { color: inherit; text-decoration: none; }
    ============================================================ */
 
 .cases { border-top: 1px solid var(--rule); }
+
+/* ─ WORKS 목록 행 ─────────────────────────────────────────────
+   구성:  번호 │ (분류 라벨 + 제목 1행) │ 방향
+   호버:  행 전체가 아래에서 위로 검게 차오른다.
+          작은 칩을 반전시키면 「이 칩을 눌러라」로 읽힌다.
+          실제 링크는 행 전체이므로, 반응 영역과 클릭 영역을 일치시킨다.
+          검정 반전은 CLOSING CTA(.btn)와 같은 문법 — 새 장식이 아니다. */
 .case-row {
-  display: grid; gap: 1rem 1.75rem; grid-template-columns: 1fr;
-  padding-block: clamp(1.5rem, 4vh, 2.5rem); border-bottom: 1px solid var(--rule);
-  transition: padding-left .35s cubic-bezier(.16,1,.3,1);
+  position: relative;
+  display: grid; gap: .75rem 1.5rem; grid-template-columns: 1fr;
+  padding-block: clamp(1.6rem, 4vh, 2.4rem);
+  border-bottom: 1px solid var(--rule);
 }
-.case-row__title { font-weight: 200; font-size: var(--step-2); line-height: 1.5; }
+.case-main { display: flex; flex-direction: column; gap: .55rem; min-width: 0; }
 
-/* 3열 — 번호 / 제목(1행) / 방향 박스
-   ------------------------------------------------------------
-   제목을 1행으로 세우려면 폭이 아니라 글자 크기로 맞춰야 한다.
-   가장 먼저 넘치는 건 한국어(최장 28자)라 상한을 ko 기준으로 잡았다.
-     실측(가장 긴 ko 케이스 10번 기준, 여유 = 열폭 − 실제 글자폭)
-       1024px  25.6px  여유 62px
-       1280px  32px    여유 151px
-       1920px  32px    여유 101px
-   ja(23자)·zh-TW(19자)는 이 안에서 자동으로 들어온다. */
-@media (min-width: 64rem) {
-  .case-row { grid-template-columns: 3rem minmax(0, 1fr) 13rem; align-items: center; gap: 1.5rem; }
-  a.case-row:hover { padding-left: 1.25rem; }
-  .case-row__title {
-    white-space: nowrap;
-    font-size: clamp(1.3rem, 2.5vw, 2rem);
-  }
+/* 분류 — 제목의 눈썹. 읽는 줄이 아니라 「무슨 일인지」를 먼저 알리는 라벨 */
+.case-cat {
+  font-family: var(--sans); font-size: var(--step--1); font-weight: 500;
+  letter-spacing: .13em; color: var(--ink-55); transition: color .3s;
 }
-
-/* 방향 박스 — 호버하면 흰색에서 검정으로 뒤집힌다(.btn 과 같은 문법) */
-.case-tag {
-  justify-self: start;
-  display: flex; flex-direction: column; gap: .3rem;
-  padding: .7rem 1.05rem;
-  /* --rule(12%)은 이 크기의 박스에서 안 보인다. 「박스가 있다」로 읽히는 최소치 */
-  border: 1px solid rgba(11, 11, 10, .28);
-  background: var(--white); color: var(--ink);
+.case-row__title { font-weight: 200; font-size: var(--step-2); line-height: 1.45; transition: color .3s; }
+.case-route {
   font-family: var(--sans); font-size: var(--step--1);
-  line-height: 1.35; letter-spacing: .01em; white-space: nowrap;
-  transition: background-color .28s cubic-bezier(.22,1,.36,1),
-              color .28s cubic-bezier(.22,1,.36,1),
-              border-color .28s cubic-bezier(.22,1,.36,1);
+  /* 분류와 같은 농도. 둘 다 제목에 딸린 메타 정보라 층이 같아야 한다.
+     --ink-25 로 두면 방향이 읽히지 않고 얼룩으로 보인다 */
+  color: var(--ink-55); white-space: nowrap; transition: color .3s;
 }
-.case-tag__cat { font-weight: 500; }
-.case-tag__route { color: var(--ink-25); }
-/* 열 폭을 13rem 으로 고정하고 박스를 꽉 채운다.
-   auto 열로 두면 박스마다 폭이 달라지고, 긴 박스가 열을 넘어 제목을 침범한다.
-   (실측: ja「キャンペーン設計・実行」박스 193px — 열이 102px 로 잡혀 겹쳤다) */
+
 @media (min-width: 64rem) {
-  .case-tag { justify-self: end; width: 100%; }
+  .case-row { grid-template-columns: 3rem minmax(0, 1fr) 9rem; align-items: center; }
+  .case-route { justify-self: end; }
+
+  /* 제목 1행 — 폭이 아니라 글자 크기로 맞춘다.
+     가장 먼저 넘치는 건 한국어(최장 28자)라 상한을 ko 기준으로 잡았다.
+     실측 여유(ko 케이스 10번): 1024px 87px / 1280px 168px / 1920px 76px
+     ⚠ 1024 와 1920 두 끝이 가장 빡빡하다. ko 원고를 늘리면 여기가 먼저 깨진다. */
+  .case-row__title { white-space: nowrap; font-size: clamp(1.35rem, 2.6vw, 2.25rem); }
+
+  /* 검은 판. 좌우로 gutter 만큼 넘겨 본문 열보다 넓게 깐다 */
+  .case-row::before {
+    content: ""; position: absolute; z-index: 0;
+    inset: 0 calc(var(--gutter) * -1);
+    background: var(--ink);
+    transform: scaleY(0); transform-origin: bottom;
+    transition: transform .38s cubic-bezier(.16, 1, .3, 1);
+  }
+  .case-row > * { position: relative; z-index: 1; }
+  a.case-row { transition: padding-left .38s cubic-bezier(.16, 1, .3, 1); }
+  a.case-row:hover::before { transform: scaleY(1); }
+  a.case-row:hover { padding-left: 1.5rem; }
+  a.case-row:hover .case-row__title { color: var(--white); }
+  a.case-row:hover .case-cat { color: rgba(255, 255, 255, .72); }
+  a.case-row:hover .case-route { color: rgba(255, 255, 255, .55); }
+  a.case-row:hover .num { color: rgba(255, 255, 255, .42); }
 }
-a.case-row:hover .case-tag {
-  background: var(--ink); border-color: var(--ink); color: var(--white);
-}
-a.case-row:hover .case-tag__route { color: rgba(255, 255, 255, .6); }
 @media (prefers-reduced-motion: reduce) {
-  .case-row, .case-tag { transition: none; }
+  .case-row, .case-row::before, .case-cat, .case-route, .case-row__title { transition: none; }
 }
 
 /* 케이스 상세 */

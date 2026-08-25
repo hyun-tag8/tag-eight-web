@@ -17,19 +17,18 @@ const list = getCases(lang);
     {list.length === 0 ? (
       <div class="empty" style="margin-top:clamp(3rem,8vh,5rem)">{d.works.empty}</div>
     ) : (
-      <div class="cases" style="margin-top:clamp(3rem,8vh,5rem)">
+      <div class="cases" data-layout="works-v141" style="margin-top:clamp(3rem,8vh,5rem)">
         {list.map((c) => (
           <a class="case-row" href={localePath(lang, `/works/${c.slug}`)}>
             <span class="num">{c.no}</span>
-            {/* 데스크톱은 1행 고정(nowrap). 모바일에서는 접히므로
-                BudouX <wbr> 는 그대로 태운다 — nowrap 이 걸리면 무시된다. */}
-            <span class="case-row__title"><T text={c.title} lang={lang} /></span>
-            {/* 방향은 「무엇을 어디로」가 한눈에 들어와야 하는 정보라 박스로 세운다.
-                호버 시 흰색 → 검정으로 반전(.btn 과 같은 문법). */}
-            <span class="case-tag">
-              <span class="case-tag__cat">{c.category}</span>
-              <span class="case-tag__route">{c.route}</span>
+            <span class="case-main">
+              {/* 분류를 제목 위로 올린다 — 시선이 번호 → 분류 → 제목 순으로 흐른다 */}
+              <span class="case-cat">{c.category}</span>
+              {/* 데스크톱은 1행 고정(nowrap). 모바일에서는 접히므로
+                  BudouX <wbr> 는 그대로 태운다 — nowrap 이 걸리면 무시된다. */}
+              <span class="case-row__title"><T text={c.title} lang={lang} /></span>
             </span>
+            <span class="case-route">{c.route}</span>
           </a>
         ))}
       </div>
