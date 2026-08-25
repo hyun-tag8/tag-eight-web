@@ -1,0 +1,106 @@
+# INSIGHT 관리화면 설정
+# ------------------------------------------------------------------
+# 이 파일이 관리화면의 입력 폼을 만든다. 필드를 늘리려면 여기만 고친다.
+# 저장소에 그대로 커밋되므로 비밀값을 쓰지 말 것.
+
+backend:
+  name: github
+  repo: hyun-tag8/tag-eight-web
+  branch: main
+  # GitHub 로그인 창구. Cloudflare Pages Functions 가 처리한다(functions/api/oauth).
+  #
+  # ⚠️ 지금은 도메인 연결 전이라 .pages.dev 주소를 쓴다.
+  #    tag-8.com 을 연결한 뒤에는 이 줄과 GitHub OAuth App 의 callback URL 을
+  #    양쪽 다 https://tag-8.com 으로 바꾼다. (한 줄 + 한 칸)
+  base_url: https://tag-eight-web.pages.dev
+  auth_endpoint: api/oauth
+
+# 로컬에서 `npm run dev` 중일 때는 브라우저에서 바로 파일을 고친다(로그인 불필요).
+local_backend: true
+
+publish_mode: simple
+media_folder: public/img/insight
+public_folder: /img/insight
+
+# 화면 문구
+site_url: https://tag-eight-web.pages.dev
+logo_url: /favicon.svg
+
+collections:
+  - name: insight
+    label: INSIGHT 記事
+    label_singular: 記事
+    folder: src/content/insight
+    create: true
+    # 파일명 = 날짜 + 식별자 + 언어. 같은 글의 다른 언어판은 postId 를 같게 쓴다.
+    slug: '{{year}}-{{month}}-{{day}}-{{fields.postId}}-{{fields.lang}}'
+    summary: '[{{fields.lang}}] {{title}}'
+    sortable_fields: ['date', 'title', 'lang']
+    view_filters:
+      - label: 日本語
+        field: lang
+        pattern: ja
+      - label: 한국어
+        field: lang
+        pattern: ko
+      - label: 繁體中文
+        field: lang
+        pattern: zh-tw
+      - label: 下書き
+        field: draft
+        pattern: true
+    fields:
+      - label: 言語
+        name: lang
+        widget: select
+        options:
+          - { label: 日本語, value: ja }
+          - { label: 한국어, value: ko }
+          - { label: 繁體中文, value: 'zh-tw' }
+        default: ja
+        hint: 同じ記事の他言語版は、下の「記事ID」を同じにしてください。
+
+      - label: 記事ID
+        name: postId
+        widget: string
+        pattern: ['^[a-z0-9-]+$', '半角英小文字・数字・ハイフンのみ']
+        hint: URL になります。例）naver-ai-tab → /insight/naver-ai-tab
+
+      - label: タイトル
+        name: title
+        widget: string
+
+      - label: 一行要約
+        name: excerpt
+        widget: text
+        required: false
+        hint: 検索結果とSNSシェアに出ます。60〜90字目安。
+
+      - label: 公開日
+        name: date
+        widget: datetime
+        date_format: 'YYYY-MM-DD'
+        time_format: false
+        picker_utc: false
+
+      - label: タグ
+        name: tags
+        widget: list
+        required: false
+        default: []
+        hint: 2つまでを推奨。例）検索 / 韓国市場
+
+      - label: 一覧の先頭に固定
+        name: featured
+        widget: boolean
+        default: false
+
+      - label: 下書き（公開しない）
+        name: draft
+        widget: boolean
+        default: true
+        hint: チェックを外すと公開されます。
+
+      - label: 本文
+        name: body
+        widget: markdown

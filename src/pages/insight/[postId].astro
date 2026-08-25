@@ -1,0 +1,17 @@
+---
+import Base from '../../layouts/Base.astro';
+import Post from '../../sections/Post.astro';
+import { getPosts } from '../../lib/insight';
+
+export async function getStaticPaths() {
+  const posts = await getPosts('ja');
+  return posts.map((post) => ({ params: { postId: post.data.postId }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const lang = 'ja' as const;
+---
+<Base lang={lang} title={`${post.data.title}｜INSIGHT｜TAG EIGHT`}
+      description={post.data.excerpt ?? post.data.title} path={`/insight/${post.data.postId}`}>
+  <Post lang={lang} post={post} />
+</Base>

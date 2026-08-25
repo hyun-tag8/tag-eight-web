@@ -8,6 +8,11 @@
 https://:project.pages.dev/*
   X-Robots-Tag: noindex, nofollow
 
+# 관리화면은 검색에 절대 노출하지 않는다
+/admin/*
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-store
+
 # 이미지·영상 캐시
 #
 # ⚠ 예전에는 max-age=31536000, immutable (1년) 이었다.

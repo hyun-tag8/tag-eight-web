@@ -1,0 +1,48 @@
+---
+/**
+ * INSIGHT 기사 본문.
+ * 케이스 상세와 같은 머리 문법 — 날짜가 번호 자리에 온다.
+ */
+import T from '../components/T.astro';
+import Arrow from '../components/Arrow.astro';
+import ClosingCta from '../components/ClosingCta.astro';
+import { t, localePath, type Lang } from '../data/i18n';
+import { render } from 'astro:content';
+import { fmtDate, type Post } from '../lib/insight';
+
+interface Props { lang: Lang; post: Post }
+const { lang, post } = Astro.props;
+const d = t[lang];
+// Astro 6: entry.render() 폐지 → astro:content 의 render(entry)
+const { Content } = await render(post);
+---
+<article data-layout="post-v168">
+  <header class="case-head">
+    <div class="wrap">
+      <p class="case-head__no post-head__date">{fmtDate(post.data.date)}</p>
+      {post.data.tags.length > 0 && (
+        <p class="case-head__meta">
+          {post.data.tags.map((tg, i) => (
+            <>
+              {i > 0 && <span class="case-head__sep" aria-hidden="true">／</span>}
+              <span class="case-head__cat">{tg}</span>
+            </>
+          ))}
+        </p>
+      )}
+      <h1 class="case-head__title"><T text={post.data.title} lang={lang} /></h1>
+    </div>
+  </header>
+
+  <section class="sec sec--flush postbody">
+    <div class="wrap">
+      <div class="prose"><Content /></div>
+    </div>
+  </section>
+
+  <a class="case-back" href={localePath(lang, '/insight')}>
+    <span>{d.journal.backToList}</span>
+  </a>
+
+  <ClosingCta lang={lang} />
+</article>

@@ -1,0 +1,60 @@
+---
+/**
+ * 방향 아이콘.
+ *
+ * 「→」「←」 문자 글리프는 폰트마다 굵기·길이가 제각각이고 CJK 폰트로 폴백되면
+ * 굵고 짧게 나와 싸구려로 보인다. 전부 SVG 로 고정한다.
+ *
+ * variant
+ *   'ring'  기본. 1px 원 + 꺾쇠. 「눌러지는 것」으로 읽힌다. 케이스 이전·다음용
+ *   'line'  가로선 + 꺾쇠. 넓은 자리용
+ *   'chev'  꺾쇠만. 버튼(.btn) 안 — 버튼은 이미 사각 테두리라
+ *           안에 가로선을 또 그으면 선이 두 겹이 된다
+ *
+ * 선 굵기는 둘 다 1 — 사이트 괘선과 같다.
+ */
+interface Props { dir?: 'right' | 'left'; variant?: 'ring' | 'line' | 'chev'; size?: string; cls?: string }
+const { dir = 'right', variant = 'ring', size, cls = '' } = Astro.props;
+const w = size ?? (variant === 'ring' ? '2.4rem' : variant === 'chev' ? '.55rem' : '1.6rem');
+---
+{variant === 'chev' ? (
+  <svg
+    class:list={['arw', 'arw--chev', `arw--${dir}`, cls]}
+    viewBox="0 0 8 14" width="8" height="14"
+    fill="none" stroke="currentColor" stroke-linecap="square" stroke-linejoin="miter"
+    aria-hidden="true" focusable="false" style={`--arw-w:${w}`}
+  >
+    <polyline points="1.5,1.5 6.5,7 1.5,12.5" stroke-width="1.2" />
+  </svg>
+) : variant === 'ring' ? (
+  <svg
+    class:list={['arw', 'arw--ring', `arw--${dir}`, cls]}
+    viewBox="0 0 40 40" width="40" height="40"
+    fill="none" stroke="currentColor" stroke-linecap="square" stroke-linejoin="miter"
+    aria-hidden="true" focusable="false" style={`--arw-w:${w}`}
+  >
+    <circle cx="20" cy="20" r="19" stroke-width="1" />
+    <polyline points="17.5,13.5 24,20 17.5,26.5" stroke-width="1" />
+  </svg>
+) : (
+  <svg
+    class:list={['arw', 'arw--line', `arw--${dir}`, cls]}
+    viewBox="0 0 28 12" width="28" height="12"
+    fill="none" stroke="currentColor" stroke-linecap="square" stroke-linejoin="miter"
+    aria-hidden="true" focusable="false" style={`--arw-w:${w}`}
+  >
+    <line x1="0" y1="6" x2="26" y2="6" stroke-width="1" />
+    <polyline points="21,1.5 26.5,6 21,10.5" stroke-width="1" />
+  </svg>
+)}
+
+<style>
+  .arw { width: var(--arw-w); height: auto; display: inline-block; flex: none; }
+  /* 원은 글자보다 크므로 베이스라인이 아니라 시각 중심으로 내린다 */
+  .arw--ring { transform: translateY(.35em); }
+  .arw--ring.arw--left { transform: translateY(.35em) scaleX(-1); }
+  .arw--chev { height: .85em; width: auto; }
+  .arw--chev.arw--left { transform: scaleX(-1); }
+  .arw--line { transform: translateY(-.08em); }
+  .arw--line.arw--left { transform: translateY(-.08em) scaleX(-1); }
+</style>

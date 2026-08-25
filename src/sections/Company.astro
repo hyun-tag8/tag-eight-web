@@ -1,4 +1,5 @@
 ---
+import Sentences from '../components/Sentences.astro';
 import T from '../components/T.astro';
 import ClosingCta from '../components/ClosingCta.astro';
 import { company } from '../data/company';
@@ -33,9 +34,8 @@ const rows = [
     <div class="ceo__text">
       {d.message.stanzas.map((st) => (
         <p class={st.kind === 'believe' ? 'believe' : undefined}>
-          {st.lines.map((line, i) => (
-            <>{i > 0 && <br />}<T text={line} lang={lang} /></>
-          ))}
+          {/* Sentences 가 문장마다 block 을 만든다. <br> 을 함께 쓰면 빈 줄이 생긴다 */}
+          {st.lines.map((line) => <Sentences text={line} lang={lang} />)}
         </p>
       ))}
     </div>
@@ -79,7 +79,7 @@ const rows = [
             <p class="tm__base">{m.base}</p>
             <p class="tm__name">{m.name}</p>
             <p class="tm__role" style={`color:${m.ink}`}>{m.role}</p>
-            <p class="tm__bio"><T text={m.bio} lang={lang} /></p>
+            <p class="tm__bio"><Sentences text={m.bio} lang={lang} /></p>
           </div>
         </div>
       ))}

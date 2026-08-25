@@ -482,15 +482,17 @@ a { color: inherit; text-decoration: none; }
 
 /* 분류 — 제목의 눈썹. 읽는 줄이 아니라 「무슨 일인지」를 먼저 알리는 라벨 */
 .case-cat {
-  font-family: var(--sans); font-size: var(--step--1); font-weight: 500;
-  letter-spacing: .13em; color: var(--ink-55); transition: color .3s;
+  /* --step--1(11.5px)은 라벨로 너무 작아 얼룩으로 보인다. --step-0 으로 한 단 승격.
+     자간은 .13em → .1em 으로 줄인다. 글자가 커지면 같은 자간이 더 벌어져 보인다 */
+  font-family: var(--sans); font-size: var(--step-0); font-weight: 400;
+  letter-spacing: .1em; color: var(--ink-55); transition: color .3s, font-weight .3s;
 }
-.case-row__title { font-weight: 200; font-size: var(--step-2); line-height: 1.45; transition: color .3s; }
+.case-row__title { font-weight: 200; font-size: var(--step-2); line-height: 1.45; transition: color .3s, font-weight .3s; }
 .case-route {
-  font-family: var(--sans); font-size: var(--step--1);
-  /* 분류와 같은 농도. 둘 다 제목에 딸린 메타 정보라 층이 같아야 한다.
+  font-family: var(--sans); font-size: var(--step-0); letter-spacing: .02em;
+  /* 분류와 같은 농도·같은 크기. 둘 다 제목에 딸린 메타 정보라 층이 같아야 한다.
      --ink-25 로 두면 방향이 읽히지 않고 얼룩으로 보인다 */
-  color: var(--ink-55); white-space: nowrap; transition: color .3s;
+  color: var(--ink-55); white-space: nowrap; transition: color .3s, font-weight .3s;
 }
 
 @media (min-width: 64rem) {
@@ -515,42 +517,237 @@ a { color: inherit; text-decoration: none; }
   a.case-row { transition: padding-left .38s cubic-bezier(.16, 1, .3, 1); }
   a.case-row:hover::before { transform: scaleY(1); }
   a.case-row:hover { padding-left: 1.5rem; }
-  a.case-row:hover .case-row__title { color: var(--white); }
-  a.case-row:hover .case-cat { color: rgba(255, 255, 255, .72); }
-  a.case-row:hover .case-route { color: rgba(255, 255, 255, .55); }
-  a.case-row:hover .num { color: rgba(255, 255, 255, .42); }
+  /* 검정 위에서는 회색이 죽는다. 메타 2종을 흰색으로 올리고 굵기도 한 단 올린다.
+     번호만 45% 로 남겨 「여기가 몇 번째인지」의 앵커 역할을 시킨다.
+     굵기는 200/300/400/500 만 로드돼 있다(Noto Sans JP). 600·700 을 쓰면
+     500 으로 떨어져 아무 변화가 없으므로, 각 요소를 한 단씩만 올린다.
+     CJK 글리프는 굵기가 바뀌어도 폭이 같아서(전각 고정) 리플로우가 없다.
+     실측: 제목 200→300 에서 글자 폭 변화 0px. */
+  a.case-row:hover .case-row__title { color: var(--white); font-weight: 300; }
+  a.case-row:hover .case-cat { color: var(--white); font-weight: 500; }
+  a.case-row:hover .case-route { color: var(--white); font-weight: 500; }
+  a.case-row:hover .num { color: rgba(255, 255, 255, .45); }
 }
 @media (prefers-reduced-motion: reduce) {
   .case-row, .case-row::before, .case-cat, .case-route, .case-row__title { transition: none; }
 }
 
-/* 케이스 상세 */
-.case-hero { position: relative; height: clamp(16rem, 42vh, 26rem); overflow: hidden; background: var(--ink); }
-.case-hero img { object-position: center 65%; }
-.case-hero::after {
-  content: ''; position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(11,11,10,.55) 0%, rgba(11,11,10,.25) 50%, rgba(11,11,10,.7) 100%);
+/* 케이스 상세 — 사진 없는 텍스트 헤드.
+   도시 사진 3장을 10건이 돌려쓰던 구조라 「이 케이스의 사진」이 못 됐다.
+   근거가 못 되는 이미지는 빼고, 하위 페이지 머리(80px 라벨)와 같은 문법으로 세운다. */
+.case-head { padding-block: clamp(2.75rem, 7vh, 4.5rem) 0; }
+.case-head__no {
+  font-family: var(--sans); font-weight: 500;
+  font-size: var(--seclabel-size); letter-spacing: 0.02em; line-height: 1;
+  color: var(--ink);
 }
-.case-hero__in { position: absolute; inset: auto 0 0 0; z-index: 2; padding-bottom: clamp(1.5rem, 4vh, 2.5rem); color: #fff; }
-.case-hero__in .meta { color: rgba(255,255,255,.72); }
-.case-hero__title { font-weight: 200; font-size: var(--step-2); line-height: 1.55; max-width: 24ch; margin-top: .75rem; }
+.case-head__meta {
+  margin-top: clamp(1.25rem, 3vh, 1.75rem);
+  font-family: var(--sans); font-size: var(--step-0);
+  line-height: 1.6; color: var(--ink-55);
+}
+/* 분류와 방향은 같은 층이다. 분류만 굵히면 방향이 부속물로 밀린다 */
+.case-head__cat { font-weight: 500; letter-spacing: .04em; color: var(--ink-55); }
+.case-head__sep { margin-inline: .55rem; color: var(--ink-25); }
+.case-head__route { letter-spacing: .01em; color: var(--ink-55); }
+.case-head__title {
+  margin-top: .6rem;
+  font-weight: 300; font-size: clamp(1.5rem, 3.3vw, 2.9rem);
+  line-height: 1.4; max-width: none;
+}
 
+/* 케이스 본문 — 課題 / 設計 / 展開 / 本質 을 세로 4행으로 쌓는다.
+   本質을 검정 밴드로 떼어내면 결론이 스크롤 밖으로 밀려난다.
+   같은 흐름 안에 두고 크기로만 층을 만드는 쪽이 읽힌다. */
+/* 제목 → 課題 사이 여백을 좁힌다. 헤드와 본문은 끊긴 두 덩어리가 아니라 한 흐름이다 */
+.caserows { padding-block: clamp(1.75rem, 4vh, 2.5rem) clamp(3rem, 8vh, 5rem); }
+.caserow {
+  display: grid; grid-template-columns: 1fr; gap: .6rem;
+  padding-block: clamp(1.5rem, 4vh, 2.25rem);
+  border-bottom: 1px solid var(--rule);
+}
+.caserow:first-child { border-top: 1px solid var(--ink); }
+@media (min-width: 60rem) {
+  .caserow { grid-template-columns: 8rem minmax(0, 1fr); gap: 0 clamp(2rem, 5vw, 4rem); align-items: start; }
+}
+/* --ink-25(34%)는 라벨이 배경으로 가라앉는다. 읽히는 층까지 올린다 */
+.caserow__label {
+  font-family: var(--cjk); font-weight: 500;
+  font-size: var(--step-1); line-height: 1.4; letter-spacing: .04em;
+  color: var(--ink-55);
+}
+/* 40em(=40자)에서 끊기니 두세 줄로 접혔다. 한 문장이 한 줄에 들어가는 폭으로 넓힌다 */
+.caserow__text {
+  font-size: var(--step-0); line-height: 1.9; letter-spacing: .01em;
+  color: var(--ink-55); max-width: 58em;
+}
+/* 마지막 행 — 라벨은 진해지고, 문장은 커진다. 이 한 줄이 인용된다 */
+/* 마지막 행 — 크기는 다른 행과 같게 두고 굵기·농도로만 층을 만든다.
+   크기를 키우면 인용문이 아니라 제목처럼 읽힌다 */
+.caserow--essence { border-bottom: 0; }
+.caserow--essence .caserow__label { color: var(--ink); }
 .essence {
-  font-weight: 200; font-size: var(--step-2); line-height: 1.8;
-  letter-spacing: 0.02em; max-width: 26ch; text-wrap: balance;
+  font-weight: 500; font-size: var(--step-0);
+  line-height: 1.9; letter-spacing: .01em;
+  color: var(--ink); max-width: 58em;
 }
-.case-nav { display: grid; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
-@media (min-width: 48rem) {
-  .case-nav { grid-template-columns: 1fr 1fr; }
-  .case-nav__item + .case-nav__item { border-top: 0; border-left: 1px solid var(--rule); text-align: right; align-items: flex-end; }
+
+/* 이전·다음 — 본문과 같은 축(.wrap)에 맞춘다.
+   화면 끝까지 붙이던 때는 위 본문보다 80px 왼쪽에서 시작해 축이 어긋났다. */
+.case-nav {
+  border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  overflow: hidden;   /* 호버 배경을 화면 끝까지 늘리기 위한 클리핑 */
 }
+.case-nav__in { display: grid; grid-template-columns: 1fr; }
 .case-nav__item {
-  display: flex; flex-direction: column; gap: .75rem;
-  padding: clamp(1.5rem, 4vw, 2.5rem) var(--gutter); transition: opacity .25s;
+  position: relative;
+  display: flex; flex-direction: column; gap: 1rem;
+  padding-block: clamp(2.25rem, 5.5vh, 3.25rem);
+  transition: color .35s;
 }
 .case-nav__item + .case-nav__item { border-top: 1px solid var(--rule); }
-.case-nav__item:hover { opacity: .5; }
-.case-nav__title { font-weight: 200; font-size: var(--step-1); line-height: 1.6; max-width: 24ch; }
+
+/* 호버 배경 — 바깥쪽은 화면 끝까지 채운다(.case-nav 가 잘라준다) */
+.case-nav__item::before {
+  content: ""; position: absolute; z-index: 0; inset: 0;
+  margin-inline: -100vw;
+  background: var(--ink); opacity: 0;
+  transition: opacity .35s cubic-bezier(.22,1,.36,1);
+}
+.case-nav__item > * { position: relative; z-index: 1; }
+.case-nav__item:hover::before { opacity: 1; }
+.case-nav__item:hover { color: var(--white); }
+
+.case-nav__meta {
+  display: inline-flex; align-items: baseline; gap: .9rem;
+  font-family: var(--sans); color: var(--ink-55); transition: color .35s;
+}
+/* 아이콘 화살표 — 문자 글리프 대신 Arrow.astro 의 SVG.
+   이전·다음은 ring(원+꺾쇠). 유일하게 「눌러지는 것」으로 읽힌다. */
+.case-nav__arrow { color: var(--ink-25); transition: color .35s, transform .4s cubic-bezier(.16,1,.3,1); }
+.case-nav__item:hover .case-nav__arrow { color: var(--white); }
+.case-nav__item:hover .case-nav__arrow.arw--right { transform: translateY(.35em) translateX(34px); }
+.case-nav__item:hover .case-nav__arrow.arw--left  { transform: translateY(.35em) scaleX(-1) translateX(10px); }
+.case-nav__no {
+  display: inline-block; font-weight: 200; font-size: var(--step-2);
+  letter-spacing: -.04em; line-height: 1;
+  transform-origin: left bottom;
+  transition: transform .4s cubic-bezier(.16,1,.3,1), color .35s;
+}
+.case-nav__item:hover .case-nav__no { transform: scale(1.7); color: var(--white); }
+.case-nav__item:hover .case-nav__meta { color: rgba(255, 255, 255, .55); }
+.case-nav__title { font-weight: 200; font-size: var(--step-1); line-height: 1.6; max-width: var(--measure-cjk); }
+
+@media (min-width: 48rem) {
+  .case-nav__in { grid-template-columns: 1fr 1fr; }
+  .case-nav__item + .case-nav__item {
+    border-top: 0; border-left: 1px solid var(--rule);
+    padding-left: clamp(2rem, 4vw, 3.5rem);
+  }
+  .case-nav__item { padding-right: clamp(1.5rem, 3vw, 2.5rem); }
+  /* 안쪽(가운데 선 쪽)은 넘기지 않는다 */
+  .case-nav__item:first-child::before  { margin-right: 0; }
+  .case-nav__item + .case-nav__item::before { margin-left: 0; }
+}
+
+/* 목록으로 — 중앙 정렬 한 줄. 호버하면 칸 전체가 검정으로 찬다 */
+.case-back {
+  display: flex; align-items: center; justify-content: center;
+  padding-block: clamp(2.25rem, 5.5vh, 3.5rem);
+  border-bottom: 1px solid var(--rule);
+  /* --step-0(15.7px)은 페이지를 닫는 유일한 한 줄로는 작았다.
+     .h-md 아래 한 단인 --step-1 로 올린다. 자간도 같이 넓힌다 */
+  font-family: var(--sans); font-size: var(--step-1); font-weight: 400;
+  letter-spacing: .16em; color: var(--ink-55);
+  transition: background-color .35s cubic-bezier(.22,1,.36,1), color .35s, letter-spacing .35s;
+}
+/* 바로 아래가 검정 CTA 라 호버 시 두 블록이 붙어 보인다. 흰 실선 한 줄로 경계를 남긴다 */
+.case-back:hover {
+  background: var(--ink); color: var(--white); letter-spacing: .26em;
+  border-bottom-color: rgba(255, 255, 255, .22);
+}
+@media (prefers-reduced-motion: reduce) {
+  .case-nav__item, .case-nav__item::before, .case-nav__no, .case-back { transition: none; }
+}
+
+/* ============================================================
+   INSIGHT — 목록과 기사
+   ============================================================ */
+/* 목록은 WORKS 와 같은 문법. 번호 자리에 날짜가 온다 */
+.posts { border-top: 1px solid var(--ink); }
+.post {
+  position: relative; display: grid; grid-template-columns: 1fr; gap: .5rem;
+  padding-block: clamp(1.75rem, 4.5vh, 2.5rem);
+  border-bottom: 1px solid var(--rule);
+  transition: color .35s, padding-left .4s cubic-bezier(.16,1,.3,1);
+}
+@media (min-width: 48rem) {
+  .post { grid-template-columns: 8rem minmax(0, 1fr); gap: 0 clamp(2rem, 5vw, 4rem); align-items: baseline; }
+}
+.post::before {
+  content: ""; position: absolute; z-index: 0; inset: 0;
+  margin-inline: calc(var(--gutter) * -1);
+  background: var(--ink); transform: scaleY(0); transform-origin: bottom;
+  transition: transform .38s cubic-bezier(.22,1,.36,1);
+}
+.post > * { position: relative; z-index: 1; }
+.post:hover::before { transform: scaleY(1); }
+.post:hover { color: var(--white); padding-left: 1.5rem; }
+.post__date {
+  font-family: var(--sans); font-size: var(--step-0); font-weight: 400;
+  letter-spacing: .06em; color: var(--ink-25); transition: color .35s;
+}
+.post:hover .post__date { color: rgba(255, 255, 255, .55); }
+.post__tags { display: flex; flex-wrap: wrap; gap: .4rem 1rem; margin-bottom: .5rem; }
+.post__tag {
+  font-family: var(--sans); font-size: var(--step-0); font-weight: 400;
+  letter-spacing: .04em; color: var(--ink-55); transition: color .35s, font-weight .2s;
+}
+.post:hover .post__tag { color: rgba(255, 255, 255, .7); font-weight: 500; }
+.post__title {
+  display: block; font-weight: 200; font-size: clamp(1.2rem, 2.2vw, 1.85rem);
+  line-height: 1.5; letter-spacing: .01em; text-wrap: pretty;
+}
+.post:hover .post__title { font-weight: 300; }
+
+/* 기사 머리 — 날짜가 케이스 번호 자리에 온다. 숫자가 길어 조금 줄인다 */
+.post-head__date { font-size: clamp(1.8rem, 4vw, 3.2rem); letter-spacing: .01em; }
+
+/* 본문 — 마크다운이 들어오는 유일한 자리. 여기서만 태그 선택자를 쓴다 */
+.postbody { padding-block: clamp(2rem, 5vh, 3rem) clamp(3rem, 8vh, 5rem); }
+.prose { max-width: 46em; font-size: var(--step-0); line-height: 2.05; color: var(--ink-55); }
+.prose > * + * { margin-top: 1.5rem; }
+.prose h2 {
+  margin-top: clamp(2.75rem, 7vh, 4rem);
+  font-weight: 500; font-size: clamp(1.15rem, 2.2vw, 1.7rem);
+  line-height: 1.5; letter-spacing: .02em; color: var(--ink);
+}
+.prose h3 {
+  margin-top: clamp(2rem, 5vh, 2.75rem);
+  font-weight: 500; font-size: var(--step-1); line-height: 1.5; color: var(--ink);
+}
+.prose strong { font-weight: 500; color: var(--ink); }
+.prose a { color: var(--ink); text-decoration: underline; text-underline-offset: .25em; }
+.prose a:hover { opacity: .55; }
+.prose ul, .prose ol { padding-left: 1.35em; }
+.prose li + li { margin-top: .5rem; }
+.prose ul { list-style: disc; }
+.prose ol { list-style: decimal; }
+.prose blockquote {
+  padding-left: 1.25rem; border-left: 2px solid var(--ink);
+  font-weight: 200; font-size: clamp(1.15rem, 2vw, 1.5rem); line-height: 1.8; color: var(--ink);
+}
+.prose img { width: 100%; height: auto; display: block; }
+.prose hr { border: 0; border-top: 1px solid var(--rule); }
+.prose code {
+  font-size: .92em; padding: .1em .4em;
+  background: rgba(11, 11, 10, .06); border-radius: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .post, .post::before { transition: none; }
+  .post:hover { padding-left: 0; }
+  .post:hover::before { transform: scaleY(1); }
+}
 
 /* ============================================================
    people / company
@@ -639,6 +836,17 @@ a { color: inherit; text-decoration: none; }
   padding: .4rem 0; border-bottom: 1px solid var(--ink); transition: opacity .2s;
 }
 .cform__submit:hover { opacity: .55; }
+/* 밑줄 링크·submit 은 테두리가 없어 꺾쇠를 상주시켜도 선이 겹치지 않는다.
+   호버하면 살짝 앞으로 나간다 */
+.cform__submit { display: inline-flex; align-items: center; gap: .55rem; }
+.link--arw { display: inline-flex; align-items: center; gap: .55rem; }
+.link__arw { transition: transform .35s cubic-bezier(.16,1,.3,1); }
+.link--arw:hover .link__arw,
+.cform__submit:hover .link__arw { transform: translateX(4px); }
+@media (prefers-reduced-motion: reduce) {
+  .link__arw { transition: none; }
+  .link--arw:hover .link__arw, .cform__submit:hover .link__arw { transform: none; }
+}
 
 /* ============================================================
    footer / misc
@@ -1112,12 +1320,14 @@ body {
   text-wrap: pretty;
 }
 
-/* CLIENTS 하단 주석 — 격자 폭에 맞춰 넉넉하게 */
 /* CLIENTS 하단 주석 — 라벨이 아니라 본문이다.
-   .meta 의 자간 0.12em 을 쓰면 글자가 흩어져 읽기 어렵다. */
+   .meta 의 자간 0.12em 을 쓰면 글자가 흩어져 읽기 어렵다.
+   ⚠ max-width 를 ch 로 잡으면 안 된다. ch 는 숫자 0 의 폭이라
+     CJK 에서는 실제 글자 폭의 절반밖에 못 담는다 — 72ch 로 잡았더니
+     418px 에서 끊겨 2행이 됐다(실제 필요 폭 ja 633px). WORKS 의 ※ 주석도 같은 함정이었다. */
 .sector__note {
   margin-top: clamp(1.75rem, 4vh, 2.5rem);
-  max-width: 72ch;
+  max-width: none;
   font-family: var(--cjk);
   font-size: var(--step--1);
   font-weight: 300;
@@ -1229,7 +1439,7 @@ body {
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0;
   padding: 1.05rem 2.3rem;
   min-height: 3rem;  /* 터치 타깃 */
   border: 1px solid currentColor;
@@ -1244,23 +1454,32 @@ body {
   transition: background-color .3s ease, color .3s ease;
 }
 /* 라벨은 별도 span 이라 확대해도 버튼 크기가 흔들리지 않는다 */
-.btn > span:not(.btn__arrow) {
+.btn > span:not(.btn__arrow):not(.btn__slot) {
   display: inline-block;
   transition: transform .35s cubic-bezier(.16,1,.3,1);
 }
-.btn__arrow { font-weight: 400; transition: transform .35s cubic-bezier(.16,1,.3,1); }
+/* 꺾쇠는 평상시엔 없다. 호버하면 자리가 열리며 나타난다.
+   버튼은 이미 사각 테두리라 안에 선을 상주시키면 선이 두 겹으로 보인다. */
+.btn__slot {
+  display: inline-flex; align-items: center;
+  width: 0; margin-left: 0; opacity: 0; overflow: hidden;
+  transition: width .38s cubic-bezier(.16,1,.3,1),
+              margin-left .38s cubic-bezier(.16,1,.3,1),
+              opacity .3s ease;
+}
+.btn:hover .btn__slot { width: .55rem; margin-left: .9rem; opacity: 1; }
+.btn__arrow { flex: none; }
 .btn:hover { background: var(--ink); color: var(--white); }
-.btn:hover > span:not(.btn__arrow) { transform: scale(1.12); }
-.btn:hover .btn__arrow { transform: translateX(5px); }
+.btn:hover > span:not(.btn__arrow):not(.btn__slot) { transform: scale(1.12); }
+
 
 /* 검정 배경 위 */
 .btn--on-dark { color: #fff; }
 .btn--on-dark:hover { background: #fff; color: var(--ink); }
 
 @media (prefers-reduced-motion: reduce) {
-  .btn > span, .btn__arrow { transition: none; }
-  .btn:hover > span:not(.btn__arrow),
-  .btn:hover .btn__arrow { transform: none; }
+  .btn > span, .btn__arrow, .btn__slot { transition: none; }
+  .btn:hover > span:not(.btn__arrow):not(.btn__slot) { transform: none; }
 }
 
 @media (max-width: 30rem) {
@@ -1357,13 +1576,10 @@ body {
   display: grid; grid-template-columns: 1fr; gap: 1.25rem;
   padding: clamp(1.25rem, 2.4vw, 1.75rem) 0;
 }
-@media (min-width: 34rem) { .capcase { grid-template-columns: 15rem minmax(0, 1fr); align-items: center; gap: clamp(1.5rem, 3vw, 2.5rem); } }
+/* 사진 열 삭제(2026-08-25) — 1열로 되돌린다 */
 .capcase + .capcase { border-top: 1px solid var(--rule); }
 /* 케이스 안에서는 페이지 하단의 큰 버튼보다 작게 */
 .capcase__btn { margin-top: 1.25rem; padding: .7rem 1.5rem; min-height: 2.4rem; font-size: var(--step--1); }
-.capcase__fig { margin: 0; aspect-ratio: 3/2; overflow: hidden; background: var(--ink); }
-.capcase__fig img { transition: transform 0.7s cubic-bezier(.16, 1, .3, 1), filter var(--tone-dur, 0.5s) cubic-bezier(.16, 1, .3, 1); }
-.capcase:hover .capcase__fig img { transform: scale(1.03); }
 
 .capcase__meta {
   display: flex; align-items: baseline; gap: 0.8rem; flex-wrap: wrap;
@@ -1372,14 +1588,21 @@ body {
 .capcase__meta .num { font-size: var(--step-0); }
 .capcase__cat { font-weight: 500; letter-spacing: 0.14em; color: var(--ink); }
 .capcase__route { color: var(--ink-55); }
+/* 사진 열을 뺀 뒤(2026-08-25) 본문이 1136px 를 다 쓰게 됐다.
+   CJK 한 줄 78자는 눈이 다음 줄 첫머리를 놓친다. 40자 안팎으로 묶는다.
+   em 은 자기 글자 크기 기준이라 제목·본문의 시각적 폭이 비슷하게 맞는다. */
 .capcase__title {
   margin-top: 0.6rem; font-weight: 300; font-size: var(--step-1);
   line-height: 1.5; letter-spacing: 0.02em; text-wrap: pretty;
+  max-width: 34em;
 }
 .capcase__essence {
   margin-top: 0.9rem; padding-top: 0.9rem; border-top: 1px solid var(--rule);
   font-size: var(--step--1); line-height: 1.9; color: var(--ink-55); text-wrap: pretty;
+  max-width: 46em;
 }
+/* 괘선이 화면 끝까지 뻗으면 본문 폭과 어긋난다 */
+.capcase__essence { border-top-color: var(--rule); }
 
 @media (prefers-reduced-motion: reduce) {
   .cap__chev, .capcase__fig img { transition: none; }
@@ -1391,7 +1614,8 @@ body {
    ============================================================ */
 
 /* 섹션 이름을 크게 세운다. 의미는 아래 h2 가 갖고, 이건 표지 역할이다.
-   --seclabel-size 하나로 크기를 조절한다. */
+   --seclabel-size 하나로 홈 섹션 머리와 하위 페이지 머리가 함께 움직인다.
+   (2026-08-25 · 하위 페이지 머리를 홈과 같은 크기로 통일) */
 :root { --seclabel-size: clamp(2.6rem, 6vw, 5rem); }
 
 .seclabel {
@@ -1401,6 +1625,19 @@ body {
   letter-spacing: 0.02em;
   line-height: 1;
   text-transform: uppercase;
+  color: var(--ink);
+}
+
+/* 하위 페이지 머리(WORKS / CAPABILITIES / JOURNAL / CONTACT …)를
+   홈 섹션 머리와 같은 값으로 맞춘다.
+   ⚠ .page-head 안에 있는 라벨만 해당. 케이스 상세의 「課題/解決策/本質」,
+     ABOUT 의 VISION/MISSION/VALUES, CONTACT 하단의 항목 라벨은
+     본문에 딸린 라벨이므로 11.5px 그대로 둔다. */
+.page-head .label {
+  font-weight: 500;
+  font-size: var(--seclabel-size);
+  letter-spacing: 0.02em;
+  line-height: 1;
   color: var(--ink);
 }
 .invert .seclabel { color: #fff; }
@@ -1433,19 +1670,6 @@ body {
 /* 영상이 붙으면 이미지 확대는 끈다 — 두 움직임이 겹치면 산만하다 */
 .svc-brief:hover .svc-brief__fig.is-playing img { transform: none; }
 
-/* 케이스 상세 상단 메타 — WORKS 카드와 같은 규격 */
-.case-hero__meta {
-  display: flex; align-items: baseline; gap: 0.9rem; flex-wrap: wrap;
-  font-family: var(--sans); font-size: var(--step--1); letter-spacing: 0.1em;
-}
-.case-hero__meta .num { font-size: var(--step-1); color: rgba(255, 255, 255, 0.45); }
-.case-hero__cat {
-  font-weight: 500; letter-spacing: 0.14em; color: #fff;
-}
-.case-hero__route { color: rgba(255, 255, 255, 0.7); }
-
-/* 이전·다음 번호 */
-.case-nav .meta .num { font-size: inherit; }
 
 /* CAPABILITIES 밴드 — 도입부와 3블록 사이의 유일한 시각 휴지 */
 /* 밴드를 헤더 바로 아래 최상단에 둔다. 위가 헤더라 여백을 따로 두지 않는다.

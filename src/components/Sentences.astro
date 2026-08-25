@@ -1,0 +1,77 @@
+---
+/**
+ * 문장 단위로 줄을 나눈다.
+ *
+ * CJK 본문을 폭에 맡기면 「〜まだ限定的だった。単発の」처럼
+ * 앞 문장 끝과 다음 문장 머리가 한 줄에 섞인다. 읽는 리듬이 끊긴다.
+ * 홈 리드문·클로징 CTA 가 이미 쓰는 문법을 본문에도 적용한다.
+ *
+ * 각 문장은 block 이므로 폭이 좁으면 그 안에서 다시 접힌다(모바일 안전).
+ *
+ * ⚠️ 정규식 한 줄로 자르면 두 군데서 깨진다. 파서로 처리하는 이유다.
+ *    ① 「最大2.9倍」 → 소수점이 문장 끝으로 잡혀 「最大2.」 / 「9倍を記録。」
+ *    ② 「あのお菓子は何？」 → 닫는 낫표가 다음 줄에 홀로 떨어진다
+ *    ③ 「〜「あのお菓子は何？」は、置き場所さえあれば残り続ける。」
+ *       → 인용 안의 물음표에서 잘려 문장이 두 동강 난다. 인용 깊이를 세야 한다
+ */
+import T from './T.astro';
+import type { Lang } from '../data/i18n';
+
+interface Props { text: string; lang: Lang; cls?: string }
+const { text, lang, cls = '' } = Astro.props;
+
+const CJK_END = '。！？';
+const ASCII_END = '.!?';
+const CLOSERS = '」』））\'"';
+const OPEN_Q = '「『（(';
+const CLOSE_Q = '」』）)';
+
+function splitSentences(src: string): string[] {
+  const out: string[] = [];
+  let buf = '';
+  let depth = 0;   // 인용·괄호 안에서는 자르지 않는다
+  for (let i = 0; i < src.length; i++) {
+    const ch = src[i];
+    buf += ch;
+    if (OPEN_Q.includes(ch)) depth++;
+    else if (CLOSE_Q.includes(ch) && depth > 0) depth--;
+    let cut = false;
+
+    if (depth > 0) {
+      continue;
+    }
+    if (CJK_END.includes(ch)) {
+      cut = true;
+    } else if (ASCII_END.includes(ch)) {
+      // 소수점·약어 방어 — 앞이 숫자이고 뒤도 숫자면 문장 끝이 아니다
+      const prev = src[i - 1] ?? '';
+      const next = src[i + 1] ?? '';
+      const isDecimal = /[0-9]/.test(prev) && /[0-9]/.test(next);
+      const endsHere = next === '' || /\s/.test(next);
+      cut = !isDecimal && endsHere;
+    }
+
+    if (!cut) continue;
+
+    // 닫는 괄호·따옴표는 앞 문장에 붙인다
+    while (i + 1 < src.length && CLOSERS.includes(src[i + 1])) {
+      buf += src[++i];
+    }
+    out.push(buf.trim());
+    buf = '';
+    // 뒤따르는 공백은 버린다
+    while (i + 1 < src.length && /\s/.test(src[i + 1])) i++;
+  }
+  if (buf.trim()) out.push(buf.trim());
+  return out.filter(Boolean);
+}
+
+const parts = splitSentences(text);
+---
+{parts.map((s) => (
+  <span class:list={['sent', cls]}><T text={s} lang={lang} /></span>
+))}
+
+<style>
+  .sent { display: block; }
+</style>

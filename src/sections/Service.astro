@@ -1,11 +1,13 @@
 ---
+import Sentences from '../components/Sentences.astro';
+import Arrow from '../components/Arrow.astro';
 /**
  * CAPABILITIES — 아코디언.
  * 각 영역을 펼치면 그 영역으로 실제로 한 일(케이스)이 바로 나온다.
  * 서비스와 실적이 한 자리에서 연결되는 것이 이 구조의 목적.
  */
 import T from '../components/T.astro';
-import { getCases, destOf } from '../data/cases';
+import { getCases } from '../data/cases';
 import { t, localePath, type Lang } from '../data/i18n';
 import ClosingCta from '../components/ClosingCta.astro';
 
@@ -28,7 +30,6 @@ const CATS: Record<string, string[]> = {
 };
 
 const all = getCases(lang);
-const bg = { kr: '/img/hero-seoul.webp', jp: '/img/hero-tokyo.webp', tw: '/img/hero-taipei.webp' };
 ---
 {/* 사진을 맨 위로. 이미지 → 라벨 → 제목 → 본문 → WE THINK 로 내려오면
     도입부와 3블록이 하나의 흐름이 된다. */}
@@ -42,16 +43,15 @@ const bg = { kr: '/img/hero-seoul.webp', jp: '/img/hero-tokyo.webp', tw: '/img/h
 <section class="sec sec--flush page-head page-head--band">
   <div class="wrap">
     <p class="label">{d.whatWeDo.eyebrow}</p>
-    <h1 class="h-lg" style="margin-top:1.5rem">
+    <h1 class="h-lg" style="margin-top:clamp(1.75rem,4vh,2.5rem)">
       {d.whatWeDo.head.map((l, i) => (
         <><span class="jp-line"><T text={l} lang={lang} /></span>{i < d.whatWeDo.head.length - 1 && <span class="vh"> </span>}</>
       ))}
     </h1>
-    {/* 원고의 \n 을 그대로 개행으로 쓴다 — 「間」に立ち、 뒤에서 끊어야 호흡이 맞는다 */}
+    {/* 원고의 \n 은 유지하고, 그 안에서 문장 단위로 한 번 더 나눈다.
+        Sentences 가 block 을 만드므로 <br> 은 쓰지 않는다 */}
     <p class="lead">
-      {d.whatWeDo.body.split('\n').map((ln, i) => (
-        <>{i > 0 && <br />}<T text={ln} lang={lang} /></>
-      ))}
+      {d.whatWeDo.body.split('\n').map((ln) => <Sentences text={ln} lang={lang} />)}
     </p>
   </div>
 </section>
@@ -77,26 +77,23 @@ const bg = { kr: '/img/hero-seoul.webp', jp: '/img/hero-tokyo.webp', tw: '/img/h
           </summary>
 
           <div class="cap__body">
-            <p class="cap__lead"><T text={b.lead} lang={lang} /></p>
+            <p class="cap__lead"><Sentences text={b.lead} lang={lang} /></p>
 
             {related.length > 0 && (
               <div class="cap__cases">
                 {related.map((c, ci) => (
                   <div class="capcase">
-                    {/* 같은 도착 시장이면 사진이 겹친다. 케이스 번호로 크롭 위치를 달리해 구분한다 */}
-                    <figure class="capcase__fig tone">
-                      <img src={bg[destOf(c.route)]} alt="" loading="lazy"
-                           style={`object-position: ${28 + ci * 30}% center`} />
-                    </figure>
+                    {/* 사진 삭제(2026-08-25) — 도시 사진 3장을 케이스가 돌려쓰던 구조라
+                        「그 케이스의 사진」이 못 됐다. 케이스 상세와 같은 기준 */}
                     <div class="capcase__body">
                       {/* 번호는 WORKS 목록의 것이라 여기서는 맥락이 없다. 카테고리와 루트만 남긴다 */}
                       <p class="capcase__meta"><span class="capcase__cat">{c.category}</span><span class="capcase__route">　—　{c.route}</span></p>
                       <h3 class="capcase__title"><T text={c.title} lang={lang} /></h3>
-                      <p class="capcase__essence"><T text={c.essence} lang={lang} /></p>
+                      <p class="capcase__essence"><Sentences text={c.essence} lang={lang} /></p>
                       {/* 카드 전체를 반전시키면 시선이 사진으로 가지 않는다.
                           홈 WORKS 와 같은 버튼 하나만 반전시킨다 */}
                       <a class="btn capcase__btn" href={localePath(lang, `/works/${c.slug}`)}>
-                        <span>{d.common.viewMore}</span><span class="btn__arrow">→</span>
+                        <span>{d.common.viewMore}</span><span class="btn__slot"><Arrow variant="chev" cls="btn__arrow" /></span>
                       </a>
                     </div>
                   </div>

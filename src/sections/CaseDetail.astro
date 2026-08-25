@@ -1,6 +1,9 @@
 ---
 import T from '../components/T.astro';
-import { getCases, destOf, type Case } from '../data/cases';
+import { getCases, routeKey, type Case } from '../data/cases';
+import ClosingCta from '../components/ClosingCta.astro';
+import Arrow from '../components/Arrow.astro';
+import Sentences from '../components/Sentences.astro';
 import { t, localePath, type Lang } from '../data/i18n';
 
 interface Props { lang: Lang; item: Case }
@@ -12,68 +15,89 @@ const i = list.findIndex((c) => c.slug === item.slug);
 const prev = i > 0 ? list[i - 1] : list[list.length - 1];
 const next = i < list.length - 1 ? list[i + 1] : list[0];
 const total = String(list.length).padStart(2, '0');
+// 「日本 → 韓国」은 목록의 내부 표기. 상세에서는 문장으로 읽히게 바꾼다
+const routeLine = d.works.routeLines[routeKey(item.route)] ?? item.route;
 
-// 도착 시장의 거리 사진을 배경으로. 그 케이스가 어느 시장을 움직였는지가 사진으로 보인다.
-// 표시폭은 항상 100vw. 모바일(390px @2x = 780w)은 -sm(800w) 판이면 충분하다.
-const heroImg = {
-  kr: { key: 'hero-seoul',  w: 1200, h: 600 },
-  jp: { key: 'hero-tokyo',  w: 1200, h: 600 },
-  tw: { key: 'hero-taipei', w: 1200, h: 600 },
-}[destOf(item.route)];
 ---
-<article>
-  <div class="case-hero tone">
-    <img
-      src={`/img/${heroImg.key}.webp`}
-      srcset={`/img/${heroImg.key}-sm.webp 800w, /img/${heroImg.key}.webp ${heroImg.w}w`}
-      sizes="100vw"
-      width={heroImg.w} height={heroImg.h}
-      alt="" fetchpriority="high" decoding="async"
-    />
-    <div class="case-hero__in"><div class="wrap">
-      {/* 카드와 같은 규격 — 번호는 크게 흐리게, 카테고리는 굵게 */}
-      <p class="case-hero__meta">
-        <span class="num">{item.no}</span>
-        <span class="case-hero__cat">{item.category}</span>
-        <span class="case-hero__route">　—　{item.route}</span>
+<article data-layout="case-v153">
+  {/* 사진 없는 텍스트 헤드.
+      도착 시장의 도시 사진을 깔았지만 10건이 3장을 돌려쓰는 구조라
+      「이 케이스의 사진」이 아니라 장식이 됐다. 근거가 못 되는 이미지는 뺀다.
+      하위 페이지 머리(WORKS 80px)와 같은 문법 — 번호가 그 자리에 온다. */}
+  <header class="case-head">
+    <div class="wrap">
+      <p class="case-head__no">{item.no}</p>
+      <p class="case-head__meta">
+        <span class="case-head__cat">{item.category}</span>
+        <span class="case-head__sep" aria-hidden="true">／</span>
+        <span class="case-head__route">{routeLine}</span>
       </p>
-      <h1 class="case-hero__title"><T text={item.title} lang={lang} /></h1>
-    </div></div>
-  </div>
+      <h1 class="case-head__title"><T text={item.title} lang={lang} /></h1>
+    </div>
+  </header>
 
-  <section class="sec sec--flush" style="padding-top:clamp(3.5rem,10vh,6rem)">
-    <div class="wrap split" style="align-items:start">
-      <div><p class="label">{d.works.challengeLabel}</p></div>
-      <p class="prose" style="font-size:var(--step-1);line-height:2.05"><T text={item.challenge} lang={lang} /></p>
+  {/* 課題 → 設計 → 展開 → 本質 을 한 흐름으로 쌓는다.
+      本質을 검정 밴드로 떼어내면 결론이 스크롤 밖으로 밀려난다.
+      마지막 행에 두고 크기로만 층을 만든다.
+      ja 만 4행. ko / zh-TW 는 원고 미작성이라 3행으로 폴백한다. */}
+  <section class="sec sec--flush caserows">
+    <div class="wrap">
+      <div class="caserow">
+        <p class="caserow__label">{d.works.challengeLabel}</p>
+        <p class="caserow__text"><Sentences text={item.challenge} lang={lang} /></p>
+      </div>
+
+      {item.design && (
+        <div class="caserow">
+          <p class="caserow__label">{d.works.designLabel}</p>
+          <p class="caserow__text"><Sentences text={item.design} lang={lang} /></p>
+        </div>
+      )}
+
+      {item.rollout ? (
+        <div class="caserow">
+          <p class="caserow__label">{d.works.rolloutLabel}</p>
+          <p class="caserow__text"><Sentences text={item.rollout} lang={lang} /></p>
+        </div>
+      ) : (
+        <div class="caserow">
+          <p class="caserow__label">{d.works.approachLabel}</p>
+          <p class="caserow__text"><Sentences text={item.approach} lang={lang} /></p>
+        </div>
+      )}
+
+      <div class="caserow caserow--essence">
+        <p class="caserow__label">{d.works.essenceLabel}</p>
+        <blockquote class="essence"><Sentences text={item.essence} lang={lang} /></blockquote>
+      </div>
     </div>
   </section>
 
-  <section class="sec">
-    <div class="wrap split" style="align-items:start">
-      <div><p class="label">{d.works.approachLabel}</p></div>
-      <p class="h-md"><T text={item.approach} lang={lang} /></p>
-    </div>
-  </section>
-
-  <section class="sec invert" style="padding-block:clamp(5rem,14vh,9rem)">
-    <div class="wrap split" style="align-items:start">
-      <div><p class="label">{d.works.essenceLabel}</p></div>
-      <blockquote class="essence"><T text={item.essence} lang={lang} /></blockquote>
-    </div>
-  </section>
-
+  {/* 이전·다음. 좌우 2칸은 유지하되 본문과 같은 축(.wrap)에 맞춘다.
+      화면 끝까지 붙이면 위 본문과 축이 80px 어긋나 조잡해 보였다. */}
   <nav class="case-nav" aria-label="cases">
-    <a class="case-nav__item" href={localePath(lang, `/works/${prev.slug}`)}>
-      <span class="meta">← {prev.no}</span>
-      <span class="case-nav__title"><T text={prev.title} lang={lang} /></span>
-    </a>
-    <a class="case-nav__item" href={localePath(lang, `/works/${next.slug}`)}>
-      <span class="meta">{next.no} →</span>
-      <span class="case-nav__title"><T text={next.title} lang={lang} /></span>
-    </a>
+    <div class="wrap case-nav__in">
+      <a class="case-nav__item" href={localePath(lang, `/works/${prev.slug}`)}>
+        <span class="case-nav__meta">
+          <Arrow dir="left" variant="ring" cls="case-nav__arrow" />
+          <span class="case-nav__no">{prev.no}</span>
+        </span>
+        <span class="case-nav__title"><T text={prev.title} lang={lang} /></span>
+      </a>
+      <a class="case-nav__item case-nav__item--next" href={localePath(lang, `/works/${next.slug}`)}>
+        <span class="case-nav__meta">
+          <span class="case-nav__no">{next.no}</span>
+          <Arrow dir="right" variant="ring" cls="case-nav__arrow" />
+        </span>
+        <span class="case-nav__title"><T text={next.title} lang={lang} /></span>
+      </a>
+    </div>
   </nav>
 
-  <div class="wrap" style="padding-block:2.5rem 0">
-    <a class="meta link" href={localePath(lang, '/works')}>{d.works.backToList}</a>
-  </div>
+  {/* 목록으로 — 중앙 정렬 한 줄. 호버하면 칸 전체가 검정으로 찬다 */}
+  <a class="case-back" href={localePath(lang, '/works')}>
+    <span>{d.works.backToList}</span>
+  </a>
+
+  <ClosingCta lang={lang} />
 </article>

@@ -1,4 +1,6 @@
 ---
+import Sentences from '../components/Sentences.astro';
+import Arrow from '../components/Arrow.astro';
 import T from '../components/T.astro';
 import { t, localePath, type Lang } from '../data/i18n';
 
@@ -68,7 +70,7 @@ const creeds = [d.philosophy.vision, d.philosophy.mission, d.philosophy.values];
           ? <h1 class="creed__head"><T text={c.head} lang={lang} /></h1>
           : <h2 class="creed__head"><T text={c.head} lang={lang} /></h2>}
         <p class="creed__en">{c.en}</p>
-        <p class="creed__body"><T text={c.body} lang={lang} /></p>
+        <p class="creed__body"><Sentences text={c.body} lang={lang} /></p>
       </div>
     </div>
   </section>
@@ -91,7 +93,7 @@ const creeds = [d.philosophy.vision, d.philosophy.mission, d.philosophy.values];
         </svg>
       </div>
       {d.why.lines.map((block) => (
-        <p class="why__lead">{block.map((l) => <span><T text={l} lang={lang} /></span>)}</p>
+        <p class="why__lead">{block.map((l) => <span><Sentences text={l} lang={lang} /></span>)}</p>
       ))}
 
       {/* ABOUT(사상) 다음은 COMPANY(그 사상을 가진 사람들). 읽는 순서지 영업이 아니다.
@@ -100,7 +102,7 @@ const creeds = [d.philosophy.vision, d.philosophy.mission, d.philosophy.values];
         {/* 바로 위가 「その意志を、名前に込めています。」로 끝나므로 그 이름을 그대로 버튼으로 쓴다.
             목적지가 문구에 없으므로 aria-label 로 보완한다. */}
         <a class="btn btn--on-dark" href={localePath(lang, '/company')} aria-label={d.nav.company}>
-          <span>TAG EIGHT</span><span class="btn__arrow">→</span>
+          <span>TAG EIGHT</span><span class="btn__slot"><Arrow variant="chev" cls="btn__arrow" /></span>
         </a>
       </p>
     </div>

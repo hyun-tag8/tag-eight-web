@@ -1,17 +1,43 @@
 ---
+/**
+ * INSIGHT 목록.
+ * WORKS 목록과 같은 문법 — 행 전체 반전, 번호 자리에 날짜.
+ * 글이 0건이면 준비중 문구만 남는다.
+ */
+import Sentences from '../components/Sentences.astro';
 import T from '../components/T.astro';
 import ClosingCta from '../components/ClosingCta.astro';
-import { t, type Lang } from '../data/i18n';
+import { t, localePath, type Lang } from '../data/i18n';
+import { getPosts, fmtDate } from '../lib/insight';
+
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const d = t[lang];
+const posts = await getPosts(lang);
 ---
 <section class="sec sec--flush page-head">
   <div class="wrap">
     <p class="label">{d.journal.eyebrow}</p>
-    <h1 class="h-lg" style="margin-top:1.5rem"><T text={d.journal.head} lang={lang} /></h1>
-    <p class="lead"><T text={d.journal.sub} lang={lang} /></p>
-    <div class="empty" style="margin-top:clamp(3rem,8vh,5rem)">{d.journal.empty}</div>
+    <h1 class="h-lg" style="margin-top:clamp(1.75rem,4vh,2.5rem)"><T text={d.journal.head} lang={lang} /></h1>
+    <p class="lead"><Sentences text={d.journal.sub} lang={lang} /></p>
+
+    {posts.length === 0 ? (
+      <div class="empty" style="margin-top:clamp(3rem,8vh,5rem)">{d.journal.empty}</div>
+    ) : (
+      <div class="posts" data-layout="insight-v168" style="margin-top:clamp(3rem,8vh,5rem)">
+        {posts.map((p) => (
+          <a class="post" href={localePath(lang, `/insight/${p.data.postId}`)}>
+            <span class="post__date">{fmtDate(p.data.date)}</span>
+            <span class="post__body">
+              {p.data.tags.length > 0 && (
+                <span class="post__tags">{p.data.tags.map((tg) => <span class="post__tag">{tg}</span>)}</span>
+              )}
+              <span class="post__title"><T text={p.data.title} lang={lang} /></span>
+            </span>
+          </a>
+        ))}
+      </div>
+    )}
   </div>
 </section>
 

@@ -1,7 +1,9 @@
 ---
+import Sentences from '../components/Sentences.astro';
+import Arrow from '../components/Arrow.astro';
 import T from '../components/T.astro';
 import ClosingCta from '../components/ClosingCta.astro';
-import { getCases, destOf } from '../data/cases';
+import { getCases } from '../data/cases';
 import { company } from '../data/company';
 import { t, localePath, type Lang } from '../data/i18n';
 
@@ -25,7 +27,6 @@ const panels = [
   { key: 'taipei', label: 'TAIWAN', city: 'TAIPEI', tz: 'Asia/Taipei', zone: 'CST' },
 ];
 const svcImg = ['think', 'create', 'activate'];
-const bg = { kr: '/img/hero-seoul-sm.webp', jp: '/img/hero-tokyo-sm.webp', tw: '/img/hero-taipei-sm.webp' };
 ---
 
 <!-- 1. 히어로 — 3분할 세로 패널. 각 도시의 타임랩스 위에 아이덴티티가 서서히 떠오른다.
@@ -96,7 +97,7 @@ const bg = { kr: '/img/hero-seoul-sm.webp', jp: '/img/hero-tokyo-sm.webp', tw: '
   <div class="wrap">
     <p class="seclabel">{d.works.eyebrow}</p>
     <h2 class="h-lg" style="margin-top:clamp(1.75rem,4vh,2.5rem)"><T text={d.works.head} lang={lang} /></h2>
-    <p class="secsub"><T text={d.works.sub} lang={lang} /></p>
+    <p class="secsub"><Sentences text={d.works.sub} lang={lang} /></p>
 
     {/* 세로 1열 리스트 — 번호 · 사진 · (분류 / 제목).
         가로 2열 카드는 설명을 지운 뒤 비어 보였다. 사진이 들어가면서 무게가 생기고,
@@ -119,7 +120,7 @@ const bg = { kr: '/img/hero-seoul-sm.webp', jp: '/img/hero-tokyo-sm.webp', tw: '
         ))}
       </div>
     )}
-    <p style="margin-top:clamp(2.5rem,6vh,3.5rem)"><a class="btn" href={localePath(lang, '/works')}><span>{d.nav.works}</span><span class="btn__arrow">→</span></a></p>
+    <p style="margin-top:clamp(2.5rem,6vh,3.5rem)"><a class="btn" href={localePath(lang, '/works')}><span>{d.nav.works}</span><span class="btn__slot"><Arrow variant="chev" cls="btn__arrow" /></span></a></p>
   </div>
 </section>
 
@@ -129,9 +130,8 @@ const bg = { kr: '/img/hero-seoul-sm.webp', jp: '/img/hero-tokyo-sm.webp', tw: '
     <p class="seclabel">{d.sectors.eyebrow}</p>
     <h2 class="h-lg" style="margin-top:clamp(1.75rem,4vh,2.5rem)"><T text={d.sectors.head} lang={lang} /></h2>
     <p class="secsub sector__lead">
-      {d.sectors.sub.split(/(?<=[。.？?！!])\s*/).filter(Boolean).map((t) => (
-        <span class="jp-line"><T text={t} lang={lang} /></span>
-      ))}
+      {/* 정규식 분할을 Sentences 로 교체(2026-08-25) — 소수점·닫는 괄호·인용 안 물음표 함정 */}
+      <Sentences text={d.sectors.sub} lang={lang} cls="jp-line" />
     </p>
 
     <div class="sectors">
@@ -163,11 +163,9 @@ const bg = { kr: '/img/hero-seoul-sm.webp', jp: '/img/hero-tokyo-sm.webp', tw: '
         <span class="beat"><T text={bt} lang={lang} /></span>
       ))}
     </h2>
-    {/* 원고의 개행을 그대로 쓴다 — 「〜まで。」 뒤에서 끊어야 두 문장이 갈린다 */}
+    {/* 원고의 개행은 유지하고, 그 안에서 문장 단위로 한 번 더 나눈다 */}
     <p class="secsub">
-      {d.whatWeDo.sub.split('\n').map((ln, i) => (
-        <>{i > 0 && <br />}<T text={ln} lang={lang} /></>
-      ))}
+      {d.whatWeDo.sub.split('\n').map((ln) => <Sentences text={ln} lang={lang} />)}
     </p>
   </div>
 
@@ -204,7 +202,7 @@ const bg = { kr: '/img/hero-seoul-sm.webp', jp: '/img/hero-tokyo-sm.webp', tw: '
     </div>
 
     <p style="margin-top:clamp(2.5rem,6vh,4rem)">
-      <a class="btn" href={localePath(lang, '/capabilities')}><span>{d.nav.service}</span><span class="btn__arrow">→</span></a>
+      <a class="btn" href={localePath(lang, '/capabilities')}><span>{d.nav.service}</span><span class="btn__slot"><Arrow variant="chev" cls="btn__arrow" /></span></a>
     </p>
   </div>
 </section>

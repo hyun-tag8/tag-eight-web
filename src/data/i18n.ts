@@ -84,8 +84,8 @@ type Dict = {
   };
   statement: { body: string; facts: { n: string; label: string }[] };
   sectors: { eyebrow: string; head: string; sub: string; note: string; items: { no: string; ja: string; en: string; body: string }[] };
-  works: { eyebrow: string; head: string; sub: string; empty: string; confidential: string; challengeLabel: string; approachLabel: string; essenceLabel: string; requestHead: string; requestBody: string; requestCta: string; backToList: string };
-  journal: { eyebrow: string; head: string; sub: string; empty: string };
+  works: { eyebrow: string; head: string; sub: string; empty: string; confidential: string; challengeLabel: string; approachLabel: string; designLabel: string; rolloutLabel: string; essenceLabel: string; routeLines: Record<string, string>; requestHead: string; requestBody: string; requestCta: string; backToList: string };
+  journal: { eyebrow: string; head: string; sub: string; empty: string; readMore: string; backToList: string };
   /** WHY TAG EIGHT — 사명의 유래. ABOUT 의 클로징 */
   why: { eyebrow: string; lines: string[][] };
   contact: {
@@ -286,14 +286,32 @@ export const t: Record<Lang, Dict> = {
       confidential: '※ 一部案件については守秘義務により、企業名・団体名の記載を控えております。',
       challengeLabel: '課題',
       approachLabel: '解決策',
+      designLabel: '設計',
+      rolloutLabel: '展開',
       essenceLabel: '本質',
+      routeLines: {
+        'jp-kr': '把日本，帶給韓國的消費者。',
+        'tw-kr': '把台灣，帶給韓國的消費者。',
+        'jp-tw': '把日本，帶給台灣的消費者。',
+      },
+      // 「日本 → 韓国」은 내부 표기다. 케이스 머리에서는 무엇을 어디로 옮겼는지 문장으로 읽힌다.
+      // ⚠️ 언어별로 단어가 다르다. ja 만 「生活者」, ko·zh-TW 는 「소비자 / 消費者」.
+      //    ja 는 덱·사이트 전체가 生活者 로 통일돼 있고(WHAT WE DO 「生活者の感情」 등),
+      //    한국어 「생활자」와 중국어 「生活者」는 일상어가 아니라 번역투로 읽힌다.
+      routeLines: {
+        'jp-kr': '日本を、韓国の生活者へ。',
+        'tw-kr': '台湾を、韓国の生活者へ。',
+        'jp-tw': '日本を、台湾の生活者へ。',
+      },
       requestHead: '詳細事例をPDFでお送りします。',
       requestBody: '実施内容、成果数値、クリエイティブを含む詳細版をご用意しています。お問い合わせいただいた方に個別にお送りします。',
       requestCta: '資料をリクエストする',
       backToList: '事例一覧へ',
     },
     journal: {
-      eyebrow: 'JOURNAL',
+      eyebrow: 'INSIGHT',
+      readMore: '続きを読む',
+      backToList: '記事一覧へ',
       head: '市場を読む、私たちの視点。',
       sub: '韓国・台湾の生活者インサイト、検索行動、クリエイターマーケティングについて。',
       empty: '記事は準備中です。',
@@ -412,8 +430,8 @@ export const t: Record<Lang, Dict> = {
           title: 'WE THINK',
           ja: '브랜드 전략·현지 최적화',
           lead: '다름을 읽고, 선택받는 이유와 나아갈 방향을 찾는다.',
-          items: ['시장·생활자 분석', '브랜드 전략·포지셔닝', '커뮤니케이션 전략', '로컬라이즈'],
-          itemsHome: ['시장·생활자 분석', '브랜드·커뮤니케이션 전략', '로컬라이즈'],
+          items: ['시장·소비자 분석', '브랜드 전략·포지셔닝', '커뮤니케이션 전략', '로컬라이즈'],
+          itemsHome: ['시장·소비자 분석', '브랜드·커뮤니케이션 전략', '로컬라이즈'],
         },
         {
           no: '02',
@@ -517,14 +535,23 @@ export const t: Record<Lang, Dict> = {
       confidential: '※ 일부 프로젝트는 비밀유지 의무에 따라 기업명·단체명 표기를 생략하고 있습니다.',
       challengeLabel: '과제',
       approachLabel: '해결책',
+      designLabel: '설계',
+      rolloutLabel: '전개',
       essenceLabel: '본질',
+      routeLines: {
+        'jp-kr': '일본을, 한국 소비자에게.',
+        'tw-kr': '대만을, 한국 소비자에게.',
+        'jp-tw': '일본을, 대만 소비자에게.',
+      },
       requestHead: '상세 사례는 PDF로 보내드립니다.',
       requestBody: '실행 내역, 성과 수치, 크리에이티브를 포함한 상세판을 준비해두었습니다. 문의해주신 분께 개별적으로 보내드립니다.',
       requestCta: '자료 요청하기',
       backToList: '사례 목록으로',
     },
     journal: {
-      eyebrow: 'JOURNAL',
+      eyebrow: 'INSIGHT',
+      readMore: '이어서 읽기',
+      backToList: '기사 목록으로',
       head: '시장을 읽는, 우리의 관점.',
       sub: '한국·대만의 소비자 인사이트, 검색 행동, 크리에이터 마케팅에 대하여.',
       empty: '아티클은 준비 중입니다.',
@@ -748,14 +775,23 @@ export const t: Record<Lang, Dict> = {
       confidential: '※ 部分專案因保密義務，恕不記載企業或團體名稱。',
       challengeLabel: '課題',
       approachLabel: '解決策',
+      designLabel: '設計',
+      rolloutLabel: '展開',
       essenceLabel: '本質',
+      routeLines: {
+        'jp-kr': '把日本，帶給韓國的消費者。',
+        'tw-kr': '把台灣，帶給韓國的消費者。',
+        'jp-tw': '把日本，帶給台灣的消費者。',
+      },
       requestHead: '詳細案例將以PDF寄送。',
       requestBody: '我們備有包含執行內容、成果數據與創意素材的詳細版本，將個別寄送給洽詢者。',
       requestCta: '索取資料',
       backToList: '返回案例列表',
     },
     journal: {
-      eyebrow: 'JOURNAL',
+      eyebrow: 'INSIGHT',
+      readMore: '繼續閱讀',
+      backToList: '返回文章列表',
       head: '解讀市場的，我們的觀點。',
       sub: '關於韓國與台灣的消費者洞察、搜尋行為與創作者行銷。',
       empty: '文章準備中。',
