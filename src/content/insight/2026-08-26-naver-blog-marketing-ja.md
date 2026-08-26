@@ -8,8 +8,7 @@ date: 2026-08-26
 featured: true
 draft: true
 tags:
-  - NAVER
-  - 韓国市場
+  - NAVER戦略
 ---
 
 ## NAVERブログ施策とは

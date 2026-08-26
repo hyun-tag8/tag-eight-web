@@ -111,7 +111,10 @@ collections:
         widget: list
         required: false
         default: []
-        hint: 主要メディア戦略のキーワードを。2つまで推奨。例）NAVER戦略 / Instagram戦略 / PPL / プレスリリース
+        hint: >-
+          「どの手段の話か」を書きます。1〜2つまで。
+          例）NAVER戦略 / インフルエンサー起用 / PPL / プレスリリース / Instagram戦略 / KOL起用
+          ※「韓国市場」「台湾市場」など市場名は入れないでください。分類がすでに市場を示しているため重複します。
 
       - label: 一覧の先頭に固定
         name: featured
