@@ -107,10 +107,13 @@ const picks = await getHomePicks(lang);
       <p class="seclabel">{d.journal.homeLabel}</p>
       <h2 class="h-lg" style="margin-top:clamp(1.75rem,4vh,2.5rem)"><T text={d.journal.homeHead} lang={lang} /></h2>
 
-      <div class="scols" style="margin-top:clamp(2.5rem,6vh,3.5rem)">
+      {/* 홈은 분류마다 1건이라 가로 3분할이 맞다.
+          INSIGHT 페이지의 3행 가로 배열은 「쌓인다」를 보여주는 자리이고,
+          여기는 「세 시장을 다룬다」만 전하면 된다 */}
+      <div class="hins" style="margin-top:clamp(2.5rem,6vh,3.5rem)">
         {picks.map(({ cat, post }) => (
-          <div class="scol">
-            <p class="scol__head">{d.journal.cat[cat as 'korea' | 'taiwan' | 'notice']}</p>
+          <div class="hins__col">
+            <p class="hins__cat">{d.journal.cat[cat as 'korea' | 'taiwan' | 'notice']}</p>
             <a class="scard" href={localePath(lang, `/insight/${post.data.postId}`)}>
               <span class="scard__date">{fmtDate(post.data.date)}</span>
               <span class="scard__title"><T text={post.data.title} lang={lang} /></span>

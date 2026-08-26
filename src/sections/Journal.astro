@@ -37,7 +37,7 @@ const hasStream = STREAM.some((c) => stream[c].length > 0);
 {/* ── 1층 · 常設 해설 ─────────────────────────────
     검색어 하나 = 페이지 하나. 여기가 유입의 입구다 */}
 {guides.length > 0 && (
-  <section class="sec" data-layout="guides-v179">
+  <section class="sec" data-layout="guides-v180">
     <div class="wrap">
       <p class="seclabel">{d.journal.guideLabel}</p>
       <h2 class="h-lg" style="margin-top:clamp(1.5rem,3.5vh,2.25rem)"><T text={d.journal.guideHead} lang={lang} /></h2>
@@ -59,8 +59,14 @@ const hasStream = STREAM.some((c) => stream[c].length > 0);
   </section>
 )}
 
-{/* ── 2층 · 3열 박스 ─────────────────────────────
-    한 열이 한 시장. 「어느 시장을 다루는 회사인가」가 레이아웃으로 전해진다 */}
+{/* ── 2층 · 3행 가로 배열 ─────────────────────────
+    한 행이 한 시장. 왼쪽에 분류가 고정되고, 오른쪽으로 기사가 흐른다.
+    세로 3열이던 것을 가로로 바꾼 이유 —
+      · 글이 쌓일수록 열마다 높이가 어긋나 계단처럼 보였다
+      · 가로면 글이 늘어도 행 높이가 그대로고, 「계속 쌓이고 있다」가 전해진다
+
+    ⚠ 섹션 제목(LATEST 등)은 두지 않는다. 각 행이 이미 분류명을 갖고 있어 같은 말을 두 번 하게 된다.
+    ⚠ 아래 삼항의 각 분기에는 요소가 하나만 온다 — 분기 안에 주석을 넣으면 컴파일이 깨진다 */}
 {/* 글이 한 편도 없으면 라벨만 남아 어색하다. 그럴 때는 준비중 한 줄로 끝낸다.
     ko·zh-TW 는 원고가 일본어보다 늦게 붙으므로 이 상태를 지난다 */}
 {!hasStream && guides.length === 0 ? (
@@ -68,30 +74,27 @@ const hasStream = STREAM.some((c) => stream[c].length > 0);
     <div class="wrap"><div class="empty">{d.journal.empty}</div></div>
   </section>
 ) : (
-<section class="sec" data-layout="stream-v179">
+<section class="sec" data-layout="stream-v180">
   <div class="wrap">
-    <p class="seclabel">{d.journal.streamLabel}</p>
-    <h2 class="h-lg" style="margin-top:clamp(1.5rem,3.5vh,2.25rem)"><T text={d.journal.streamHead} lang={lang} /></h2>
-
-    {(
-      <div class="scols" style="margin-top:clamp(2.5rem,6vh,3.5rem)">
-        {STREAM.map((c) => (
-          <div class="scol">
-            <p class="scol__head">{d.journal.cat[c]}</p>
-            {stream[c].length === 0 ? (
-              <p class="scol__empty">{d.journal.catEmpty}</p>
-            ) : (
-              stream[c].map((p) => (
+    <div class="srows">
+      {STREAM.map((c) => (
+        <div class="srow">
+          <p class="srow__head">{d.journal.cat[c]}</p>
+          {stream[c].length === 0 ? (
+            <p class="srow__empty">{d.journal.catEmpty}</p>
+          ) : (
+            <div class="srow__strip">
+              {stream[c].map((p) => (
                 <a class="scard" href={localePath(lang, `/insight/${p.data.postId}`)}>
                   <span class="scard__date">{fmtDate(p.data.date)}</span>
                   <span class="scard__title"><T text={p.data.title} lang={lang} /></span>
                 </a>
-              ))
-            )}
-          </div>
-        ))}
-      </div>
-    )}
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
   </div>
 </section>
 )}

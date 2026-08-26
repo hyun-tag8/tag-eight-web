@@ -89,8 +89,6 @@ type Dict = {
     eyebrow: string; head: string; sub: string; empty: string; readMore: string; backToList: string;
     /** 常設 해설 기사 블록. 검색으로 들어온 사람의 착지점 */
     guideLabel: string; guideHead: string; guideSub: string;
-    /** 하단 3열 박스 */
-    streamLabel: string; streamHead: string;
     /** 3열 박스의 열 이름 */
     cat: { korea: string; taiwan: string; notice: string };
     /** 열이 비었을 때 */
@@ -335,8 +333,6 @@ export const t: Record<Lang, Dict> = {
       guideLabel: 'GUIDE',
       guideHead: '韓国・台湾のメディア施策を、はじめから。',
       guideSub: 'インフルエンサー起用、NAVERブログ、プレスリリース、テレビPPL。仕組みと進め方を、実務の言葉で書いています。',
-      streamLabel: 'LATEST',
-      streamHead: '市場と、私たちの、いま。',
       cat: { korea: '韓国インサイト', taiwan: '台湾インサイト', notice: 'お知らせ' },
       catEmpty: '準備中',
       homeLabel: 'INSIGHT',
@@ -591,8 +587,6 @@ export const t: Record<Lang, Dict> = {
       guideLabel: 'GUIDE',
       guideHead: '한국·대만 미디어 실행을, 처음부터.',
       guideSub: '인플루언서 기용, 네이버 블로그, 프레스 릴리스, TV PPL. 구조와 진행 방식을 실무의 언어로 씁니다.',
-      streamLabel: 'LATEST',
-      streamHead: '시장과, 우리의, 지금.',
       cat: { korea: '한국 인사이트', taiwan: '대만 인사이트', notice: '소식' },
       catEmpty: '준비 중',
       homeLabel: 'INSIGHT',
@@ -847,8 +841,6 @@ export const t: Record<Lang, Dict> = {
       guideLabel: 'GUIDE',
       guideHead: '韓國・台灣的媒體操作，從頭說起。',
       guideSub: '網紅合作、NAVER部落格、新聞稿發布、電視置入。以實務語言說明架構與執行方式。',
-      streamLabel: 'LATEST',
-      streamHead: '市場，與我們的現在。',
       cat: { korea: '韓國洞察', taiwan: '台灣洞察', notice: '消息' },
       catEmpty: '準備中',
       homeLabel: 'INSIGHT',
