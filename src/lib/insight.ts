@@ -68,13 +68,21 @@ export async function getHomePicks(lang: Lang): Promise<{ cat: Category; post: P
 export const NEW_DAYS = 7;
 
 /**
- * INSIGHT 첫 화면의 대형 카드에 설 1건.
- * 3분류를 통틀어 가장 최신 것 — 「지금 이 회사가 무엇을 보고 있나」가 한 장으로 전해진다.
- * ⚠ guide 는 제외한다. 그쪽은 위 블록에 상설되므로 여기서 또 나오면 중복이다.
+ * INSIGHT 첫 화면의 대형 카드. 분류마다 최신 1건씩 — 최대 3장.
+ *
+ * 왜 「최신 3건」이 아니라 「분류마다 1건」인가 —
+ *   최신순으로 뽑으면 한국 글만 3장이 되는 날이 생기고,
+ *   그날 이 큰 자리에서 台湾을 다룬다는 신호가 사라진다.
+ *   대만은 경쟁사가 다루지 않는 축이라, 여기서 빠지면 잃는 것이 크다.
+ *
+ * ⚠ guide 는 제외한다. 그쪽은 아래 블록에 상설되므로 여기서 또 나오면 중복이다.
+ * ⚠ 순서는 STREAM(한국 → 대만 → お知らせ) 고정이다. 날짜순으로 섞으면
+ *   넘길 때마다 순서가 바뀌어 「어디까지 봤는지」를 잃는다.
  */
-export async function getLead(lang: Lang): Promise<Post | null> {
-  const all = await getPosts(lang);
-  return all.find((e) => e.data.category !== 'guide') ?? null;
+export async function getLeads(lang: Lang): Promise<{ cat: Category; post: Post }[]> {
+  const s = await getStream(lang);
+  return STREAM.map((c) => ({ cat: c, post: s[c][0] }))
+    .filter((x): x is { cat: Category; post: Post } => !!x.post);
 }
 
 /** 한 분류의 글 전체. 분류별 목록 페이지가 쓴다 */

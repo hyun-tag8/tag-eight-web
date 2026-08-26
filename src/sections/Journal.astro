@@ -18,17 +18,17 @@ import Arrow from '../components/Arrow.astro';
 import NewBadge from '../components/NewBadge.astro';
 import ClosingCta from '../components/ClosingCta.astro';
 import { t, localePath, type Lang } from '../data/i18n';
-import { getGuides, getStream, getLead, fmtDate, STREAM, CAT_SLUG } from '../lib/insight';
+import { getGuides, getStream, getLeads, fmtDate, STREAM, CAT_SLUG } from '../lib/insight';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const d = t[lang];
 const guides = await getGuides(lang);
 const stream = await getStream(lang);
-/* 첫 화면의 대형 카드. 3분류를 통틀어 최신 1건 */
-const lead = await getLead(lang);
+/* 첫 화면의 대형 카드 — 분류마다 최신 1건씩, 좌우로 넘긴다 */
+const leads = await getLeads(lang);
 /* 대형 카드에 선 글은 아래 3행에서 뺀다 — 같은 화면에 두 번 나오면 목록이 어색해진다 */
-const leadId = lead?.data.postId;
+const leadIds = new Set(leads.map((l) => l.post.data.postId));
 const hasStream = STREAM.some((c) => stream[c].length > 0);
 ---
 {/* ⚠ 다른 하위 페이지(WORKS·COMPANY 등)는 「라벨 + 큰 제목 + 리드문」 3단이지만
@@ -38,6 +38,60 @@ const hasStream = STREAM.some((c) => stream[c].length > 0);
 <section class="sec sec--flush page-head page-head--slim">
   <div class="wrap">
     <p class="label">{d.journal.eyebrow}</p>
+  </div>
+</section>
+
+{/* ── 최신 1건 · 대형 카드 ────────────────────────
+    페이지 머리 바로 다음. 「지금 이 회사가 무엇을 보고 있나」가 먼저 오고,
+    해설(GUIDE)은 그 뒤에 온다 — 해설이 먼저면 매번 같은 화면이 되어
+    「업데이트되는 곳」이라는 신호가 사라진다. */}
+<section class="sec sec--lead" data-layout="lead-v193">
+  <div class="wrap">
+    {leads.length > 0 && (
+      <div class="leads" data-n={leads.length}>
+        <div class="leads__track">
+          {leads.map(({ cat, post }) => (
+            <a class="ilead" href={localePath(lang, `/insight/${post.data.postId}`)}
+               style={post.data.cover ? `--cover:url(${post.data.cover})` : undefined}
+               data-cover={post.data.cover ? '' : undefined}>
+              <span class="ilead__meta">
+                <span>{d.journal.cat[cat as 'korea' | 'taiwan' | 'notice']}</span>
+                <span>{fmtDate(post.data.date)}</span>
+              </span>
+              <span class="ilead__title"><T text={post.data.title} lang={lang} /></span>
+              {post.data.excerpt && (
+                <span class="ilead__ex">
+                  <T text={post.data.excerpt} lang={lang} /><NewBadge date={post.data.date} />
+                </span>
+              )}
+            </a>
+          ))}
+        </div>
+
+        {leads.length > 1 && (
+          <div class="leads__nav">
+            {/* 점 대신 분류명을 쓴다 — 어느 시장 이야기인지가 바로 보이고,
+                「3개 시장을 다룬다」가 넘기기 전에도 전해진다 */}
+            <div class="leads__tabs">
+              {leads.map(({ cat }, i) => (
+                <button class="leads__tab" type="button" data-go={i} aria-current={i === 0 ? 'true' : undefined}>
+                  {d.journal.cat[cat as 'korea' | 'taiwan' | 'notice']}
+                </button>
+              ))}
+            </div>
+            <div class="leads__arrows">
+              <button class="leads__arw" type="button" data-dir="-1" aria-label="prev">
+                <Arrow dir="left" variant="ring" />
+              </button>
+              <button class="leads__arw" type="button" data-dir="1" aria-label="next">
+                <Arrow dir="right" variant="ring" />
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    )}
+
   </div>
 </section>
 
@@ -88,25 +142,8 @@ const hasStream = STREAM.some((c) => stream[c].length > 0);
     <div class="wrap"><div class="empty">{d.journal.empty}</div></div>
   </section>
 ) : (
-<section class="sec" data-layout="stream-v184">
+<section class="sec" data-layout="stream-v193">
   <div class="wrap">
-    {lead && (
-      <a class="ilead" href={localePath(lang, `/insight/${lead.data.postId}`)}
-         style={lead.data.cover ? `--cover:url(${lead.data.cover})` : undefined}
-         data-cover={lead.data.cover ? '' : undefined}>
-        <span class="ilead__meta">
-          <span>{d.journal.cat[lead.data.category as 'korea' | 'taiwan' | 'notice']}</span>
-          <span>{fmtDate(lead.data.date)}</span>
-        </span>
-        <span class="ilead__title"><T text={lead.data.title} lang={lang} /></span>
-        {lead.data.excerpt && (
-          <span class="ilead__ex">
-            <T text={lead.data.excerpt} lang={lang} /><NewBadge date={lead.data.date} />
-          </span>
-        )}
-      </a>
-    )}
-
     <div class="srows">
       {STREAM.map((c) => (
         <div class="srow">
@@ -117,11 +154,11 @@ const hasStream = STREAM.some((c) => stream[c].length > 0);
               <span>{d.journal.cat[c]}</span><Arrow variant="chev" cls="srow__arw" />
             </a>
           </p>
-          {stream[c].filter((p) => p.data.postId !== leadId).length === 0 ? (
+          {stream[c].filter((p) => !leadIds.has(p.data.postId)).length === 0 ? (
             <p class="srow__empty">{d.journal.catEmpty}</p>
           ) : (
             <div class="slist">
-              {stream[c].filter((p) => p.data.postId !== leadId).slice(0, 5).map((p) => (
+              {stream[c].filter((p) => !leadIds.has(p.data.postId)).slice(0, 5).map((p) => (
                 <a class="sitem" href={localePath(lang, `/insight/${p.data.postId}`)}>
                   <span class="sitem__date">{fmtDate(p.data.date)}</span>
                   <span class="sitem__title"><T text={p.data.title} lang={lang} /></span>
@@ -138,3 +175,35 @@ const hasStream = STREAM.some((c) => stream[c].length > 0);
 )}
 
 <ClosingCta lang={lang} />
+
+<script>
+  /* 대형 카드 전환. 스크롤 스냅이 실제 이동을 담당하고,
+     스크립트는 화살표·점과 현재 위치 표시만 맡는다.
+     ⚠ 자동 재생은 넣지 않는다 — 읽는 도중에 바뀌면 성가시다. */
+  const box = document.querySelector<HTMLElement>('.leads');
+  if (box) {
+    const track = box.querySelector<HTMLElement>('.leads__track')!;
+    const dots = [...box.querySelectorAll<HTMLButtonElement>('.leads__tab')];
+    const arws = [...box.querySelectorAll<HTMLButtonElement>('.leads__arw')];
+    const n = track.children.length;
+
+    const at = () => Math.round(track.scrollLeft / track.clientWidth);
+    const sync = () => {
+      const i = at();
+      dots.forEach((d, k) => (k === i ? d.setAttribute('aria-current', 'true') : d.removeAttribute('aria-current')));
+      arws.forEach((a) => {
+        const dir = Number(a.dataset.dir);
+        a.disabled = dir < 0 ? i <= 0 : i >= n - 1;
+      });
+    };
+    const go = (i: number) => {
+      track.scrollTo({ left: Math.max(0, Math.min(n - 1, i)) * track.clientWidth, behavior: 'smooth' });
+    };
+
+    dots.forEach((d) => d.addEventListener('click', () => go(Number(d.dataset.go))));
+    arws.forEach((a) => a.addEventListener('click', () => go(at() + Number(a.dataset.dir))));
+    track.addEventListener('scroll', () => { clearTimeout((track as any)._t); (track as any)._t = setTimeout(sync, 90); });
+    window.addEventListener('resize', sync);
+    sync();
+  }
+</script>

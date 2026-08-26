@@ -18,6 +18,15 @@
    `astro/tsconfigs/strict` 를 참조하는데 거기엔 node_modules 가 없어
    프로젝트 tsconfig 를 아무리 고쳐도 `Tsconfig not found` 가 계속 났다.
 
+🔴 **zip 적용은 `~/Downloads/apply.sh` 한 줄로만 한다.** (2026-08-26)
+   명령을 손으로 붙여넣으면 위 화살표(↑)로 옛 명령을 불러 쓰다 사고가 난다.
+   실제로 `rsync -a --delete /tmp/t8/tag-eight/src/ ./src/` (src 통째)가 한 번 섞여 실행되어
+   **원고가 세 번 날아갔다.** src/ 를 통째로 동기화하면 zip 에 없는 `src/content/` 가 지워진다.
+
+   apply.sh 는 ① 최신 zip 자동 선택 ② `git pull --rebase` ③ src 하위 폴더만 개별 동기화
+   ④ 빌드 ⑤ **원고 폴더가 없으면 멈추고 경고** 까지 한다.
+   스크립트가 없어졌다면 이 문서의 이력이나 트랜스크립트에서 복원할 것.
+
 🔴 **`src/content/journal/`·`src/content/works/` 를 되살리지 말 것.** (2026-08-26)
    컬렉션은 `insight` 하나뿐인데, 안 쓰는 두 폴더가 `.gitkeep` 과 함께 zip 에 섞여 있었다.
    그 탓에 적용 명령이 `src/content/` 를 건드리게 되어 **원고가 두 번 날아갔다.**
