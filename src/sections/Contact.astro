@@ -23,7 +23,7 @@ const errCode = Astro.url.searchParams.get('e');
     이전에는 머리 → 오피스 사진 → 연락처 → 폼 순으로 쌓여 3293px(3화면)였다.
     문의하러 온 사람이 스크롤을 세 번 하는 구조였다.
     오피스 사진은 COMPANY 에 있으므로 여기서는 지도로 바꾼다. */}
-<section class="ctpanel tone" data-layout="contact-v172">
+<section class="ctpanel tone" data-layout="contact-v173">
   <OfficeMap mapLink={f.mapLink} label={company.addressJa} />
 
   <div class="ctpanel__in">
@@ -43,7 +43,8 @@ const errCode = Astro.url.searchParams.get('e');
           <dt>Tel</dt>
           <dd>{company.tel}</dd>
         </div>
-        <div class="ctpanel__row">
+        {/* 주소는 한 줄로 세운다. 좌우 2열이면 폭이 모자라 「13階」만 다음 줄로 떨어진다 */}
+        <div class="ctpanel__row ctpanel__row--wide">
           <dt>Address</dt>
           <dd>{company.addressJa}</dd>
         </div>
@@ -97,7 +98,10 @@ const errCode = Astro.url.searchParams.get('e');
 
         {errCode && <p class="cform__err" role="alert">{errCode === '1' ? f.errInput : f.errServer}</p>}
         <p class="meta cform__note">{f.note}</p>
-        <button class="cform__submit" type="submit"><span>{f.submit}</span><Arrow variant="chev" cls="link__arw" /></button>
+        {/* 박스형 버튼 — 사이트 공통 .btn 문법. 테두리가 있으므로 꺾쇠는 호버 때만 열린다 */}
+        <button class="btn cform__btn" type="submit">
+          <span>{f.submit}</span><span class="btn__slot"><Arrow variant="chev" cls="btn__arrow" /></span>
+        </button>
       </form>
     </div>
   </div>
