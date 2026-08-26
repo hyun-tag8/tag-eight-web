@@ -46,8 +46,18 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
   const url = new URL(request.url);
   const code = url.searchParams.get('code');
 
-  if (!env.GITHUB_CLIENT_ID || !env.GITHUB_CLIENT_SECRET) {
-    return new Response('OAuth の環境変数が未設定です。', { status: 500 });
+  // 어느 값이 비었는지 이름만 돌려준다. 값은 절대 내보내지 않는다.
+  // (2026-08-25: 변수명을 ITHUB_CLIENT_SECRET 으로 잘못 넣어 500 만 반복된 적이 있다)
+  const missing = [
+    !env.GITHUB_CLIENT_ID && 'GITHUB_CLIENT_ID',
+    !env.GITHUB_CLIENT_SECRET && 'GITHUB_CLIENT_SECRET',
+  ].filter(Boolean);
+  if (missing.length) {
+    return new Response(
+      `OAuth の環境変数が未設定です: ${missing.join(', ')}\n` +
+        `Cloudflare Pages → Settings → Variables and secrets で名前を確認し、保存後に再デプロイしてください。`,
+      { status: 500, headers: { 'content-type': 'text/plain; charset=utf-8' } }
+    );
   }
 
   // 1단계 — GitHub 인증 화면으로 보낸다

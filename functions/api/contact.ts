@@ -204,9 +204,12 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     const name = clean(form.get('name'), LIMITS.name);
     const email = clean(form.get('email'), LIMITS.email);
     const subject = clean(form.get('subject'), LIMITS.subject);
+    // 동의 체크 — 개인정보보호법 21조. 클라이언트 required 만으로는 우회된다 */
+    const consent = clean(form.get('consent'), 16);
     const message = String(form.get('message') ?? '').trim().slice(0, LIMITS.message);
 
     if (!company || !name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return back('/contact/?e=1');
+    if (consent !== 'agree') return back('/contact/?e=1');
 
     const send = makeSender(env);
     const to = env.MAIL_TO || 'info@tag-8.com';

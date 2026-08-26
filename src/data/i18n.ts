@@ -97,6 +97,7 @@ type Dict = {
       subjects: string[];
       /** 전송 실패 안내 */
       errInput: string; errServer: string;
+      consent: string; consentLink: string; mapLink: string;
       /** 送信完了ページ */
       thanksHead: string; thanksBody: string; thanksBack: string;
     };
@@ -336,6 +337,9 @@ export const t: Record<Lang, Dict> = {
         subjects: ['ご相談・お見積り', '事例資料（PDF）のご請求', '取材・メディア', '採用について', 'その他'],
       errInput: '入力内容をご確認ください。',
       errServer: '送信に失敗しました。お手数ですが info@tag-8.com へ直接ご連絡ください。',
+      consent: 'に同意のうえ送信します。',
+      consentLink: 'プライバシーポリシー',
+      mapLink: 'Google マップで見る',
       thanksHead: 'お問い合わせを承りました。',
       thanksBody: '確認のメールをお送りしました。担当者より2営業日以内にご連絡いたします。',
       thanksBack: 'ホームへ戻る',
@@ -576,6 +580,9 @@ export const t: Record<Lang, Dict> = {
         subjects: ['상담·견적', '사례 자료(PDF) 요청', '취재·미디어', '채용 문의', '기타'],
       errInput: '입력 내용을 확인해 주세요.',
       errServer: '전송에 실패했습니다. 번거로우시겠지만 info@tag-8.com 으로 직접 연락 주세요.',
+      consent: '에 동의하고 전송합니다.',
+      consentLink: '개인정보 처리방침',
+      mapLink: 'Google 지도에서 보기',
       thanksHead: '문의가 접수되었습니다.',
       thanksBody: '확인 메일을 보내드렸습니다. 담당자가 2영업일 이내에 연락드리겠습니다.',
       thanksBack: '홈으로 돌아가기',
@@ -816,6 +823,9 @@ export const t: Record<Lang, Dict> = {
         subjects: ['諮詢・報價', '索取案例資料（PDF）', '採訪・媒體', '徵才相關', '其他'],
       errInput: '請確認輸入內容。',
       errServer: '傳送失敗。麻煩您直接來信 info@tag-8.com。',
+      consent: '，並同意後送出。',
+      consentLink: '隱私權政策',
+      mapLink: '在 Google 地圖上查看',
       thanksHead: '已收到您的來信。',
       thanksBody: '我們已寄出確認信件，將由專人於兩個工作天內與您聯繫。',
       thanksBack: '返回首頁',

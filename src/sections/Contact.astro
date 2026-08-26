@@ -3,7 +3,8 @@ import Sentences from '../components/Sentences.astro';
 import Arrow from '../components/Arrow.astro';
 import T from '../components/T.astro';
 import { company } from '../data/company';
-import { t, langMeta, type Lang } from '../data/i18n';
+import { t, langMeta, localePath, type Lang } from '../data/i18n';
+import OfficeMap from '../components/OfficeMap.astro';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
@@ -18,90 +19,87 @@ const FORM_ACTION = '/api/contact';
 /* 전송 실패 시 ?e=1(입력 오류) / ?e=2(서버 오류) 로 되돌아온다 */
 const errCode = Astro.url.searchParams.get('e');
 ---
-<section class="sec sec--flush page-head">
-  <div class="wrap">
-    <p class="label">{d.contact.eyebrow}</p>
-    <p class="muted" style="font-size:var(--step-1);margin-top:clamp(1.75rem,4vh,2.5rem)">{d.contact.kicker}</p>
-    <h1 class="h-lg" style="margin-top:1rem">
-      {d.contact.head.map((l) => <span style="display:block">{l}</span>)}
-    </h1>
-    <p class="lead" style="margin-top:2.25rem"><Sentences text={d.contact.sub} lang={lang} /></p>
-  </div>
-</section>
+{/* 지도 패널 — 왼쪽에 위치와 연락처, 오른쪽에 폼 카드.
+    이전에는 머리 → 오피스 사진 → 연락처 → 폼 순으로 쌓여 3293px(3화면)였다.
+    문의하러 온 사람이 스크롤을 세 번 하는 구조였다.
+    오피스 사진은 COMPANY 에 있으므로 여기서는 지도로 바꾼다. */}
+<section class="ctpanel tone" data-layout="contact-v172">
+  <OfficeMap mapLink={f.mapLink} label={company.addressJa} />
 
-<!-- 오피스 — 실재하는 회사라는 증거. 이 사진만은 실제 사무실이다 -->
-<figure class="office">
-  <img
-    src="/img/office.webp"
-    srcset="/img/office-sm.webp 800w, /img/office.webp 1223w"
-    sizes="100vw"
-    width="1223" height="816"
-    alt="" loading="lazy" decoding="async"
-  />
-</figure>
+  <div class="ctpanel__in">
+    <div class="ctpanel__info">
+      <p class="label ctpanel__label">{d.contact.eyebrow}</p>
+      <p class="ctpanel__kicker">{d.contact.kicker}</p>
+      <h1 class="ctpanel__head">
+        {d.contact.head.map((l) => <span style="display:block">{l}</span>)}
+      </h1>
 
-<!-- 직접 연락 — 폼을 쓰기 싫은 사람을 위해 위에 둔다 -->
-<section class="sec">
-  <div class="wrap split" style="align-items:start">
-    <div class="split__aside" data-aside><p class="label">{d.contact.directLabel}</p></div>
-    <div class="spec" style="max-width:42rem">
-      <div class="spec__row">
-        <span class="spec__key">Email</span>
-        <span><a class="link" href={`mailto:${company.email}`}>{company.email}</a></span>
-      </div>
-      <div class="spec__row">
-        <span class="spec__key">Tel</span>
-        <span>{company.tel}</span>
-      </div>
-      <div class="spec__row">
-        <span class="spec__key">Address</span>
-        <span>{company.addressJa}</span>
-      </div>
+      <dl class="ctpanel__spec">
+        <div class="ctpanel__row">
+          <dt>Email</dt>
+          <dd><a class="link" href={`mailto:${company.email}`}>{company.email}</a></dd>
+        </div>
+        <div class="ctpanel__row">
+          <dt>Tel</dt>
+          <dd>{company.tel}</dd>
+        </div>
+        <div class="ctpanel__row">
+          <dt>Address</dt>
+          <dd>{company.addressJa}</dd>
+        </div>
+      </dl>
     </div>
-  </div>
-</section>
 
-<!-- 폼 — 항목을 최소로. 허들을 낮춘다 -->
-<section class="sec">
-  <div class="wrap split" style="align-items:start">
-    <div class="split__aside" data-aside><p class="label">{d.contact.formLabel}</p></div>
+    {/* 폼 카드 — 사이트에서 유일하게 검정 위에 흰 판이 오는 자리.
+        여기가 종착점이라는 신호가 된다 */}
+    <div class="ctcard">
+      <p class="ctcard__label">{d.contact.formLabel}</p>
 
-    <form class="cform" method="POST" action={FORM_ACTION || undefined}>
-      <input type="hidden" name="_lang" value={langMeta[lang].htmlLang} />
-      {/* 봇 트랩. 사람에게는 보이지 않는다 */}
-      <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="cform__trap" aria-hidden="true" />
+      <form class="cform" method="POST" action={FORM_ACTION || undefined}>
+        <input type="hidden" name="_lang" value={langMeta[lang].htmlLang} />
+        {/* 봇 트랩. 사람에게는 보이지 않는다 */}
+        <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="cform__trap" aria-hidden="true" />
 
-      <div class="cform__row">
-        <label for="cf-company">{f.company} <span class="cform__req">{f.required}</span></label>
-        <input id="cf-company" name="company" type="text" required autocomplete="organization" />
-      </div>
+        <div class="cform__row">
+          <label for="cf-company">{f.company} <span class="cform__req">{f.required}</span></label>
+          <input id="cf-company" name="company" type="text" required autocomplete="organization" />
+        </div>
 
-      <div class="cform__row">
-        <label for="cf-name">{f.name} <span class="cform__req">{f.required}</span></label>
-        <input id="cf-name" name="name" type="text" required autocomplete="name" />
-      </div>
+        <div class="cform__row">
+          <label for="cf-name">{f.name} <span class="cform__req">{f.required}</span></label>
+          <input id="cf-name" name="name" type="text" required autocomplete="name" />
+        </div>
 
-      <div class="cform__row">
-        <label for="cf-email">{f.email} <span class="cform__req">{f.required}</span></label>
-        <input id="cf-email" name="email" type="email" required autocomplete="email" />
-      </div>
+        <div class="cform__row">
+          <label for="cf-email">{f.email} <span class="cform__req">{f.required}</span></label>
+          <input id="cf-email" name="email" type="email" required autocomplete="email" />
+        </div>
 
-      <div class="cform__row">
-        <label for="cf-subject">{f.subject}</label>
-        <select id="cf-subject" name="subject">
-          {f.subjects.map((s) => <option value={s}>{s}</option>)}
-        </select>
-      </div>
+        <div class="cform__row">
+          <label for="cf-subject">{f.subject}</label>
+          <select id="cf-subject" name="subject">
+            {f.subjects.map((s) => <option value={s}>{s}</option>)}
+          </select>
+        </div>
 
-      <div class="cform__row">
-        <label for="cf-message">{f.message}</label>
-        <textarea id="cf-message" name="message" rows="5"></textarea>
-      </div>
+        <div class="cform__row">
+          <label for="cf-message">{f.message}</label>
+          <textarea id="cf-message" name="message" rows="4"></textarea>
+        </div>
 
-      {errCode && <p class="cform__err" role="alert">{errCode === '1' ? f.errInput : f.errServer}</p>}
-      <p class="meta cform__note">{f.note}</p>
-      <button class="cform__submit" type="submit"><span>{f.submit}</span><Arrow variant="chev" cls="link__arw" /></button>
-    </form>
+        {/* 동의 체크박스 — 개인情報保護法 21조. 없으면 공개할 수 없다 */}
+        <label class="cform__consent">
+          <input type="checkbox" name="consent" value="agree" required />
+          <span>
+            <a class="link" href={localePath(lang, '/privacy')} target="_blank" rel="noopener">{f.consentLink}</a>{f.consent}
+          </span>
+        </label>
+
+        {errCode && <p class="cform__err" role="alert">{errCode === '1' ? f.errInput : f.errServer}</p>}
+        <p class="meta cform__note">{f.note}</p>
+        <button class="cform__submit" type="submit"><span>{f.submit}</span><Arrow variant="chev" cls="link__arw" /></button>
+      </form>
+    </div>
   </div>
 </section>
 

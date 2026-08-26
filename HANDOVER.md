@@ -3,7 +3,7 @@
 ## 0. 새 대화창에서 가장 먼저 할 일
 
 ```
-1. 최신 zip 확인:  tag-eight-web_v169.zip
+1. 최신 zip 확인:  tag-eight-web_v171.zip
 2. 로컬 경로:      ~/Downloads/tag-eight-web   (Mac mini)
 3. PRD 읽기:       PRD.md  ← 모든 결정의 근거가 여기 있다
 4. 트랜스크립트:    /mnt/transcripts/  (journal.txt 에 카탈로그)
@@ -34,7 +34,7 @@
 | 스택 | Astro SSG + Cloudflare Pages + GitHub |
 | 언어 | ja(기본) / ko / zh-TW — **58 페이지** |
 | 배포 | GitHub `hyun-tag8/tag-eight-web` → `tag-eight-web.pages.dev` (자동 배포) |
-| 현재 버전 | **v169** |
+| 현재 버전 | **v171** |
 | 로컬 확인 | `./update.sh` → `localhost:4321` (Mac mini, Node v24) |
 
 ### QA 스크립트 (`/home/claude/`)
@@ -590,6 +590,43 @@ tag-8.com/admin  →  GitHub 로그인  →  글 작성  →  保存
 **Astro 6 함정 2건 (오늘 둘 다 밟음)**
 - 컬렉션 설정은 `src/content/config.ts` 가 아니라 **`src/content.config.ts`**, 그리고 `loader` 필수
 - `entry.render()` 폐지 → **`import { render } from 'astro:content'`** 후 `render(entry)`
+
+### 4.4-q CONTACT 재구성 (2026-08-26 · v171)
+
+**3293px(3화면) → 1792px.** 이전 구조는 머리 → 오피스 사진 → 연락처 → 폼 순으로 쌓여
+문의하러 온 사람이 스크롤을 세 번 해야 했다.
+
+```
+┌──────────────────────┬───────────┐
+│ 지도(다크) 위에         │ 폼 카드    │
+│ CONTACT / 카피        │ (흰 판)    │
+│ Email·Tel·Address     │           │
+└──────────────────────┴───────────┘
+```
+
+| 항목 | 내용 |
+|---|---|
+| 지도 | **CARTO Dark + Leaflet.** `src/components/OfficeMap.astro` |
+| 오피스 사진 | **삭제.** COMPANY 에 이미 있다 |
+| 전화번호 필드 | 추가하지 않음(대표 판단) |
+| 동의 체크박스 | **추가.** 개인정보보호법 21조 |
+
+**왜 Google Maps 가 아닌가** — 다크 스타일로 바꾸려면 CSS 필터를 씌워야 하는데
+Google Maps 이용약관상 스타일 변형에 제한이 있다. CARTO 는 다크 타일을 정식 제공하고
+저작권 표기(`© OpenStreetMap © CARTO`)만 하면 무료다.
+
+🔴 **좌표는 잠정값이다.** `OfficeMap.astro` 의 `LAT/LNG` 는 麹町一丁目 블록 중심
+   (Nominatim 조회, 35.684447 / 139.742919). **정확한 건물 위치로 교체할 것** —
+   Google 지도에서 해당 건물 우클릭 → 좌표 복사 → 두 상수만 바꾸면 된다.
+
+**동의 체크는 서버에서도 검증한다** — `functions/api/contact.ts` 에서
+`consent !== 'agree'` 면 `?e=1` 로 되돌린다. 클라이언트 `required` 만으로는 우회된다.
+
+⚠️ 지도는 **화면에 들어올 때 로드**한다(IntersectionObserver). 스크롤 확대는 꺼둔다 —
+   페이지를 내리다 지도가 확대되는 사고를 막는다. 클릭하면 켜진다.
+⚠️ `.omap__link`(Google 지도 링크)는 **지도 컨테이너 밖**에 둔다.
+   안에 두면 `.ctpanel__in`(z-index:1)에 덮여 안 보인다. 한 번 밟았다.
+⚠️ `.cform label { display:block }` 이 뒤에 오므로 동의 라벨은 `display:grid !important`.
 
 ### 4.5 클로징 CTA
 `src/components/ClosingCta.astro` — 홈 포함 5페이지 공통.
