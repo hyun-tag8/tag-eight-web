@@ -7,18 +7,17 @@
  * Google Maps 이용약관상 스타일 변형은 제한이 있다. CARTO 는 다크 타일을 정식 제공하고
  * 저작권 표기만 하면 무료다.
  *
- * 좌표는 VORT半蔵門plus(麹町1-6-30) 건물 실측치.
- *    Google 지도 우클릭 → 좌표 복사로 취득(2026-08-26). 이전 값은 블록 중심이라 약 100m 벗어나 있었다.
+ * 좌표는 src/data/office.ts 에 있다 — 「Google マップで見る」 링크와 같은 값을 봐야 한다.
+ * 그 링크 자체는 CONTACT 의 연락처 블록(주소 아래)에서 렌더한다.
  */
-const LAT = 35.6850827;
-const LNG = 139.7421486;
-const ZOOM = 17;
+import { OFFICE } from '../data/office';
 
-import Arrow from './Arrow.astro';
+const LAT = OFFICE.lat;
+const LNG = OFFICE.lng;
+const ZOOM = OFFICE.zoom;
 
-interface Props { mapLink: string; label?: string }
-const { mapLink, label } = Astro.props;
-const gmaps = `https://www.google.com/maps/search/?api=1&query=${LAT},${LNG}`;
+interface Props { label?: string }
+const { label } = Astro.props;
 ---
 <div class="omap">
   <div
@@ -32,11 +31,6 @@ const gmaps = `https://www.google.com/maps/search/?api=1&query=${LAT},${LNG}`;
     aria-label={label}
   ></div>
 </div>
-{/* 링크는 지도 컨테이너 밖에 둔다 — 안에 두면 패널 본문(z-index:1)에 덮인다 */}
-<a class="btn btn--on-dark omap__link" href={gmaps} target="_blank" rel="noopener noreferrer">
-  <span>{mapLink}</span><span class="btn__slot"><Arrow variant="chev" cls="btn__arrow" /></span>
-</a>
-
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 

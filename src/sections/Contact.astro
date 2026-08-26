@@ -3,6 +3,7 @@ import Arrow from '../components/Arrow.astro';
 import { company } from '../data/company';
 import { t, langMeta, localePath, type Lang } from '../data/i18n';
 import OfficeMap from '../components/OfficeMap.astro';
+import { GMAPS_URL } from '../data/office';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
@@ -21,8 +22,8 @@ const errCode = Astro.url.searchParams.get('e');
     이전에는 머리 → 오피스 사진 → 연락처 → 폼 순으로 쌓여 3293px(3화면)였다.
     문의하러 온 사람이 스크롤을 세 번 하는 구조였다.
     오피스 사진은 COMPANY 에 있으므로 여기서는 지도로 바꾼다. */}
-<section class="ctpanel tone" data-layout="contact-v175">
-  <OfficeMap mapLink={f.mapLink} label={company.addressJa} />
+<section class="ctpanel tone" data-layout="contact-v176">
+  <OfficeMap label={company.addressJa} />
 
   <div class="ctpanel__in">
     <div class="ctpanel__info">
@@ -44,7 +45,13 @@ const errCode = Astro.url.searchParams.get('e');
         {/* 주소는 한 줄로 세운다. 좌우 2열이면 폭이 모자라 「13階」만 다음 줄로 떨어진다 */}
         <div class="ctpanel__row ctpanel__row--wide">
           <dt>Address</dt>
-          <dd>{company.addressJa}</dd>
+          <dd>
+            {company.addressJa}
+            {/* 지도 링크는 주소 바로 아래. 지도 위에 띄우면 카피·폼과 자리를 다툰다 */}
+            <a class="omap__link link--arw" href={GMAPS_URL} target="_blank" rel="noopener noreferrer">
+              <span>{f.mapLink}</span><Arrow variant="chev" cls="link__arw" />
+            </a>
+          </dd>
         </div>
       </dl>
     </div>

@@ -684,8 +684,6 @@ a { color: inherit; text-decoration: none; }
 }
 /* 지도는 배경이다. 위에 글자가 올라가므로 어둡게 깔고 그라데이션으로 한 번 더 덮는다 */
 .omap { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
-/* 지도 위 링크는 .ctpanel__in(z-index:1) 에 덮인다. 그보다 위로 올린다 */
-.ctpanel > .omap__link, .omap__link { z-index: 3; }
 .omap__canvas { position: absolute; inset: 0; background: var(--ink); }
 .omap::after {
   content: ""; position: absolute; inset: 0; pointer-events: none;
@@ -693,16 +691,18 @@ a { color: inherit; text-decoration: none; }
 }
 @media (max-width: 60rem) {
   .omap::after { background: linear-gradient(180deg, rgba(11,11,10,.55) 0%, rgba(11,11,10,.92) 55%); }
-  /* 좁은 화면에서는 지도 링크와 CONTACT 라벨이 같은 자리에 겹친다. 본문을 아래로 민다 */
-  .ctpanel { padding-top: clamp(7.5rem, 17vh, 10rem); }
-  .omap__link { top: clamp(1.75rem, 4vh, 2.5rem); }
+  .ctpanel { padding-top: clamp(4.5rem, 11vh, 6.5rem); }
 }
-/* Google 지도 링크 — 박스형(.btn 문법). 테두리가 있으므로 꺾쇠는 호버 때만 열린다.
-   위치만 여기서 잡고 나머지는 .btn / .btn--on-dark 가 담당한다 */
+/* Google 지도 링크 — 주소 바로 아래에 작게. 지도 위에 띄우면 카피·폼과 자리를 다툰다.
+   여기서는 정보(주소)의 부속이므로 박스가 아니라 밑줄 링크로 둔다 */
 .omap__link {
-  position: absolute; z-index: 2; left: var(--gutter); top: clamp(3.25rem, 8vh, 5rem);
-  padding: .8rem 1.6rem; min-height: 2.6rem; font-size: var(--step--1); letter-spacing: .12em;
+  display: inline-flex; align-items: center; gap: .45rem;
+  margin-top: .5rem; font-family: var(--sans); font-size: var(--step--1);
+  letter-spacing: .1em; color: rgba(255, 255, 255, .62);
+  border-bottom: 1px solid rgba(255, 255, 255, .3);
+  padding-bottom: .15rem; transition: color .3s, border-color .3s;
 }
+.omap__link:hover { color: var(--white); border-bottom-color: var(--white); }
 
 .ctpanel__in {
   position: relative; z-index: 1;
@@ -723,13 +723,13 @@ a { color: inherit; text-decoration: none; }
 }
 /* ⚠ 위계 반전(2026-08-26) — 강조점은 「まだ、選ばれる理由がない。」쪽이다.
    문제 제기가 먼저 꽂히고, 그 다음에 우리가 답한다. 크기를 뒤집었다 */
-/* ⚠ 크기 위계는 3단이다 — CONTACT(라벨) > kicker(강조) > head(응답).
-   kicker 를 라벨과 같은 크기로 두면 1등이 둘이 되어 지저분해진다.
-   강조는 크기가 아니라 「흰색 + 굵기 + 라벨보다 한 단 아래」로 만든다 */
+/* ⚠ 리듬은 다른 하위 페이지와 같다 — 라벨(--seclabel-size) → 제목(.h-lg 크기).
+   INSIGHT·WORKS 가 이 비율이므로 CONTACT 만 두 번째 줄이 작으면 페이지가 붕 뜬다.
+   강조는 크기가 아니라 「좌측 폭을 꽉 채운 한 줄 + 순백」으로 만든다 */
 .ctpanel__kicker {
-  margin-top: clamp(1.25rem, 3vh, 1.75rem);
-  font-weight: 300; font-size: clamp(1.35rem, 2.4vw, 2rem);
-  line-height: 1.5; letter-spacing: .01em; color: var(--white);
+  margin-top: clamp(1.75rem, 4vh, 2.5rem);
+  font-weight: 300; font-size: clamp(1.8rem, 3.3vw, 2.9rem);
+  line-height: 1.45; letter-spacing: .005em; color: var(--white);
 }
 .ctpanel__head {
   margin-top: .7rem; font-weight: 200;
@@ -750,10 +750,20 @@ a { color: inherit; text-decoration: none; }
 /* 값은 흰색. 회색이면 지도 배경에 묻혀 연락처가 읽히지 않는다 */
 .ctpanel__row dd { margin: 0; font-size: var(--step-0); line-height: 1.75; color: var(--white); align-self: center; }
 .ctpanel__row .link { color: var(--white); }
-/* 주소는 한 줄로 세운다 — 2열이면 폭이 모자라 「13階」만 다음 줄로 떨어진다 */
-.ctpanel__row--wide { grid-template-columns: 1fr; gap: .45rem; }
-.ctpanel__row--wide dd { white-space: nowrap; }
-@media (max-width: 46rem) { .ctpanel__row--wide dd { white-space: normal; } }
+/* 주소만 dt 가 윗줄로 빠지면 EMAIL·TEL 과 축이 어긋나 혼자 떠 보인다.
+   다른 행과 같은 2열을 유지하고, 대신 값 열이 좁아지지 않게 라벨 폭만 지킨다 */
+/* 주소 행 — 값이 2줄(주소 + 지도 링크)이라 기본값(align-self:center)이면
+   dt 가 세로 중앙으로 내려가 EMAIL·TEL 과 축이 어긋난다. 이 행만 상단 정렬한다.
+   ⚠ 이 블록은 반드시 .ctpanel__row dt/dd 기본 규칙 **뒤**에 와야 이긴다 */
+.ctpanel__row--wide dt { align-self: start; padding-top: .28em; }
+.ctpanel__row--wide dd {
+  white-space: nowrap; align-self: start;
+  display: flex; flex-direction: column; align-items: flex-start;
+}
+@media (max-width: 60rem) {
+  .ctpanel__row--wide { grid-template-columns: 1fr; gap: .4rem; }
+  .ctpanel__row--wide dd { white-space: normal; }
+}
 @media (max-width: 34rem) { .ctpanel__row { grid-template-columns: 1fr; } }
 
 /* 폼 카드 — 사이트에서 유일하게 검정 위에 흰 판이 오는 자리 */
