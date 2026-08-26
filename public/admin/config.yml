@@ -19,6 +19,12 @@ backend:
 local_backend: true
 
 publish_mode: simple
+
+# 본문에 넣은 이미지는 여기에 올라간다.
+# 본문에서는 /img/insight/파일명 으로 참조된다(public_folder).
+#
+# ⚠️ 압축 규칙은 public/img/insight/README.md 참조.
+#    긴 변 1600px · WebP · 300KB 이하. 원본을 그대로 올리면 사이트가 무거워진다.
 media_folder: public/img/insight
 public_folder: /img/insight
 
@@ -148,3 +154,8 @@ collections:
       - label: 本文
         name: body
         widget: markdown
+        hint: >-
+          画像はツールバーの画像ボタン、またはファイルをドラッグして入れられます。
+          入れたあと、すぐ次の行に *キャプション* を書くと写真の説明になります。
+          ※ 画像の中の文字は検索・生成AIが読めません。数字と結論は必ず本文か表に置いてください。
+          ※ アップロード前に長辺1600px・WebP・300KB以下に圧縮してください（squoosh.app）。
