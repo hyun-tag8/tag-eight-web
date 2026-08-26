@@ -9,7 +9,7 @@ tags:
   - NAVER戦略
 cover: ''
 featured: false
-draft: true
+draft: false
 ---
 韓国人旅行者を呼び込みたい地方の観光施設、宿泊施設、自治体、DMOにとって、重要なのは「韓国でどれだけ知られているか」だけではありません。
 
