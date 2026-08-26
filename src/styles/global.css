@@ -723,20 +723,23 @@ a { color: inherit; text-decoration: none; }
 }
 /* ⚠ 위계 반전(2026-08-26) — 강조점은 「まだ、選ばれる理由がない。」쪽이다.
    문제 제기가 먼저 꽂히고, 그 다음에 우리가 답한다. 크기를 뒤집었다 */
+/* ⚠ 크기 위계는 3단이다 — CONTACT(라벨) > kicker(강조) > head(응답).
+   kicker 를 라벨과 같은 크기로 두면 1등이 둘이 되어 지저분해진다.
+   강조는 크기가 아니라 「흰색 + 굵기 + 라벨보다 한 단 아래」로 만든다 */
 .ctpanel__kicker {
-  margin-top: clamp(1.75rem, 4vh, 2.75rem);
-  font-weight: 300; font-size: clamp(1.7rem, 3.6vw, 3rem);
-  line-height: 1.4; letter-spacing: .01em; color: var(--white);
+  margin-top: clamp(1.25rem, 3vh, 1.75rem);
+  font-weight: 300; font-size: clamp(1.35rem, 2.4vw, 2rem);
+  line-height: 1.5; letter-spacing: .01em; color: var(--white);
 }
 .ctpanel__head {
-  margin-top: clamp(1rem, 2.5vh, 1.5rem); font-weight: 200;
-  font-size: clamp(1.15rem, 2vw, 1.6rem); line-height: 1.6; letter-spacing: .015em;
-  color: rgba(255, 255, 255, .82);
+  margin-top: .7rem; font-weight: 200;
+  font-size: var(--step-1); line-height: 1.7; letter-spacing: .015em;
+  color: rgba(255, 255, 255, .72);
 }
-.ctpanel__spec { margin-top: clamp(2.25rem, 5vh, 3.25rem); max-width: 34rem; }
+.ctpanel__spec { margin-top: clamp(2rem, 4.5vh, 2.75rem); max-width: 34rem; }
 .ctpanel__row {
-  display: grid; grid-template-columns: 6rem minmax(0, 1fr); gap: .35rem 1.5rem;
-  padding-block: .95rem; border-top: 1px solid rgba(255, 255, 255, .16);
+  display: grid; grid-template-columns: 5.5rem minmax(0, 1fr); gap: .3rem 1.25rem;
+  padding-block: .8rem; border-top: 1px solid rgba(255, 255, 255, .16);
 }
 .ctpanel__row:last-child { border-bottom: 1px solid rgba(255, 255, 255, .16); }
 .ctpanel__row dt {
@@ -745,7 +748,7 @@ a { color: inherit; text-decoration: none; }
   align-self: center;
 }
 /* 값은 흰색. 회색이면 지도 배경에 묻혀 연락처가 읽히지 않는다 */
-.ctpanel__row dd { margin: 0; font-size: var(--step-1); line-height: 1.75; color: var(--white); align-self: center; }
+.ctpanel__row dd { margin: 0; font-size: var(--step-0); line-height: 1.75; color: var(--white); align-self: center; }
 .ctpanel__row .link { color: var(--white); }
 /* 주소는 한 줄로 세운다 — 2열이면 폭이 모자라 「13階」만 다음 줄로 떨어진다 */
 .ctpanel__row--wide { grid-template-columns: 1fr; gap: .45rem; }
@@ -759,12 +762,13 @@ a { color: inherit; text-decoration: none; }
   padding: clamp(1.75rem, 4vw, 2.75rem);
   box-shadow: 0 2rem 4rem rgba(0, 0, 0, .35);
 }
+/* 폼 제목은 좌측 kicker 보다 한 단 아래. 카드 안의 머리이지 페이지 머리가 아니다 */
 .ctcard__label {
-  font-family: var(--cjk); font-size: var(--step-2); font-weight: 500;
+  font-family: var(--cjk); font-size: var(--step-1); font-weight: 500;
   letter-spacing: .04em; color: var(--ink);
-  margin-bottom: clamp(1.5rem, 3.5vh, 2.25rem);
+  margin-bottom: clamp(1.25rem, 3vh, 1.75rem);
 }
-.ctcard .cform__row { margin-top: 1.25rem; }
+.ctcard .cform__row { margin-top: clamp(1rem, 2.4vh, 1.35rem); }
 .ctcard .cform__row:first-of-type { margin-top: 0; }
 
 /* 동의 체크박스 — 개인정보보호법 21조. 이게 없으면 공개할 수 없다 */
@@ -930,21 +934,24 @@ a { color: inherit; text-decoration: none; }
   line-height: 1.8; color: var(--ink);
 }
 .cform__trap { position: absolute; left: -9999px; opacity: 0; height: 0; width: 0; }
-.cform__row + .cform__row { margin-top: clamp(1.5rem, 4vh, 2.25rem); }
-/* 라벨은 검정. 회색이면 「무엇을 쓰는 칸인지」가 흐려져 입력이 멈춘다 */
+/* 행 간격 압축 — 벌어져 있으면 항목이 따로 떠 보이고 폼이 길어진다 */
+.cform__row + .cform__row { margin-top: clamp(1rem, 2.4vh, 1.35rem); }
+/* 라벨은 검정. 회색이면 「무엇을 쓰는 칸인지」가 흐려져 입력이 멈춘다.
+   앞의 ・ 는 CSS 로 붙인다 — 원고(i18n)에 넣으면 3개 언어를 각각 고쳐야 한다 */
 .cform label {
-  display: block; font-family: var(--sans); font-size: var(--step-0); font-weight: 500;
-  letter-spacing: .08em; color: var(--ink); margin-bottom: .65rem;
+  display: block; font-family: var(--cjk); font-size: var(--step-0); font-weight: 500;
+  letter-spacing: .04em; color: var(--ink); margin-bottom: .35rem;
 }
+.cform__row > label::before { content: '・'; margin-right: .1em; color: var(--ink); }
 /* 必須 = 브랜드 오렌지. 페이지에서 유일한 유채색이라 눈이 먼저 간다 */
 .cform__req { font-size: .82em; font-weight: 500; color: #F37021; margin-left: .5em; letter-spacing: .06em; }
 .cform input, .cform select, .cform textarea {
   width: 100%; border: 0; border-bottom: 1px solid rgba(11, 11, 10, .28); background: transparent;
-  color: var(--ink); font-family: inherit; font-size: var(--step-1); line-height: 1.9;
-  padding: .45rem 0; border-radius: 0; transition: border-color .2s;
+  color: var(--ink); font-family: inherit; font-size: var(--step-0); line-height: 1.6;
+  padding: .3rem 0 .5rem; border-radius: 0; transition: border-color .2s;
 }
 .cform select { appearance: none; cursor: pointer; }
-.cform textarea { resize: vertical; min-height: 7rem; }
+.cform textarea { resize: vertical; min-height: 5.5rem; }
 .cform input:focus, .cform select:focus, .cform textarea:focus { outline: none; border-bottom-color: var(--ink); }
 /* 제출 버튼 — 박스형(.btn 문법). 호버 시 검정 반전 + 꺾쇠가 열리고 글자가 커진다.
    cursor 와 여백만 여기서 얹는다 */

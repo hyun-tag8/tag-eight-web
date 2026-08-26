@@ -53,8 +53,8 @@ const gmaps = `https://www.google.com/maps/search/?api=1&query=${LAT},${LNG}`;
       // 넓은 화면에서는 좌측에 카피, 우측에 폼이 있다.
       // 중심을 북동쪽으로 밀어 핀이 두 덩어리 사이 빈 곳(우하단)에 서게 한다.
       const wide = window.matchMedia('(min-width: 60rem)').matches;
-      const dLng = wide ? 0.0016 : 0;   // 동쪽으로 → 핀은 화면 왼쪽으로
-      const dLat = wide ? 0.0011 : 0;   // 북쪽으로 → 핀은 화면 아래로
+      const dLng = wide ? 0.0010 : 0;   // 동쪽으로 → 핀은 화면 왼쪽으로
+      const dLat = wide ? 0.0030 : 0;   // 북쪽으로 → 핀은 화면 아래로
       const map = L.map(el, {
         center: [lat + dLat, lng + dLng],
         zoom: Number(el.dataset.zoom),

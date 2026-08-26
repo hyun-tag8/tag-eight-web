@@ -1,7 +1,5 @@
 ---
-import Sentences from '../components/Sentences.astro';
 import Arrow from '../components/Arrow.astro';
-import T from '../components/T.astro';
 import { company } from '../data/company';
 import { t, langMeta, localePath, type Lang } from '../data/i18n';
 import OfficeMap from '../components/OfficeMap.astro';
@@ -23,7 +21,7 @@ const errCode = Astro.url.searchParams.get('e');
     이전에는 머리 → 오피스 사진 → 연락처 → 폼 순으로 쌓여 3293px(3화면)였다.
     문의하러 온 사람이 스크롤을 세 번 하는 구조였다.
     오피스 사진은 COMPANY 에 있으므로 여기서는 지도로 바꾼다. */}
-<section class="ctpanel tone" data-layout="contact-v173">
+<section class="ctpanel tone" data-layout="contact-v174">
   <OfficeMap mapLink={f.mapLink} label={company.addressJa} />
 
   <div class="ctpanel__in">
@@ -103,22 +101,6 @@ const errCode = Astro.url.searchParams.get('e');
           <span>{f.submit}</span><span class="btn__slot"><Arrow variant="chev" cls="btn__arrow" /></span>
         </button>
       </form>
-    </div>
-  </div>
-</section>
-
-{/* 자료청구 — 케이스 상세에는 영업 문구를 두지 않고, 요청은 이 한 곳으로 모은다 */}
-<section class="sec">
-  <div class="wrap split" style="align-items:start">
-    <div><p class="label">PDF</p></div>
-    <div>
-      <p class="h-md"><T text={d.works.requestHead} lang={lang} /></p>
-      <p class="muted" style="margin-top:1.25rem;max-width:42ch"><Sentences text={d.works.requestBody} lang={lang} /></p>
-      <p style="margin-top:2rem">
-        <a class="btn" href={`mailto:${company.email}?subject=${encodeURIComponent(d.works.requestCta)}`}>
-          <span>{d.works.requestCta}</span><span class="btn__slot"><Arrow variant="chev" cls="btn__arrow" /></span>
-        </a>
-      </p>
     </div>
   </div>
 </section>
