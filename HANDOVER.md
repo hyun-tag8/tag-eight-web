@@ -18,6 +18,11 @@
    `astro/tsconfigs/strict` 를 참조하는데 거기엔 node_modules 가 없어
    프로젝트 tsconfig 를 아무리 고쳐도 `Tsconfig not found` 가 계속 났다.
 
+🔴 **`src/content/journal/`·`src/content/works/` 를 되살리지 말 것.** (2026-08-26)
+   컬렉션은 `insight` 하나뿐인데, 안 쓰는 두 폴더가 `.gitkeep` 과 함께 zip 에 섞여 있었다.
+   그 탓에 적용 명령이 `src/content/` 를 건드리게 되어 **원고가 두 번 날아갔다.**
+   v190 부터 zip 자체에서 `src/content/` 를 제외했다(스키마 `content.config.ts` 만 포함).
+
 🔴 **zip 적용 시 `src/content/` 를 덮지 말 것.** (2026-08-26 사고)
    INSIGHT 원고는 **관리화면(Sveltia CMS)이 GitHub 에 직접 커밋**한다.
    Claude 가 만든 zip 에는 그 원고가 없으므로, `src/` 를 통째로 복사하면

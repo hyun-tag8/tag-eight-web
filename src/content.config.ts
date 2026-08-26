@@ -34,6 +34,12 @@ const insight = defineCollection({
      * ⚠ 값을 늘리면 public/admin/config.yml 의 선택지도 함께 고쳐야 한다.
      */
     category: z.enum(['guide', 'korea', 'taiwan', 'notice']).default('korea'),
+    /**
+     * 최신 1건이 서는 대형 카드의 배경 이미지(선택).
+     * 넣으면 사진 위에 제목이 얹히고, 없으면 검정 판 그대로다.
+     * ⚠ 없어도 화면이 깨지지 않아야 한다 — 이미지 제작이 발행 속도를 막으면 안 된다.
+     */
+    cover: z.string().optional(),
     /** 목록 상단 고정 */
     featured: z.boolean().default(false),
     /** true 면 빌드에서 제외. 관리화면의 「비공개」 */

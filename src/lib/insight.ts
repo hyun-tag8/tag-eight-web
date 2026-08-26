@@ -67,6 +67,16 @@ export async function getHomePicks(lang: Lang): Promise<{ cat: Category; post: P
 /** NEW 배지가 붙는 기간(일). 판정은 브라우저에서 한다 — 아래 isFresh 주석 참조 */
 export const NEW_DAYS = 7;
 
+/**
+ * INSIGHT 첫 화면의 대형 카드에 설 1건.
+ * 3분류를 통틀어 가장 최신 것 — 「지금 이 회사가 무엇을 보고 있나」가 한 장으로 전해진다.
+ * ⚠ guide 는 제외한다. 그쪽은 위 블록에 상설되므로 여기서 또 나오면 중복이다.
+ */
+export async function getLead(lang: Lang): Promise<Post | null> {
+  const all = await getPosts(lang);
+  return all.find((e) => e.data.category !== 'guide') ?? null;
+}
+
 /** 한 분류의 글 전체. 분류별 목록 페이지가 쓴다 */
 export async function getByCategory(lang: Lang, cat: Category): Promise<Post[]> {
   const all = await getPosts(lang);

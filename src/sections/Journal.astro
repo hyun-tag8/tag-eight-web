@@ -18,13 +18,17 @@ import Arrow from '../components/Arrow.astro';
 import NewBadge from '../components/NewBadge.astro';
 import ClosingCta from '../components/ClosingCta.astro';
 import { t, localePath, type Lang } from '../data/i18n';
-import { getGuides, getStream, fmtDate, STREAM, CAT_SLUG } from '../lib/insight';
+import { getGuides, getStream, getLead, fmtDate, STREAM, CAT_SLUG } from '../lib/insight';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const d = t[lang];
 const guides = await getGuides(lang);
 const stream = await getStream(lang);
+/* 첫 화면의 대형 카드. 3분류를 통틀어 최신 1건 */
+const lead = await getLead(lang);
+/* 대형 카드에 선 글은 아래 3행에서 뺀다 — 같은 화면에 두 번 나오면 목록이 어색해진다 */
+const leadId = lead?.data.postId;
 const hasStream = STREAM.some((c) => stream[c].length > 0);
 ---
 <section class="sec sec--flush page-head">
@@ -40,8 +44,11 @@ const hasStream = STREAM.some((c) => stream[c].length > 0);
 {guides.length > 0 && (
   <section class="sec" data-layout="guides-v180">
     <div class="wrap">
-      <p class="seclabel">{d.journal.guideLabel}</p>
-      <h2 class="h-lg" style="margin-top:clamp(1.5rem,3.5vh,2.25rem)"><T text={d.journal.guideHead} lang={lang} /></h2>
+      {/* ⚠ 여기에 영문 라벨(GUIDE 등)을 두지 않는다.
+          페이지 머리에 INSIGHT 가 이미 서 있어 큰 라벨이 두 개가 되고,
+          「가이드」라는 말이 초심자용 안내서처럼 읽혀 상대를 아래로 보는 인상이 된다.
+          일본어 헤드라인 하나로 성격을 전한다 */}
+      <h2 class="h-lg"><T text={d.journal.guideHead} lang={lang} /></h2>
       <p class="secsub"><Sentences text={d.journal.guideSub} lang={lang} /></p>
 
       <div class="guides">
@@ -81,6 +88,23 @@ const hasStream = STREAM.some((c) => stream[c].length > 0);
 ) : (
 <section class="sec" data-layout="stream-v184">
   <div class="wrap">
+    {lead && (
+      <a class="ilead" href={localePath(lang, `/insight/${lead.data.postId}`)}
+         style={lead.data.cover ? `--cover:url(${lead.data.cover})` : undefined}
+         data-cover={lead.data.cover ? '' : undefined}>
+        <span class="ilead__meta">
+          <span>{d.journal.cat[lead.data.category as 'korea' | 'taiwan' | 'notice']}</span>
+          <span>{fmtDate(lead.data.date)}</span>
+        </span>
+        <span class="ilead__title"><T text={lead.data.title} lang={lang} /></span>
+        {lead.data.excerpt && (
+          <span class="ilead__ex">
+            <T text={lead.data.excerpt} lang={lang} /><NewBadge date={lead.data.date} />
+          </span>
+        )}
+      </a>
+    )}
+
     <div class="srows">
       {STREAM.map((c) => (
         <div class="srow">
@@ -91,11 +115,11 @@ const hasStream = STREAM.some((c) => stream[c].length > 0);
               <span>{d.journal.cat[c]}</span><Arrow variant="chev" cls="srow__arw" />
             </a>
           </p>
-          {stream[c].length === 0 ? (
+          {stream[c].filter((p) => p.data.postId !== leadId).length === 0 ? (
             <p class="srow__empty">{d.journal.catEmpty}</p>
           ) : (
             <div class="slist">
-              {stream[c].slice(0, 5).map((p) => (
+              {stream[c].filter((p) => p.data.postId !== leadId).slice(0, 5).map((p) => (
                 <a class="sitem" href={localePath(lang, `/insight/${p.data.postId}`)}>
                   <span class="sitem__date">{fmtDate(p.data.date)}</span>
                   <span class="sitem__title"><T text={p.data.title} lang={lang} /></span>

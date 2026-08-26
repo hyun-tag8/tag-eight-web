@@ -135,6 +135,16 @@ collections:
           例）NAVER戦略 / インフルエンサー起用 / PPL / プレスリリース / Instagram戦略 / KOL起用
           ※「韓国市場」「台湾市場」など市場名は入れないでください。分類がすでに市場を示しているため重複します。
 
+      - label: トップの大きなカードの背景画像
+        name: cover
+        widget: image
+        required: false
+        hint: >-
+          その分類の最新記事は、INSIGHTページの一番上に大きく表示されます。
+          ここに画像を入れると、その背景になります。
+          ※ 入れなくても構いません。無い場合は黒地のまま、崩れません。
+          ※ 横長（16:9前後）・長辺1600px・WebP・300KB以下を推奨。
+
       - label: 一覧の先頭に固定
         name: featured
         widget: boolean

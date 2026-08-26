@@ -87,8 +87,12 @@ type Dict = {
   works: { eyebrow: string; head: string; sub: string; empty: string; confidential: string; challengeLabel: string; approachLabel: string; designLabel: string; rolloutLabel: string; essenceLabel: string; routeLines: Record<string, string>; requestHead: string; requestBody: string; requestCta: string; backToList: string };
   journal: {
     eyebrow: string; head: string; sub: string; empty: string; readMore: string; backToList: string;
-    /** 常設 해설 기사 블록. 검색으로 들어온 사람의 착지점 */
-    guideLabel: string; guideHead: string; guideSub: string;
+    /**
+     * 常設 해설 기사 블록. 검색으로 들어온 사람의 착지점.
+     * ⚠ 영문 라벨은 두지 않는다 — 페이지 머리(INSIGHT)와 큰 라벨이 겹치고,
+     *   「GUIDE」는 초심자용 안내서처럼 읽혀 상대를 아래로 보는 인상이 된다.
+     */
+    guideHead: string; guideSub: string;
     /** 3열 박스의 열 이름 */
     cat: { korea: string; taiwan: string; notice: string };
     /** 열이 비었을 때 */
@@ -334,7 +338,6 @@ export const t: Record<Lang, Dict> = {
       head: '市場を読む、私たちの視点。',
       sub: '韓国・台湾の生活者インサイト、検索行動、クリエイターマーケティングについて。',
       empty: '記事は準備中です。',
-      guideLabel: 'GUIDE',
       guideHead: '韓国・台湾のメディア施策を、はじめから。',
       guideSub: 'インフルエンサー起用、NAVERブログ、プレスリリース、テレビPPL。仕組みと進め方を、実務の言葉で書いています。',
       cat: { korea: '韓国インサイト', taiwan: '台湾インサイト', notice: 'お知らせ' },
@@ -591,7 +594,6 @@ export const t: Record<Lang, Dict> = {
       head: '시장을 읽는, 우리의 관점.',
       sub: '한국·대만의 소비자 인사이트, 검색 행동, 크리에이터 마케팅에 대하여.',
       empty: '아티클은 준비 중입니다.',
-      guideLabel: 'GUIDE',
       guideHead: '한국·대만 미디어 실행을, 처음부터.',
       guideSub: '인플루언서 기용, 네이버 블로그, 프레스 릴리스, TV PPL. 구조와 진행 방식을 실무의 언어로 씁니다.',
       cat: { korea: '한국 인사이트', taiwan: '대만 인사이트', notice: '소식' },
@@ -848,7 +850,6 @@ export const t: Record<Lang, Dict> = {
       head: '解讀市場的，我們的觀點。',
       sub: '關於韓國與台灣的消費者洞察、搜尋行為與創作者行銷。',
       empty: '文章準備中。',
-      guideLabel: 'GUIDE',
       guideHead: '韓國・台灣的媒體操作，從頭說起。',
       guideSub: '網紅合作、NAVER部落格、新聞稿發布、電視置入。以實務語言說明架構與執行方式。',
       cat: { korea: '韓國洞察', taiwan: '台灣洞察', notice: '消息' },
