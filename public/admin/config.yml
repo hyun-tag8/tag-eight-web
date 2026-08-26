@@ -34,7 +34,8 @@ collections:
     create: true
     # 파일명 = 날짜 + 식별자 + 언어. 같은 글의 다른 언어판은 postId 를 같게 쓴다.
     slug: '{{year}}-{{month}}-{{day}}-{{fields.postId}}-{{fields.lang}}'
-    summary: '[{{fields.lang}}/{{fields.category}}] {{title}}'
+    # 목록 한 줄. 언어·분류·비공개 여부가 한눈에 보여야 「어느 글이 어디까지 나갔나」를 안다
+    summary: '{{fields.lang}} · {{fields.category}}{{#if fields.draft}} · 下書き{{/if}} — {{title}}'
     sortable_fields: ['date', 'title', 'lang']
     view_filters:
       - label: 解説記事
@@ -70,24 +71,34 @@ collections:
           - { label: 한국어, value: ko }
           - { label: 繁體中文, value: 'zh-tw' }
         default: ja
-        hint: 同じ記事の他言語版は、下の「記事ID」を同じにしてください。
+        hint: >-
+          まず日本語で出し、翻訳は後から足せます。
+          同じ記事の他言語版をつくるときは、下の「記事ID」を同じ値にしてください（言語切替がつながります）。
 
-      - label: 分類
+      # ⚠ 선택지를 늘리면 src/content.config.ts 의 z.enum 도 함께 고쳐야 한다.
+      #   한쪽만 고치면 관리화면에서는 고를 수 있는데 빌드가 깨진다.
+      - label: どこに載せるか（分類）
         name: category
         widget: select
         options:
-          - { label: '解説記事（常設・ページ上部）', value: guide }
-          - { label: '韓国インサイト', value: korea }
-          - { label: '台湾インサイト', value: taiwan }
-          - { label: 'お知らせ', value: notice }
+          - { label: '解説記事（GUIDE）— INSIGHT上部に常設', value: guide }
+          - { label: '韓国インサイト — /insight/korea', value: korea }
+          - { label: '台湾インサイト — /insight/taiwan', value: taiwan }
+          - { label: 'お知らせ — /insight/notice', value: notice }
         default: korea
-        hint: 「解説記事」はページ上部に常設されます。検索から来た方の着地点です。
+        hint: >-
+          【解説記事】NAVERブログとは・インフルエンサー起用とは、のような常設の解説。
+          検索や生成AIから来た方の着地点になり、INSIGHTページの上部に固定されます。時期で古びない内容を。
+          【韓国／台湾インサイト】市場の動き・調査・考察。分類ごとの一覧に最新5件が並びます。
+          【お知らせ】受注・発表・実績公開など。※進行中の案件は書きません（守秘義務）。
 
       - label: 記事ID
         name: postId
         widget: string
         pattern: ['^[a-z0-9-]+$', '半角英小文字・数字・ハイフンのみ']
-        hint: URL になります。例）naver-ai-tab → /insight/naver-ai-tab
+        hint: >-
+          URL になります。例）naver-ai-tab → /insight/naver-ai-tab
+          ※ korea / taiwan / notice は分類一覧のURLです。この3つは記事IDに使えません（ページが生成されません）。
 
       - label: タイトル
         name: title
@@ -97,7 +108,9 @@ collections:
         name: excerpt
         widget: text
         required: false
-        hint: 検索結果とSNSシェアに出ます。60〜90字目安。
+        hint: >-
+          検索結果とSNSシェアに出る一文です。60〜90字目安。
+          ※ 分類一覧には出ません（そこはタイトルとタグだけ）。解説記事では特に大事です。
 
       - label: 公開日
         name: date
@@ -120,12 +133,17 @@ collections:
         name: featured
         widget: boolean
         default: false
+        hint: >-
+          日付に関係なく、その分類の先頭に置きます。
+          ※ 複数の記事に付けると効果が薄れます。分類ごとに1件までを目安に。
 
       - label: 下書き（公開しない）
         name: draft
         widget: boolean
         default: true
-        hint: チェックを外すと公開されます。
+        hint: >-
+          チェックを外すと公開されます。書きかけの間は付けたままにしてください。
+          ※ 公開すると、発行から7日間だけ一覧に「NEW」が付きます。
 
       - label: 本文
         name: body
