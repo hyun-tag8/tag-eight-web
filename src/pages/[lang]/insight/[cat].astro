@@ -1,0 +1,25 @@
+---
+/** 분류별 목록 (ko / zh-tw). ja 는 루트 라우트가 담당한다 */
+import Base from '../../../layouts/Base.astro';
+import CategoryList from '../../../sections/CategoryList.astro';
+import { t, LANGS, type Lang } from '../../../data/i18n';
+import { STREAM, CAT_SLUG, type Category } from '../../../lib/insight';
+
+export async function getStaticPaths() {
+  const out = [];
+  for (const lang of LANGS.filter((l) => l !== 'ja')) {
+    for (const c of STREAM) {
+      out.push({ params: { lang, cat: CAT_SLUG[c as 'korea' | 'taiwan' | 'notice'] }, props: { cat: c } });
+    }
+  }
+  return out;
+}
+
+const { cat } = Astro.props as { cat: Exclude<Category, 'guide'> };
+const lang = Astro.params.lang as Lang;
+const label = t[lang].journal.cat[cat];
+---
+<Base lang={lang} title={`${label}｜INSIGHT｜TAG EIGHT`}
+      description={t[lang].meta.insight.description} path={`/insight/${Astro.params.cat}`}>
+  <CategoryList lang={lang} cat={cat} />
+</Base>

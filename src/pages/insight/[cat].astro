@@ -1,0 +1,24 @@
+---
+/**
+ * 분류별 목록 (일본어). /insight/korea · /insight/taiwan · /insight/notice
+ *
+ * ⚠ 같은 폴더의 [postId].astro 와 URL 층이 같다.
+ *   충돌을 막기 위해 [postId] 쪽에서 이 세 슬러그를 제외한다(isReservedSlug).
+ */
+import Base from '../../layouts/Base.astro';
+import CategoryList from '../../sections/CategoryList.astro';
+import { t } from '../../data/i18n';
+import { STREAM, CAT_SLUG, type Category } from '../../lib/insight';
+
+export async function getStaticPaths() {
+  return STREAM.map((c) => ({ params: { cat: CAT_SLUG[c as 'korea' | 'taiwan' | 'notice'] }, props: { cat: c } }));
+}
+
+const { cat } = Astro.props as { cat: Exclude<Category, 'guide'> };
+const lang = 'ja' as const;
+const label = t[lang].journal.cat[cat];
+---
+<Base lang={lang} title={`${label}｜INSIGHT｜TAG EIGHT`}
+      description={t[lang].meta.insight.description} path={`/insight/${Astro.params.cat}`}>
+  <CategoryList lang={lang} cat={cat} />
+</Base>

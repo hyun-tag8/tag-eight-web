@@ -17,7 +17,7 @@ import T from '../components/T.astro';
 import Arrow from '../components/Arrow.astro';
 import ClosingCta from '../components/ClosingCta.astro';
 import { t, localePath, type Lang } from '../data/i18n';
-import { getGuides, getStream, fmtDate, STREAM } from '../lib/insight';
+import { getGuides, getStream, fmtDate, STREAM, CAT_SLUG } from '../lib/insight';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
@@ -79,7 +79,13 @@ const hasStream = STREAM.some((c) => stream[c].length > 0);
     <div class="srows">
       {STREAM.map((c) => (
         <div class="srow">
-          <p class="srow__head">{d.journal.cat[c]}</p>
+          {/* 분류명은 그 분류의 전체 목록으로 간다.
+              가로 스트립에는 최근 것만 보이므로, 쌓인 글로 가는 길이 여기 하나뿐이다 */}
+          <p class="srow__head">
+            <a class="srow__link" href={localePath(lang, `/insight/${CAT_SLUG[c]}`)}>
+              <span>{d.journal.cat[c]}</span><Arrow variant="chev" cls="srow__arw" />
+            </a>
+          </p>
           {stream[c].length === 0 ? (
             <p class="srow__empty">{d.journal.catEmpty}</p>
           ) : (

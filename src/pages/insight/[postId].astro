@@ -1,11 +1,14 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Post from '../../sections/Post.astro';
-import { getPosts } from '../../lib/insight';
+import { getPosts, isReservedSlug } from '../../lib/insight';
 
 export async function getStaticPaths() {
   const posts = await getPosts('ja');
-  return posts.map((post) => ({ params: { postId: post.data.postId }, props: { post } }));
+  // korea / taiwan / notice 는 분류 목록 URL 이다. 같은 이름의 기사는 라우트를 만들지 않는다
+  return posts
+    .filter((post) => !isReservedSlug(post.data.postId))
+    .map((post) => ({ params: { postId: post.data.postId }, props: { post } }));
 }
 
 const { post } = Astro.props;

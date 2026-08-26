@@ -4,8 +4,24 @@ import type { Lang } from '../data/i18n';
 export type Post = CollectionEntry<'insight'>;
 export type Category = 'guide' | 'korea' | 'taiwan' | 'notice';
 
-/** 하단 3열 박스에 서는 분류. 순서가 곧 열 순서다 */
+/** 하단 3행에 서는 분류. 순서가 곧 행 순서다 */
 export const STREAM: Category[] = ['korea', 'taiwan', 'notice'];
+
+/**
+ * 분류별 목록 페이지의 URL 조각. /insight/korea 처럼 쓴다.
+ *
+ * ⚠ 기사 URL(/insight/<postId>)과 같은 층이다.
+ *   postId 로 korea / taiwan / notice 를 쓰면 라우트가 충돌하므로,
+ *   아래 isReservedSlug 로 막는다.
+ */
+export const CAT_SLUG: Record<'korea' | 'taiwan' | 'notice', string> = {
+  korea: 'korea',
+  taiwan: 'taiwan',
+  notice: 'notice',
+};
+
+/** 분류 목록 URL 과 겹치는 postId 인지. 겹치면 기사 쪽 라우트를 만들지 않는다 */
+export const isReservedSlug = (id: string) => Object.values(CAT_SLUG).includes(id);
 
 const byDate = (a: Post, b: Post) => {
   if (a.data.featured !== b.data.featured) return a.data.featured ? -1 : 1;
@@ -46,6 +62,12 @@ export async function getStream(lang: Lang): Promise<Record<Category, Post[]>> {
 export async function getHomePicks(lang: Lang): Promise<{ cat: Category; post: Post }[]> {
   const s = await getStream(lang);
   return STREAM.map((c) => ({ cat: c, post: s[c][0] })).filter((x): x is { cat: Category; post: Post } => !!x.post);
+}
+
+/** 한 분류의 글 전체. 분류별 목록 페이지가 쓴다 */
+export async function getByCategory(lang: Lang, cat: Category): Promise<Post[]> {
+  const all = await getPosts(lang);
+  return all.filter((e) => e.data.category === cat);
 }
 
 /** 그 글이 실제로 번역돼 있는 언어만. 없는 언어로 전환하면 404 가 된다 */

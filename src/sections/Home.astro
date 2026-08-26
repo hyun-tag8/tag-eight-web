@@ -6,7 +6,7 @@ import ClosingCta from '../components/ClosingCta.astro';
 import { getCases } from '../data/cases';
 import { company } from '../data/company';
 import { t, localePath, type Lang } from '../data/i18n';
-import { getHomePicks, fmtDate } from '../lib/insight';
+import { getHomePicks, fmtDate, CAT_SLUG } from '../lib/insight';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
@@ -113,7 +113,11 @@ const picks = await getHomePicks(lang);
       <div class="hins" style="margin-top:clamp(2.5rem,6vh,3.5rem)">
         {picks.map(({ cat, post }) => (
           <div class="hins__col">
-            <p class="hins__cat">{d.journal.cat[cat as 'korea' | 'taiwan' | 'notice']}</p>
+            <p class="hins__cat">
+              <a class="srow__link" href={localePath(lang, `/insight/${CAT_SLUG[cat as 'korea' | 'taiwan' | 'notice']}`)}>
+                <span>{d.journal.cat[cat as 'korea' | 'taiwan' | 'notice']}</span><Arrow variant="chev" cls="srow__arw" />
+              </a>
+            </p>
             <a class="scard" href={localePath(lang, `/insight/${post.data.postId}`)}>
               <span class="scard__date">{fmtDate(post.data.date)}</span>
               <span class="scard__title"><T text={post.data.title} lang={lang} /></span>

@@ -1,7 +1,7 @@
 ---
 import Base from '../../../layouts/Base.astro';
 import Post from '../../../sections/Post.astro';
-import { getPosts } from '../../../lib/insight';
+import { getPosts, isReservedSlug } from '../../../lib/insight';
 import { LANGS, type Lang } from '../../../data/i18n';
 
 // ja 는 루트 라우트가 담당. 번역이 있는 언어만 생성한다.
@@ -9,6 +9,8 @@ export async function getStaticPaths() {
   const out = [];
   for (const lang of LANGS.filter((l) => l !== 'ja')) {
     for (const post of await getPosts(lang)) {
+      // korea / taiwan / notice 는 분류 목록 URL 이다 — 충돌을 막는다
+      if (isReservedSlug(post.data.postId)) continue;
       out.push({ params: { lang, postId: post.data.postId }, props: { post } });
     }
   }

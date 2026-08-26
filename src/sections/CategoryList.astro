@@ -1,0 +1,49 @@
+---
+/**
+ * 분류별 기사 목록 — /insight/korea · /insight/taiwan · /insight/notice
+ *
+ * INSIGHT 첫 화면의 3행 가로 배열은 「최근 것」만 보여준다.
+ * 글이 쌓이면 옆으로 밀려 사라지므로, 분류마다 전부 볼 수 있는 자리가 필요하다.
+ * 목록 문법은 WORKS·GUIDE 와 같다 — 행 전체 반전.
+ */
+import T from '../components/T.astro';
+import ClosingCta from '../components/ClosingCta.astro';
+import { t, localePath, type Lang } from '../data/i18n';
+import { getByCategory, fmtDate, type Category } from '../lib/insight';
+
+interface Props { lang: Lang; cat: Exclude<Category, 'guide'> }
+const { lang, cat } = Astro.props;
+const d = t[lang];
+const posts = await getByCategory(lang, cat);
+---
+<section class="sec sec--flush page-head">
+  <div class="wrap">
+    {/* 상위(INSIGHT)로 돌아가는 길을 머리에 둔다 — 분류 페이지는 항상 도중이다 */}
+    <p class="label">
+      <a class="catnav" href={localePath(lang, '/insight')}>{d.journal.eyebrow}</a>
+    </p>
+    <h1 class="h-lg" style="margin-top:clamp(1.75rem,4vh,2.5rem)">{d.journal.cat[cat]}</h1>
+  </div>
+</section>
+
+<section class="sec" data-layout="catlist-v181">
+  <div class="wrap">
+    {posts.length === 0 ? (
+      <div class="empty">{d.journal.empty}</div>
+    ) : (
+      <div class="guides guides--date" style="margin-top:0">
+        {posts.map((p) => (
+          <a class="guide" href={localePath(lang, `/insight/${p.data.postId}`)}>
+            <span class="guide__no">{fmtDate(p.data.date)}</span>
+            <span class="guide__body">
+              <span class="guide__title"><T text={p.data.title} lang={lang} /></span>
+              {p.data.excerpt && <span class="guide__ex"><T text={p.data.excerpt} lang={lang} /></span>}
+            </span>
+          </a>
+        ))}
+      </div>
+    )}
+  </div>
+</section>
+
+<ClosingCta lang={lang} />
