@@ -7,6 +7,7 @@ import { getCases } from '../data/cases';
 import { company } from '../data/company';
 import { t, localePath, type Lang } from '../data/i18n';
 import { getHomePicks, fmtDate, CAT_SLUG } from '../lib/insight';
+import NewBadge from '../components/NewBadge.astro';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
@@ -118,9 +119,10 @@ const picks = await getHomePicks(lang);
                 <span>{d.journal.cat[cat as 'korea' | 'taiwan' | 'notice']}</span><Arrow variant="chev" cls="srow__arw" />
               </a>
             </p>
-            <a class="scard" href={localePath(lang, `/insight/${post.data.postId}`)}>
-              <span class="scard__date">{fmtDate(post.data.date)}</span>
-              <span class="scard__title"><T text={post.data.title} lang={lang} /></span>
+            <a class="sitem" href={localePath(lang, `/insight/${post.data.postId}`)}>
+              <span class="sitem__date">{fmtDate(post.data.date)}</span>
+              <span class="sitem__title"><T text={post.data.title} lang={lang} /></span>
+              <NewBadge date={post.data.date} />
             </a>
           </div>
         ))}

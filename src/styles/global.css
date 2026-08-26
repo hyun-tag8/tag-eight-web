@@ -882,9 +882,13 @@ a { color: inherit; text-decoration: none; }
   display: inline-flex; align-items: center; gap: .45rem; color: var(--ink);
   font-family: var(--cjk); font-size: var(--step-0); font-weight: 500; letter-spacing: .04em;
   padding-bottom: .3rem; border-bottom: 1px solid var(--ink);
-  transition: gap .35s cubic-bezier(.16,1,.3,1), opacity .3s;
+  transition: gap .35s cubic-bezier(.16,1,.3,1), transform .35s cubic-bezier(.16,1,.3,1);
 }
-.srow__link:hover { opacity: .55; gap: .7rem; }
+/* 호버하면 글씨가 커진다. font-size 대신 scale 을 쓰는 이유 —
+   font-size 를 바꾸면 밑줄 폭과 행 높이가 흔들려 옆 카드까지 밀린다.
+   transform-origin 을 왼쪽에 두어 왼쪽 축은 고정된다 */
+.srow__link { transform-origin: left center; will-change: transform; }
+.srow__link:hover { gap: .7rem; transform: scale(1.14); }
 /* 꺾쇠는 상주. 테두리가 없는 밑줄 링크라 선이 겹치지 않는다 */
 .srow__arw { flex: none; transition: transform .35s cubic-bezier(.16,1,.3,1); }
 .srow__link:hover .srow__arw { transform: translateX(2px); }
@@ -892,62 +896,74 @@ a { color: inherit; text-decoration: none; }
 .catnav { color: inherit; }
 .catnav:hover { opacity: .55; }
 
-/* 기사는 가로로 흐른다. 늘어나면 가로 스크롤 — 행 높이는 그대로다.
-   ⚠ 넘치는 카드는 잘리므로, 스크롤이 가능하다는 신호로 우측에 페이드를 건다 */
-.srow__strip {
-  display: flex; gap: clamp(1.25rem, 2.5vw, 2rem);
-  overflow-x: auto; scroll-snap-type: x proximity;
-  padding-bottom: .35rem;
-  scrollbar-width: thin; scrollbar-color: var(--rule) transparent;
-  /* 스크롤 끝을 흐리게 — 더 있다는 것을 보여준다 */
-  -webkit-mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 3rem), transparent 100%);
-          mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 3rem), transparent 100%);
+/* 기사는 세로 목록. 카드였을 때는 한 장이 자리를 크게 먹어
+   한 화면에 1~2건밖에 안 보였다. 목록이면 5건이 한눈에 들어온다 */
+.slist { display: flex; flex-direction: column; }
+.sitem {
+  position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0 1.1rem; align-items: baseline;
+  padding-block: .7rem;
+  transition: color .3s, padding-left .35s cubic-bezier(.16,1,.3,1);
 }
-/* 카드가 몇 장 안 되면 페이드가 오히려 어색하다. 넘칠 때만 걸리게 한다 */
-@supports (animation-timeline: scroll()) {
-  .srow__strip { -webkit-mask-image: none; mask-image: none; }
-}
-.srow__strip::-webkit-scrollbar { height: 3px; }
-.srow__strip::-webkit-scrollbar-thumb { background: var(--rule); }
-
-.scard {
-  position: relative; display: block; flex: 0 0 auto;
-  width: min(19rem, 72vw); scroll-snap-align: start;
-  padding: 1rem 1.1rem 1.15rem;
-  border: 1px solid var(--rule);
-  transition: color .35s, border-color .35s;
-}
-/* 반전은 카드 안에서만 — 가로 배열이라 밖으로 번지면 옆 카드를 덮는다 */
-.scard::before {
+.sitem + .sitem { border-top: 1px solid var(--rule); }
+/* 반전은 본문 폭 안에서만 — 3행 구조라 화면 끝까지 번지면 분류명까지 덮는다 */
+.sitem::before {
   content: ""; position: absolute; z-index: 0; inset: 0;
+  margin-inline: -.9rem;
   background: var(--ink); transform: scaleY(0); transform-origin: bottom;
-  transition: transform .38s cubic-bezier(.22,1,.36,1);
+  transition: transform .34s cubic-bezier(.22,1,.36,1);
 }
-.scard > * { position: relative; z-index: 1; }
-.scard:hover::before { transform: scaleY(1); }
-.scard:hover { color: var(--white); border-color: var(--ink); }
-.scard__date {
-  display: block; font-family: var(--sans); font-size: var(--step--1);
-  letter-spacing: .06em; color: var(--ink-25); transition: color .35s;
+.sitem > * { position: relative; z-index: 1; }
+.sitem:hover::before { transform: scaleY(1); }
+.sitem:hover { color: var(--white); padding-left: .55rem; }
+.sitem__date {
+  font-family: var(--sans); font-size: var(--step--1); letter-spacing: .06em;
+  color: var(--ink-25); white-space: nowrap; transition: color .3s;
 }
-.scard:hover .scard__date { color: rgba(255, 255, 255, .5); }
-.scard__title {
-  display: block; margin-top: .5rem; font-size: var(--step-0);
-  line-height: 1.65; font-weight: 400;
+.sitem:hover .sitem__date { color: rgba(255, 255, 255, .5); }
+.sitem__title {
+  font-size: var(--step-0); line-height: 1.6;
+  /* 제목이 길면 한 줄로 자른다 — 목록의 리듬을 지킨다 */
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  transition: font-weight .2s;
 }
-.scard:hover .scard__title { font-weight: 500; }
+.sitem:hover .sitem__title { font-weight: 500; }
+@media (max-width: 40rem) {
+  .sitem { grid-template-columns: minmax(0, 1fr) auto; }
+  .sitem__date { grid-column: 1 / -1; margin-bottom: .15rem; }
+  .sitem__title { white-space: normal; }
+}
+
+/* NEW — 발행 후 7일. 은은하게 맥동한다.
+   ⚠ 빠른 점멸은 광과민성 발작 유발 기준(3Hz 초과)에 걸린다. 2초 주기로 밝기만 바꾼다 */
+.nbadge {
+  font-family: var(--sans); font-size: .58rem; font-weight: 600; letter-spacing: .12em;
+  color: #F37021; border: 1px solid #F37021; border-radius: 1px;
+  padding: .1rem .32rem; line-height: 1.4; white-space: nowrap;
+  animation: nbadge-pulse 2s ease-in-out infinite;
+}
+.sitem:hover .nbadge { color: #F37021; border-color: #F37021; }
+@keyframes nbadge-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .45; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nbadge { animation: none; }
+  .srow__link:hover { transform: none; }
+}
 
 /* 홈의 INSIGHT 3분할 — 분류마다 1건씩.
-   카드 자체는 INSIGHT 페이지와 같은 .scard 를 쓴다(문법은 하나로 유지).
-   여기서는 가로 스크롤이 없으므로 카드가 열 폭을 채운다 */
+   행 자체는 INSIGHT 페이지와 같은 .sitem 을 쓴다(문법은 하나로 유지).
+   여기는 한 건뿐이므로 목록이 아니라 한 줄로 선다 */
 .hins { display: grid; grid-template-columns: 1fr; gap: clamp(1.5rem, 3vh, 2rem); }
 @media (min-width: 52rem) {
   .hins { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(1.25rem, 2.5vw, 2rem); }
 }
-.hins__cat { margin-bottom: .85rem; }
-/* 홈은 카드가 열 폭을 채우므로 분류명 링크도 그에 맞춰 조금 작게 */
+.hins__cat { margin-bottom: .6rem; }
+/* 홈은 열 폭이 좁으므로 분류명 링크도 그에 맞춰 조금 작게 */
 .hins__cat .srow__link { font-size: var(--step--1); letter-spacing: .06em; }
-.hins .scard { width: auto; height: 100%; }
+/* 홈은 분류마다 1건이라 위아래 괘선으로 한 줄을 세운다 */
+.hins .sitem { border-top: 1px solid var(--rule); }
 
 /* 목록은 WORKS 와 같은 문법. 번호 자리에 날짜가 온다 */
 .posts { border-top: 1px solid var(--ink); }

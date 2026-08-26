@@ -1,0 +1,33 @@
+---
+/**
+ * NEW 배지 — 발행 후 7일간.
+ *
+ * ⚠ 판정을 서버(빌드)에서 하면 안 된다.
+ *   이 사이트는 SSG 라 HTML 이 빌드 시점에 굳는다. 빌드할 때 「7일 이내」로 계산하면
+ *   그 뒤로는 다시 계산되지 않아, 배포를 안 하는 동안 NEW 가 계속 남는다.
+ *   그래서 날짜만 심어두고, 브라우저가 볼 때마다 판정한다.
+ */
+import { isoDate, NEW_DAYS } from '../lib/insight';
+
+interface Props { date: Date }
+const { date } = Astro.props;
+---
+<span class="nbadge" data-date={isoDate(date)} data-days={NEW_DAYS} hidden>NEW</span>
+
+<script>
+  /* 페이지에 있는 모든 배지를 한 번에 판정한다.
+     날짜 비교는 자정 기준 — 시각까지 보면 「오늘 아침에 낸 글」이 경계에서 흔들린다 */
+  const days = 86400000;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  document.querySelectorAll<HTMLElement>('.nbadge').forEach((el) => {
+    const iso = el.dataset.date;
+    if (!iso) return;
+    const [y, m, d] = iso.split('-').map(Number);
+    const pub = new Date(y, m - 1, d);
+    const passed = (today.getTime() - pub.getTime()) / days;
+    // 미래 날짜(예약 발행)도 NEW 로 본다
+    if (passed <= Number(el.dataset.days ?? 7)) el.hidden = false;
+  });
+</script>

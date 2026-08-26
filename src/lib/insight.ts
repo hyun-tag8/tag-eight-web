@@ -64,6 +64,9 @@ export async function getHomePicks(lang: Lang): Promise<{ cat: Category; post: P
   return STREAM.map((c) => ({ cat: c, post: s[c][0] })).filter((x): x is { cat: Category; post: Post } => !!x.post);
 }
 
+/** NEW 배지가 붙는 기간(일). 판정은 브라우저에서 한다 — 아래 isFresh 주석 참조 */
+export const NEW_DAYS = 7;
+
 /** 한 분류의 글 전체. 분류별 목록 페이지가 쓴다 */
 export async function getByCategory(lang: Lang, cat: Category): Promise<Post[]> {
   const all = await getPosts(lang);
@@ -74,6 +77,12 @@ export async function getByCategory(lang: Lang, cat: Category): Promise<Post[]> 
 export async function langsOfPost(postId: string): Promise<Lang[]> {
   const all = await getCollection('insight', (e) => !e.data.draft && e.data.postId === postId);
   return all.map((e) => e.data.lang);
+}
+
+/** ISO 날짜(YYYY-MM-DD). NEW 판정을 브라우저에 넘길 때 쓴다 */
+export function isoDate(d: Date): string {
+  const p = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
 }
 
 /** 2026.08.25 형식. 언어와 무관하게 같은 표기를 쓴다 */

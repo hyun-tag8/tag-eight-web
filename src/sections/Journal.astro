@@ -15,6 +15,7 @@
 import Sentences from '../components/Sentences.astro';
 import T from '../components/T.astro';
 import Arrow from '../components/Arrow.astro';
+import NewBadge from '../components/NewBadge.astro';
 import ClosingCta from '../components/ClosingCta.astro';
 import { t, localePath, type Lang } from '../data/i18n';
 import { getGuides, getStream, fmtDate, STREAM, CAT_SLUG } from '../lib/insight';
@@ -65,6 +66,10 @@ const hasStream = STREAM.some((c) => stream[c].length > 0);
       · 글이 쌓일수록 열마다 높이가 어긋나 계단처럼 보였다
       · 가로면 글이 늘어도 행 높이가 그대로고, 「계속 쌓이고 있다」가 전해진다
 
+    기사는 분류마다 최신 5건까지. 카드가 아니라 목록으로 세운다 —
+    카드는 한 장이 자리를 크게 먹어 한 화면에 1~2건밖에 못 보였다.
+    그 이상은 분류명(전체 보기)으로 간다
+
     ⚠ 섹션 제목(LATEST 등)은 두지 않는다. 각 행이 이미 분류명을 갖고 있어 같은 말을 두 번 하게 된다.
     ⚠ 아래 삼항의 각 분기에는 요소가 하나만 온다 — 분기 안에 주석을 넣으면 컴파일이 깨진다 */}
 {/* 글이 한 편도 없으면 라벨만 남아 어색하다. 그럴 때는 준비중 한 줄로 끝낸다.
@@ -74,7 +79,7 @@ const hasStream = STREAM.some((c) => stream[c].length > 0);
     <div class="wrap"><div class="empty">{d.journal.empty}</div></div>
   </section>
 ) : (
-<section class="sec" data-layout="stream-v180">
+<section class="sec" data-layout="stream-v184">
   <div class="wrap">
     <div class="srows">
       {STREAM.map((c) => (
@@ -89,11 +94,12 @@ const hasStream = STREAM.some((c) => stream[c].length > 0);
           {stream[c].length === 0 ? (
             <p class="srow__empty">{d.journal.catEmpty}</p>
           ) : (
-            <div class="srow__strip">
-              {stream[c].map((p) => (
-                <a class="scard" href={localePath(lang, `/insight/${p.data.postId}`)}>
-                  <span class="scard__date">{fmtDate(p.data.date)}</span>
-                  <span class="scard__title"><T text={p.data.title} lang={lang} /></span>
+            <div class="slist">
+              {stream[c].slice(0, 5).map((p) => (
+                <a class="sitem" href={localePath(lang, `/insight/${p.data.postId}`)}>
+                  <span class="sitem__date">{fmtDate(p.data.date)}</span>
+                  <span class="sitem__title"><T text={p.data.title} lang={lang} /></span>
+                  <NewBadge date={p.data.date} />
                 </a>
               ))}
             </div>
