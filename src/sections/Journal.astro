@@ -31,11 +31,13 @@ const lead = await getLead(lang);
 const leadId = lead?.data.postId;
 const hasStream = STREAM.some((c) => stream[c].length > 0);
 ---
-<section class="sec sec--flush page-head">
+{/* ⚠ 다른 하위 페이지(WORKS·COMPANY 등)는 「라벨 + 큰 제목 + 리드문」 3단이지만
+    INSIGHT 만 라벨 하나로 끝낸다.
+    바로 아래에 검정 대형 카드가 서므로, 머리까지 크면 큰 덩어리가 연달아 두 개가 된다.
+    페이지 성격은 아래 「韓国・台湾のメディア施策を、はじめから。」가 이미 말하고 있다. */}
+<section class="sec sec--flush page-head page-head--slim">
   <div class="wrap">
     <p class="label">{d.journal.eyebrow}</p>
-    <h1 class="h-lg" style="margin-top:clamp(1.75rem,4vh,2.5rem)"><T text={d.journal.head} lang={lang} /></h1>
-    <p class="lead"><Sentences text={d.journal.sub} lang={lang} /></p>
   </div>
 </section>
 

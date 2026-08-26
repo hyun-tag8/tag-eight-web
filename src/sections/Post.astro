@@ -28,8 +28,18 @@ const next = siblings.length > 1 ? siblings[(idx + 1) % siblings.length] : null;
 /* guide 는 분류 목록 페이지가 없다 — 그때는 INSIGHT 로 되돌린다 */
 const catLabel = cat === 'guide' ? d.journal.eyebrow : d.journal.cat[cat];
 const catHref = cat === 'guide' ? '/insight' : `/insight/${CAT_SLUG[cat]}`;
+
+/* 사이드바의 おすすめ記事 — 같은 분류의 다른 글 3건.
+   분류를 넘기지 않는 이유는 前/次 와 같다. 문맥이 이어져야 계속 읽는다. */
+const recs = siblings.filter((e) => e.data.postId !== post.data.postId).slice(0, 3);
+
+/* 目次 — 본문의 ## 를 뽑는다.
+   ⚠ headings 는 Astro 가 마크다운을 파싱하며 만들어 주는 것이라 본문과 항상 일치한다.
+     직접 정규식으로 긁으면 코드블록 안의 # 까지 잡힌다. */
+const { headings } = await render(post);
+const toc = headings.filter((h) => h.depth === 2);
 ---
-<article data-layout="post-v180">
+<article data-layout="post-v191">
   <header class="case-head">
     <div class="wrap">
       <p class="case-head__no post-head__date">{fmtDate(post.data.date)}</p>
@@ -48,8 +58,48 @@ const catHref = cat === 'guide' ? '/insight' : `/insight/${CAT_SLUG[cat]}`;
   </header>
 
   <section class="sec sec--flush postbody">
-    <div class="wrap">
+    <div class="wrap postbody__grid">
       <div class="prose"><Content /></div>
+
+      {/* 읽는 동안 따라다니는 사이드바.
+          目次 → おすすめ → 상담 순서인 이유 —
+          긴 글에서 길을 잃지 않게 먼저 목차를 주고, 다 읽었으면 다음 글로,
+          그리고 어느 지점에서 마음이 움직여도 상담 버튼이 항상 보이게 한다.
+          ⚠ 좁은 화면에서는 통째로 숨긴다. 본문 위에 쌓이면 읽는 흐름을 끊는다. */}
+      <aside class="pside">
+        <div class="pside__in">
+          {toc.length > 1 && (
+            <nav class="pside__blk" aria-label="toc">
+              <p class="pside__ttl">{d.journal.tocLabel}</p>
+              <ol class="ptoc">
+                {toc.map((h) => (
+                  <li><a href={`#${h.slug}`} data-toc={h.slug}>{h.text}</a></li>
+                ))}
+              </ol>
+            </nav>
+          )}
+
+          {recs.length > 0 && (
+            <div class="pside__blk">
+              <p class="pside__ttl">{d.journal.recLabel}</p>
+              <ul class="prec">
+                {recs.map((r) => (
+                  <li>
+                    <a href={localePath(lang, `/insight/${r.data.postId}`)}>
+                      <span class="prec__d">{fmtDate(r.data.date)}</span>
+                      <span class="prec__t"><T text={r.data.title} lang={lang} /></span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          <a class="btn pside__cta" href={`${localePath(lang, '/contact')}?s=${post.data.postId}`}>
+            <span>{d.journal.ctaBtn}</span><span class="btn__slot"><Arrow variant="chev" cls="btn__arrow" /></span>
+          </a>
+        </div>
+      </aside>
     </div>
   </section>
 
@@ -96,4 +146,37 @@ const catHref = cat === 'guide' ? '/insight' : `/insight/${CAT_SLUG[cat]}`;
   </a>
 
   <ClosingCta lang={lang} />
+
+  <script>
+    /* 지금 읽고 있는 절을 目次 에서 굵게 표시한다.
+       ⚠ IntersectionObserver 로 「화면 상단에 들어온 마지막 제목」을 고른다.
+         scroll 이벤트로 매번 좌표를 계산하면 긴 글에서 버벅인다. */
+    const links = [...document.querySelectorAll<HTMLAnchorElement>('.ptoc a[data-toc]')];
+    if (links.length) {
+      const map = new Map(links.map((a) => [a.dataset.toc!, a]));
+      const seen = new Set<string>();
+      const mark = () => {
+        links.forEach((a) => a.removeAttribute('aria-current'));
+        // 지나온 제목 중 마지막 것 = 지금 읽는 절
+        const last = [...map.keys()].filter((id) => seen.has(id)).pop();
+        if (last) map.get(last)!.setAttribute('aria-current', 'true');
+      };
+      const io = new IntersectionObserver(
+        (es) => {
+          for (const e of es) {
+            const id = e.target.id;
+            // 화면 상단(상단 30% 지점)을 넘어간 제목을 「지나온 것」으로 본다
+            if (e.boundingClientRect.top < window.innerHeight * 0.3) seen.add(id);
+            else seen.delete(id);
+          }
+          mark();
+        },
+        { rootMargin: '-30% 0px -70% 0px', threshold: 0 }
+      );
+      map.forEach((_, id) => {
+        const h = document.getElementById(id);
+        if (h) io.observe(h);
+      });
+    }
+  </script>
 </article>

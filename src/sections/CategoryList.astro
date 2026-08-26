@@ -23,13 +23,16 @@ const { lang, cat } = Astro.props;
 const d = t[lang];
 const posts = await getByCategory(lang, cat);
 ---
-<section class="sec sec--flush page-head">
+{/* INSIGHT 목록과 같은 규칙 — 머리는 라벨 한 줄.
+    다만 여기는 「어느 분류인가」를 알려야 하므로 라벨 옆에 분류명을 붙인다.
+    INSIGHT 부분은 상위로 돌아가는 링크다(분류 페이지는 항상 도중이다). */}
+<section class="sec sec--flush page-head page-head--slim">
   <div class="wrap">
-    {/* 상위(INSIGHT)로 돌아가는 길을 머리에 둔다 — 분류 페이지는 항상 도중이다 */}
-    <p class="label">
+    <p class="label catnav__row">
       <a class="catnav" href={localePath(lang, '/insight')}>{d.journal.eyebrow}</a>
+      <span class="catnav__sep" aria-hidden="true">/</span>
+      <span class="catnav__now">{d.journal.cat[cat]}</span>
     </p>
-    <h1 class="h-lg" style="margin-top:clamp(1.75rem,4vh,2.5rem)">{d.journal.cat[cat]}</h1>
   </div>
 </section>
 

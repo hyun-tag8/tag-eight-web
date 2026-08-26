@@ -357,6 +357,14 @@ a { color: inherit; text-decoration: none; }
 /* 상단 패딩도 .sec 과 같은 값으로. 144 / 108 이 섞여 페이지마다 첫 화면이 달랐다.
    아래도 비워두면 본문이 끝나자마자 다음 섹션의 괘선이 붙는다 — 위아래 같은 값으로. */
 .page-head { padding-block: var(--section-y); }
+/* INSIGHT 계열은 머리를 라벨 하나로 끝낸다.
+   바로 아래에 검정 대형 카드나 목록이 서므로, 큰 덩어리가 연달아 두 개면 무겁다.
+   위아래 여백도 절반으로 줄여 본문이 빨리 시작되게 한다 */
+.page-head--slim { padding-block: calc(var(--section-y) * .45); }
+/* 분류 페이지 — INSIGHT / 韓国インサイト 를 한 줄로 */
+.catnav__row { display: flex; align-items: baseline; gap: .6em; flex-wrap: wrap; }
+.catnav__sep { color: var(--ink-25); font-weight: 300; }
+.catnav__now { color: var(--ink); }
 
 @media (max-width: 48rem) {
   .hero { height: auto; min-height: 0; display: flex; flex-direction: column; }
@@ -1073,6 +1081,66 @@ a { color: inherit; text-decoration: none; }
 .prose code {
   font-size: .92em; padding: .1em .4em;
   background: rgba(11, 11, 10, .06); border-radius: 2px;
+}
+
+/* ── 기사 사이드바 ──────────────────────────────────────
+   읽는 동안 따라다닌다. 目次 → おすすめ → 상담 순.
+   ⚠ 60rem 미만에서는 통째로 숨긴다 — 본문 위에 쌓이면 읽는 흐름이 끊긴다.
+     모바일에는 기사 하단에 이미 CTA·前/次 가 있으므로 잃는 것이 없다. */
+.postbody__grid { display: block; }
+@media (min-width: 60rem) {
+  .postbody__grid {
+    display: grid; grid-template-columns: minmax(0, 1fr) 16rem;
+    gap: clamp(3rem, 6vw, 5.5rem);
+    /* ⚠ align-items:start 를 주면 안 된다. 사이드바 높이가 내용만큼만 되어
+       sticky 가 움직일 공간이 사라진다(스크롤하면 위에 남고 따라오지 않는다).
+       기본값(stretch)이라 사이드바가 본문 높이만큼 늘어나고, 그 안에서 고정된다. */
+  }
+  /* 본문 폭은 사이드바가 생겨도 읽기 좋은 길이를 유지한다 */
+  .postbody__grid .prose { max-width: none; }
+}
+.pside { display: none; }
+@media (min-width: 60rem) { .pside { display: block; height: 100%; } }
+/* 헤더 높이만큼 띄워 고정한다 */
+.pside__in { position: sticky; top: calc(var(--head-h, 4.5rem) + 2rem); }
+.pside__blk + .pside__blk { margin-top: clamp(2rem, 5vh, 2.75rem); }
+.pside__ttl {
+  font-family: var(--sans); font-size: var(--step--1); font-weight: 500;
+  letter-spacing: .12em; color: var(--ink);
+  padding-bottom: .7rem; border-bottom: 1px solid var(--ink);
+}
+
+/* 目次 — 지금 읽는 절이 굵어진다(아래 스크립트가 표시) */
+.ptoc { list-style: none; padding: 0; margin-top: 1rem; counter-reset: toc; }
+.ptoc li { counter-increment: toc; }
+.ptoc li + li { margin-top: .7rem; }
+.ptoc a {
+  display: grid; grid-template-columns: 1.6em minmax(0, 1fr); gap: .3rem;
+  font-size: var(--step--1); line-height: 1.6; color: var(--ink-55);
+  transition: color .25s;
+}
+.ptoc a::before { content: counter(toc, decimal-leading-zero); color: var(--ink-25); }
+.ptoc a:hover { color: var(--ink); }
+.ptoc a[aria-current="true"] { color: var(--ink); font-weight: 500; }
+.ptoc a[aria-current="true"]::before { color: #F37021; }
+
+/* おすすめ記事 */
+.prec { list-style: none; padding: 0; margin-top: 1rem; }
+.prec li + li { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--rule); }
+.prec a { display: block; color: var(--ink); }
+.prec__d {
+  display: block; font-family: var(--sans); font-size: .68rem;
+  letter-spacing: .06em; color: var(--ink-25);
+}
+.prec__t {
+  display: block; margin-top: .3rem; font-size: var(--step--1); line-height: 1.6;
+  transition: opacity .25s;
+}
+.prec a:hover .prec__t { opacity: .55; }
+
+.pside__cta {
+  margin-top: clamp(2rem, 5vh, 2.75rem); width: 100%;
+  justify-content: center; font-size: var(--step--1);
 }
 
 /* ── 表 ────────────────────────────────────────────────
