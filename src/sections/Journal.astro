@@ -1,44 +1,99 @@
 ---
 /**
- * INSIGHT 목록.
- * WORKS 목록과 같은 문법 — 행 전체 반전, 번호 자리에 날짜.
- * 글이 0건이면 준비중 문구만 남는다.
+ * INSIGHT 목록 — 2층 구조.
+ *
+ *   [1층] 常設(guide)  검색·생성형 엔진에서 들어오는 착지점. 안 변한다.
+ *   [2층] 3열 박스      韓国 / 台湾 / お知らせ. 계속 쌓인다.
+ *
+ * 왜 나누는가 —
+ *   날짜순 한 줄로 쌓으면, 검색으로 온 사람이 「NAVERブログとは」를 찾다가
+ *   최신 お知らせ 부터 읽게 된다. 착지점과 흐름은 역할이 다르므로 자리도 나눈다.
+ *
+ * ⚠ 台湾 열은 비어도 지운다. 열이 사라지면 「대만은 안 한다」로 읽히므로
+ *   준비중을 띄워서라도 3열을 유지한다.
  */
 import Sentences from '../components/Sentences.astro';
 import T from '../components/T.astro';
+import Arrow from '../components/Arrow.astro';
 import ClosingCta from '../components/ClosingCta.astro';
 import { t, localePath, type Lang } from '../data/i18n';
-import { getPosts, fmtDate } from '../lib/insight';
+import { getGuides, getStream, fmtDate, STREAM } from '../lib/insight';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const d = t[lang];
-const posts = await getPosts(lang);
+const guides = await getGuides(lang);
+const stream = await getStream(lang);
+const hasStream = STREAM.some((c) => stream[c].length > 0);
 ---
 <section class="sec sec--flush page-head">
   <div class="wrap">
     <p class="label">{d.journal.eyebrow}</p>
     <h1 class="h-lg" style="margin-top:clamp(1.75rem,4vh,2.5rem)"><T text={d.journal.head} lang={lang} /></h1>
     <p class="lead"><Sentences text={d.journal.sub} lang={lang} /></p>
+  </div>
+</section>
 
-    {posts.length === 0 ? (
-      <div class="empty" style="margin-top:clamp(3rem,8vh,5rem)">{d.journal.empty}</div>
-    ) : (
-      <div class="posts" data-layout="insight-v168" style="margin-top:clamp(3rem,8vh,5rem)">
-        {posts.map((p) => (
-          <a class="post" href={localePath(lang, `/insight/${p.data.postId}`)}>
-            <span class="post__date">{fmtDate(p.data.date)}</span>
-            <span class="post__body">
-              {p.data.tags.length > 0 && (
-                <span class="post__tags">{p.data.tags.map((tg) => <span class="post__tag">{tg}</span>)}</span>
-              )}
-              <span class="post__title"><T text={p.data.title} lang={lang} /></span>
+{/* ── 1층 · 常設 해설 ─────────────────────────────
+    검색어 하나 = 페이지 하나. 여기가 유입의 입구다 */}
+{guides.length > 0 && (
+  <section class="sec" data-layout="guides-v179">
+    <div class="wrap">
+      <p class="seclabel">{d.journal.guideLabel}</p>
+      <h2 class="h-lg" style="margin-top:clamp(1.5rem,3.5vh,2.25rem)"><T text={d.journal.guideHead} lang={lang} /></h2>
+      <p class="secsub"><Sentences text={d.journal.guideSub} lang={lang} /></p>
+
+      <div class="guides">
+        {guides.map((p, i) => (
+          <a class="guide" href={localePath(lang, `/insight/${p.data.postId}`)}>
+            <span class="guide__no" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+            <span class="guide__body">
+              <span class="guide__title"><T text={p.data.title} lang={lang} /></span>
+              {p.data.excerpt && <span class="guide__ex"><T text={p.data.excerpt} lang={lang} /></span>}
             </span>
+            <Arrow variant="chev" cls="guide__arw" />
           </a>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+{/* ── 2층 · 3열 박스 ─────────────────────────────
+    한 열이 한 시장. 「어느 시장을 다루는 회사인가」가 레이아웃으로 전해진다 */}
+{/* 글이 한 편도 없으면 라벨만 남아 어색하다. 그럴 때는 준비중 한 줄로 끝낸다.
+    ko·zh-TW 는 원고가 일본어보다 늦게 붙으므로 이 상태를 지난다 */}
+{!hasStream && guides.length === 0 ? (
+  <section class="sec">
+    <div class="wrap"><div class="empty">{d.journal.empty}</div></div>
+  </section>
+) : (
+<section class="sec" data-layout="stream-v179">
+  <div class="wrap">
+    <p class="seclabel">{d.journal.streamLabel}</p>
+    <h2 class="h-lg" style="margin-top:clamp(1.5rem,3.5vh,2.25rem)"><T text={d.journal.streamHead} lang={lang} /></h2>
+
+    {(
+      <div class="scols" style="margin-top:clamp(2.5rem,6vh,3.5rem)">
+        {STREAM.map((c) => (
+          <div class="scol">
+            <p class="scol__head">{d.journal.cat[c]}</p>
+            {stream[c].length === 0 ? (
+              <p class="scol__empty">{d.journal.catEmpty}</p>
+            ) : (
+              stream[c].map((p) => (
+                <a class="scard" href={localePath(lang, `/insight/${p.data.postId}`)}>
+                  <span class="scard__date">{fmtDate(p.data.date)}</span>
+                  <span class="scard__title"><T text={p.data.title} lang={lang} /></span>
+                </a>
+              ))
+            )}
+          </div>
         ))}
       </div>
     )}
   </div>
 </section>
+)}
 
 <ClosingCta lang={lang} />

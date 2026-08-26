@@ -16,7 +16,7 @@ const d = t[lang];
 // Astro 6: entry.render() 폐지 → astro:content 의 render(entry)
 const { Content } = await render(post);
 ---
-<article data-layout="post-v168">
+<article data-layout="post-v179">
   <header class="case-head">
     <div class="wrap">
       <p class="case-head__no post-head__date">{fmtDate(post.data.date)}</p>
@@ -37,6 +37,21 @@ const { Content } = await render(post);
   <section class="sec sec--flush postbody">
     <div class="wrap">
       <div class="prose"><Content /></div>
+    </div>
+  </section>
+
+  {/* 기사 전용 CTA — 어느 글에서 왔는지를 문의에 싣는다.
+      ?s=<postId> 로 넘기면 CONTACT 폼이 用件과 相談内容을 미리 채운다.
+      「読んで終わり」를 막는 유일한 장치다 */}
+  <section class="sec postcta">
+    <div class="wrap">
+      <p class="postcta__head"><T text={d.journal.ctaHead} lang={lang} /></p>
+      <p class="postcta__body"><T text={d.journal.ctaBody} lang={lang} /></p>
+      <p style="margin-top:clamp(2rem,5vh,2.75rem)">
+        <a class="btn" href={`${localePath(lang, '/contact')}?s=${post.data.postId}`}>
+          <span>{d.journal.ctaBtn}</span><span class="btn__slot"><Arrow variant="chev" cls="btn__arrow" /></span>
+        </a>
+      </p>
     </div>
   </section>
 

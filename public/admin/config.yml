@@ -34,9 +34,21 @@ collections:
     create: true
     # 파일명 = 날짜 + 식별자 + 언어. 같은 글의 다른 언어판은 postId 를 같게 쓴다.
     slug: '{{year}}-{{month}}-{{day}}-{{fields.postId}}-{{fields.lang}}'
-    summary: '[{{fields.lang}}] {{title}}'
+    summary: '[{{fields.lang}}/{{fields.category}}] {{title}}'
     sortable_fields: ['date', 'title', 'lang']
     view_filters:
+      - label: 解説記事
+        field: category
+        pattern: guide
+      - label: 韓国
+        field: category
+        pattern: korea
+      - label: 台湾
+        field: category
+        pattern: taiwan
+      - label: お知らせ
+        field: category
+        pattern: notice
       - label: 日本語
         field: lang
         pattern: ja
@@ -59,6 +71,17 @@ collections:
           - { label: 繁體中文, value: 'zh-tw' }
         default: ja
         hint: 同じ記事の他言語版は、下の「記事ID」を同じにしてください。
+
+      - label: 分類
+        name: category
+        widget: select
+        options:
+          - { label: '解説記事（常設・ページ上部）', value: guide }
+          - { label: '韓国インサイト', value: korea }
+          - { label: '台湾インサイト', value: taiwan }
+          - { label: 'お知らせ', value: notice }
+        default: korea
+        hint: 「解説記事」はページ上部に常設されます。検索から来た方の着地点です。
 
       - label: 記事ID
         name: postId

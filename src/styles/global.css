@@ -801,6 +801,99 @@ a { color: inherit; text-decoration: none; }
 /* ============================================================
    INSIGHT — 목록과 기사
    ============================================================ */
+/* ── 1층 · 常設 해설(GUIDE) ──────────────────────────────
+   검색·생성형 엔진에서 들어오는 착지점. 흐름(3열)과 역할이 달라 자리를 나눈다.
+   WORKS 목록과 같은 반전 문법을 쓴다 — 사이트 안에서 「목록」의 문법은 하나다 */
+.guides { margin-top: clamp(2.5rem, 6vh, 3.5rem); border-top: 1px solid var(--ink); }
+.guide {
+  position: relative; display: grid; grid-template-columns: 1fr auto; gap: .4rem 1.5rem;
+  align-items: center;
+  padding-block: clamp(1.5rem, 4vh, 2.25rem);
+  border-bottom: 1px solid var(--rule);
+  transition: color .35s, padding-left .4s cubic-bezier(.16,1,.3,1);
+}
+@media (min-width: 48rem) {
+  .guide { grid-template-columns: 4.5rem minmax(0, 1fr) auto; gap: 0 clamp(1.75rem, 4vw, 3rem); }
+}
+.guide::before {
+  content: ""; position: absolute; z-index: 0; inset: 0;
+  margin-inline: calc(var(--gutter) * -1);
+  background: var(--ink); transform: scaleY(0); transform-origin: bottom;
+  transition: transform .38s cubic-bezier(.22,1,.36,1);
+}
+.guide > * { position: relative; z-index: 1; }
+.guide:hover::before { transform: scaleY(1); }
+.guide:hover { color: var(--white); padding-left: 1.5rem; }
+.guide__no {
+  font-family: var(--sans); font-size: var(--step-0); font-weight: 500;
+  letter-spacing: .08em; color: var(--ink-25); transition: color .35s;
+}
+.guide:hover .guide__no { color: rgba(255, 255, 255, .5); }
+.guide__body { display: block; }
+.guide__title { display: block; font-size: var(--step-1); font-weight: 400; line-height: 1.55; }
+.guide:hover .guide__title { font-weight: 500; }
+.guide__ex {
+  display: block; margin-top: .4rem; font-size: var(--step--1); line-height: 1.75;
+  color: var(--ink-55); max-width: 44em; transition: color .35s;
+}
+.guide:hover .guide__ex { color: rgba(255, 255, 255, .62); }
+.guide__arw { flex: none; opacity: 0; transition: opacity .3s, transform .35s cubic-bezier(.16,1,.3,1); }
+.guide:hover .guide__arw { opacity: 1; transform: translateX(4px); }
+@media (max-width: 48rem) { .guide__arw { display: none; } }
+
+/* ── 2층 · 3열 박스 ─────────────────────────────────────
+   한 열 = 한 시장. 台湾 열은 비어도 남긴다 —
+   열이 사라지면 「대만은 안 한다」로 읽힌다 */
+.scols { display: grid; grid-template-columns: 1fr; gap: 0; }
+@media (min-width: 52rem) {
+  .scols { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; }
+  /* 열 사이 세로 괘선. 3열이 각각 독립된 흐름이라는 신호 */
+  .scol + .scol { border-left: 1px solid var(--rule); }
+}
+.scol { display: flex; flex-direction: column; }
+@media (min-width: 52rem) { .scol { padding-inline: clamp(1.25rem, 2.5vw, 2rem); } }
+.scol:first-child { padding-left: 0; }
+.scol:last-child { padding-right: 0; }
+.scol__head {
+  font-family: var(--cjk); font-size: var(--step-0); font-weight: 500;
+  letter-spacing: .04em; color: var(--ink);
+  padding-bottom: 1rem; border-bottom: 1px solid var(--ink);
+}
+@media (max-width: 52rem) {
+  .scol + .scol { margin-top: clamp(2.5rem, 6vh, 3.5rem); }
+}
+.scol__empty {
+  padding-block: clamp(1.5rem, 4vh, 2.25rem);
+  font-size: var(--step--1); color: var(--ink-25); border-bottom: 1px solid var(--rule);
+}
+.scard {
+  position: relative; display: block;
+  padding-block: clamp(1.15rem, 3vh, 1.6rem);
+  border-bottom: 1px solid var(--rule);
+  transition: color .35s, padding-left .4s cubic-bezier(.16,1,.3,1);
+}
+/* 반전은 열 폭 안에서만 일어난다 — 3열이라 화면 폭까지 번지면 옆 열을 덮는다 */
+.scard::before {
+  content: ""; position: absolute; z-index: 0; inset: 0;
+  margin-inline: calc(clamp(1.25rem, 2.5vw, 2rem) * -1);
+  background: var(--ink); transform: scaleY(0); transform-origin: bottom;
+  transition: transform .38s cubic-bezier(.22,1,.36,1);
+}
+@media (max-width: 52rem) { .scard::before { margin-inline: calc(var(--gutter) * -1); } }
+.scard > * { position: relative; z-index: 1; }
+.scard:hover::before { transform: scaleY(1); }
+.scard:hover { color: var(--white); padding-left: .9rem; }
+.scard__date {
+  display: block; font-family: var(--sans); font-size: var(--step--1);
+  letter-spacing: .06em; color: var(--ink-25); transition: color .35s;
+}
+.scard:hover .scard__date { color: rgba(255, 255, 255, .5); }
+.scard__title {
+  display: block; margin-top: .45rem; font-size: var(--step-0);
+  line-height: 1.65; font-weight: 400;
+}
+.scard:hover .scard__title { font-weight: 500; }
+
 /* 목록은 WORKS 와 같은 문법. 번호 자리에 날짜가 온다 */
 .posts { border-top: 1px solid var(--ink); }
 .post {

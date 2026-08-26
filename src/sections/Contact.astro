@@ -4,6 +4,7 @@ import { company } from '../data/company';
 import { t, langMeta, localePath, type Lang } from '../data/i18n';
 import OfficeMap from '../components/OfficeMap.astro';
 import { GMAPS_URL } from '../data/office';
+import { getPosts } from '../lib/insight';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
@@ -15,14 +16,35 @@ const f = d.contact.f;
    ⚠ Cloudflare Pages 에 배포된 뒤에만 동작한다. 로컬 `astro dev` 에서는 404 다. */
 const FORM_ACTION = '/api/contact';
 
-/* 전송 실패 시 ?e=1(입력 오류) / ?e=2(서버 오류) 로 되돌아온다 */
-const errCode = Astro.url.searchParams.get('e');
+/**
+ * ⚠ 이 사이트는 SSG(output:'static')다. Astro.url.searchParams 는 **빌드 시점**에
+ *   평가되므로 항상 빈 값이고, 방문자가 붙인 ?e= / ?s= 는 여기서 읽을 수 없다.
+ *   (이 때문에 전송 실패 안내가 지금까지 한 번도 표시되지 않았다 — 2026-08-26 발견)
+ *
+ *   따라서 두 가지 모두 아래 <script> 에서 브라우저가 처리한다.
+ *     ?e=1|2      전송 실패 안내를 띄운다
+ *     ?s=<postId> INSIGHT 기사에서 넘어온 경우 用件·相談内容을 미리 채운다
+ *
+ *   프리필에 필요한 「기사ID → 用件·제목」 대응표는 빌드 시 만들어 data 속성으로 넘긴다.
+ */
+const posts = await getPosts(lang);
+const PREFILL = Object.fromEntries(
+  posts.map((e) => [
+    e.data.postId,
+    {
+      /* 기사의 분류로 用件을 고른다. guide 는 어느 시장인지 알 수 없으므로 비운다.
+         subjects 순서: 0 韓国 / 1 台湾 / 2 日本 / 3 採用 / 4 その他 */
+      s: e.data.category === 'taiwan' ? f.subjects[1] : e.data.category === 'korea' ? f.subjects[0] : '',
+      t: e.data.title,
+    },
+  ])
+);
 ---
 {/* 지도 패널 — 왼쪽에 위치와 연락처, 오른쪽에 폼 카드.
     이전에는 머리 → 오피스 사진 → 연락처 → 폼 순으로 쌓여 3293px(3화면)였다.
     문의하러 온 사람이 스크롤을 세 번 하는 구조였다.
     오피스 사진은 COMPANY 에 있으므로 여기서는 지도로 바꾼다. */}
-<section class="ctpanel tone" data-layout="contact-v178">
+<section class="ctpanel tone" data-layout="contact-v179">
   <OfficeMap label={company.addressJa} />
 
   <div class="ctpanel__in">
@@ -104,7 +126,9 @@ const errCode = Astro.url.searchParams.get('e');
           </span>
         </label>
 
-        {errCode && <p class="cform__err" role="alert">{errCode === '1' ? f.errInput : f.errServer}</p>}
+        {/* 내용은 아래 스크립트가 채운다. SSG 라 빌드 시점에는 쿼리를 알 수 없다 */}
+        <p class="cform__err" role="alert" hidden
+           data-e1={f.errInput} data-e2={f.errServer}></p>
         <p class="meta cform__note">{f.note}</p>
         {/* 박스형 버튼 — 사이트 공통 .btn 문법. 테두리가 있으므로 꺾쇠는 호버 때만 열린다 */}
         <button class="btn cform__btn" type="submit">
@@ -113,4 +137,37 @@ const errCode = Astro.url.searchParams.get('e');
       </form>
     </div>
   </div>
+
+  {/* 기사ID → 用件·제목 대응표. 스크립트가 ?s= 를 이걸로 푼다 */}
+  <script type="application/json" id="ct-prefill" set:html={JSON.stringify(PREFILL)}></script>
 </section>
+
+<script>
+  /* SSG 라 쿼리 처리는 전부 브라우저 몫이다. 두 가지를 한다.
+       ① ?e=1|2  전송 실패 안내 표시
+       ② ?s=<postId>  INSIGHT 기사에서 넘어온 문의를 미리 채운다 */
+  const q = new URLSearchParams(location.search);
+
+  const err = document.querySelector('.cform__err') as HTMLElement | null;
+  const e = q.get('e');
+  if (err && (e === '1' || e === '2')) {
+    err.textContent = e === '1' ? (err.dataset.e1 ?? '') : (err.dataset.e2 ?? '');
+    err.hidden = false;
+  }
+
+  const src = q.get('s');
+  const raw = document.getElementById('ct-prefill')?.textContent;
+  if (src && raw) {
+    try {
+      const map = JSON.parse(raw) as Record<string, { s: string; t: string }>;
+      const hit = map[src];
+      if (hit) {
+        const sel = document.getElementById('cf-subject') as HTMLSelectElement | null;
+        if (sel && hit.s) sel.value = hit.s;
+        const msg = document.getElementById('cf-message') as HTMLTextAreaElement | null;
+        // 이미 쓰던 내용이 있으면 덮지 않는다(뒤로가기로 돌아온 경우)
+        if (msg && !msg.value) msg.value = hit.t + '\n\n';
+      }
+    } catch { /* 대응표가 깨져도 폼 자체는 살려 둔다 */ }
+  }
+</script>

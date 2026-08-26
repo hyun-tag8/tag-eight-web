@@ -1,5 +1,6 @@
 ---
 lang: ja
+category: korea
 postId: naver-ai-tab
 title: NAVERのAIタブは、韓国の検索導線を何に変えたか。
 excerpt: 2026年6月に登場したAIタブは、韓国人が「答えを探す場所」を変えた。ブランドが備えるべきことを整理する。

@@ -6,6 +6,7 @@ import ClosingCta from '../components/ClosingCta.astro';
 import { getCases } from '../data/cases';
 import { company } from '../data/company';
 import { t, localePath, type Lang } from '../data/i18n';
+import { getHomePicks, fmtDate } from '../lib/insight';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
@@ -27,6 +28,11 @@ const panels = [
   { key: 'taipei', label: 'TAIWAN', city: 'TAIPEI', tz: 'Asia/Taipei', zone: 'CST' },
 ];
 const svcImg = ['think', 'create', 'activate'];
+
+/* 홈에 띄울 3건 — 분류마다 최신 1건씩.
+   「최신 3건」으로 뽑으면 한국 글만 3개 뜨는 날이 생기고,
+   그날은 대만을 다룬다는 신호가 사라진다. */
+const picks = await getHomePicks(lang);
 ---
 
 <!-- 1. 히어로 — 3분할 세로 패널. 각 도시의 타임랩스 위에 아이덴티티가 서서히 떠오른다.
@@ -92,7 +98,37 @@ const svcImg = ['think', 'create', 'activate'];
   </div>
 </section>
 
-<!-- 2. WORKS — 증거가 약속보다 먼저 온다 -->
+<!-- 2. INSIGHT — 「지금 살아 있는 회사」를 첫 스크롤에서 보여준다.
+     WORKS 아래로 내리면 대부분 도달하지 못한다.
+     분류마다 1건씩이라, 어느 날 봐도 韓国·台湾·お知らせ 세 축이 함께 선다. -->
+{picks.length > 0 && (
+  <section class="sec" data-layout="home-insight-v179">
+    <div class="wrap">
+      <p class="seclabel">{d.journal.homeLabel}</p>
+      <h2 class="h-lg" style="margin-top:clamp(1.75rem,4vh,2.5rem)"><T text={d.journal.homeHead} lang={lang} /></h2>
+
+      <div class="scols" style="margin-top:clamp(2.5rem,6vh,3.5rem)">
+        {picks.map(({ cat, post }) => (
+          <div class="scol">
+            <p class="scol__head">{d.journal.cat[cat as 'korea' | 'taiwan' | 'notice']}</p>
+            <a class="scard" href={localePath(lang, `/insight/${post.data.postId}`)}>
+              <span class="scard__date">{fmtDate(post.data.date)}</span>
+              <span class="scard__title"><T text={post.data.title} lang={lang} /></span>
+            </a>
+          </div>
+        ))}
+      </div>
+
+      <p style="margin-top:clamp(2.5rem,6vh,3.5rem)">
+        <a class="btn" href={localePath(lang, '/insight')}>
+          <span>{d.nav.insight}</span><span class="btn__slot"><Arrow variant="chev" cls="btn__arrow" /></span>
+        </a>
+      </p>
+    </div>
+  </section>
+)}
+
+<!-- 3. WORKS — 증거가 약속보다 먼저 온다 -->
 <section class="sec">
   <div class="wrap">
     <p class="seclabel">{d.works.eyebrow}</p>

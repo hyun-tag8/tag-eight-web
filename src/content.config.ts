@@ -24,6 +24,16 @@ const insight = defineCollection({
     /** 목록·메타 설명에 쓰는 한 줄 */
     excerpt: z.string().optional(),
     date: z.coerce.date(),
+    /**
+     * 분류. 페이지 안에서 자리가 갈린다.
+     *   guide  → 상단 「常設」 블록. 검색 착지점이 되는 해설 기사
+     *   korea / taiwan / notice → 하단 3열 박스
+     *
+     * ⚠ 기본값 korea 는 기존 글(분류 없이 쓴 것)을 깨뜨리지 않기 위한 것이다.
+     *   새 글은 반드시 관리화면에서 고를 것.
+     * ⚠ 값을 늘리면 public/admin/config.yml 의 선택지도 함께 고쳐야 한다.
+     */
+    category: z.enum(['guide', 'korea', 'taiwan', 'notice']).default('korea'),
     /** 목록 상단 고정 */
     featured: z.boolean().default(false),
     /** true 면 빌드에서 제외. 관리화면의 「비공개」 */

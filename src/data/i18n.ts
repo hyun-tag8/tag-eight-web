@@ -85,7 +85,21 @@ type Dict = {
   statement: { body: string; facts: { n: string; label: string }[] };
   sectors: { eyebrow: string; head: string; sub: string; note: string; items: { no: string; ja: string; en: string; body: string }[] };
   works: { eyebrow: string; head: string; sub: string; empty: string; confidential: string; challengeLabel: string; approachLabel: string; designLabel: string; rolloutLabel: string; essenceLabel: string; routeLines: Record<string, string>; requestHead: string; requestBody: string; requestCta: string; backToList: string };
-  journal: { eyebrow: string; head: string; sub: string; empty: string; readMore: string; backToList: string };
+  journal: {
+    eyebrow: string; head: string; sub: string; empty: string; readMore: string; backToList: string;
+    /** 常設 해설 기사 블록. 검색으로 들어온 사람의 착지점 */
+    guideLabel: string; guideHead: string; guideSub: string;
+    /** 하단 3열 박스 */
+    streamLabel: string; streamHead: string;
+    /** 3열 박스의 열 이름 */
+    cat: { korea: string; taiwan: string; notice: string };
+    /** 열이 비었을 때 */
+    catEmpty: string;
+    /** 홈의 신설 블록 */
+    homeLabel: string; homeHead: string;
+    /** 기사 하단 CTA */
+    ctaHead: string; ctaBody: string; ctaBtn: string;
+  };
   /** WHY TAG EIGHT — 사명의 유래. ABOUT 의 클로징 */
   why: { eyebrow: string; lines: string[][] };
   contact: {
@@ -318,6 +332,18 @@ export const t: Record<Lang, Dict> = {
       head: '市場を読む、私たちの視点。',
       sub: '韓国・台湾の生活者インサイト、検索行動、クリエイターマーケティングについて。',
       empty: '記事は準備中です。',
+      guideLabel: 'GUIDE',
+      guideHead: '韓国・台湾のメディア施策を、はじめから。',
+      guideSub: 'インフルエンサー起用、NAVERブログ、プレスリリース、テレビPPL。仕組みと進め方を、実務の言葉で書いています。',
+      streamLabel: 'LATEST',
+      streamHead: '市場と、私たちの、いま。',
+      cat: { korea: '韓国インサイト', taiwan: '台湾インサイト', notice: 'お知らせ' },
+      catEmpty: '準備中',
+      homeLabel: 'INSIGHT',
+      homeHead: '市場は、いま動いている。',
+      ctaHead: 'この件について、話しませんか。',
+      ctaBody: '実際の進め方、期間、費用感は案件によって変わります。具体的な条件をうかがったうえでお答えします。',
+      ctaBtn: 'この件で相談する',
     },
     contact: {
       eyebrow: 'CONTACT',
@@ -562,6 +588,18 @@ export const t: Record<Lang, Dict> = {
       head: '시장을 읽는, 우리의 관점.',
       sub: '한국·대만의 소비자 인사이트, 검색 행동, 크리에이터 마케팅에 대하여.',
       empty: '아티클은 준비 중입니다.',
+      guideLabel: 'GUIDE',
+      guideHead: '한국·대만 미디어 실행을, 처음부터.',
+      guideSub: '인플루언서 기용, 네이버 블로그, 프레스 릴리스, TV PPL. 구조와 진행 방식을 실무의 언어로 씁니다.',
+      streamLabel: 'LATEST',
+      streamHead: '시장과, 우리의, 지금.',
+      cat: { korea: '한국 인사이트', taiwan: '대만 인사이트', notice: '소식' },
+      catEmpty: '준비 중',
+      homeLabel: 'INSIGHT',
+      homeHead: '시장은, 지금 움직이고 있다.',
+      ctaHead: '이 건에 대해, 이야기 나누시겠습니까.',
+      ctaBody: '실제 진행 방식, 기간, 비용은 안건에 따라 달라집니다. 구체적인 조건을 듣고 답변드립니다.',
+      ctaBtn: '이 건으로 상담하기',
     },
     contact: {
       eyebrow: 'CONTACT',
@@ -806,6 +844,18 @@ export const t: Record<Lang, Dict> = {
       head: '解讀市場的，我們的觀點。',
       sub: '關於韓國與台灣的消費者洞察、搜尋行為與創作者行銷。',
       empty: '文章準備中。',
+      guideLabel: 'GUIDE',
+      guideHead: '韓國・台灣的媒體操作，從頭說起。',
+      guideSub: '網紅合作、NAVER部落格、新聞稿發布、電視置入。以實務語言說明架構與執行方式。',
+      streamLabel: 'LATEST',
+      streamHead: '市場，與我們的現在。',
+      cat: { korea: '韓國洞察', taiwan: '台灣洞察', notice: '消息' },
+      catEmpty: '準備中',
+      homeLabel: 'INSIGHT',
+      homeHead: '市場，正在移動。',
+      ctaHead: '要不要就這件事聊聊？',
+      ctaBody: '實際的執行方式、期程與費用會依專案而異。了解具體條件後，我們會給您明確的答覆。',
+      ctaBtn: '就此洽詢',
     },
     contact: {
       eyebrow: 'CONTACT',
