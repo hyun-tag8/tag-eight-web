@@ -18,6 +18,30 @@
    `astro/tsconfigs/strict` 를 참조하는데 거기엔 node_modules 가 없어
    프로젝트 tsconfig 를 아무리 고쳐도 `Tsconfig not found` 가 계속 났다.
 
+🔴 **zip 적용 시 `src/content/` 를 덮지 말 것.** (2026-08-26 사고)
+   INSIGHT 원고는 **관리화면(Sveltia CMS)이 GitHub 에 직접 커밋**한다.
+   Claude 가 만든 zip 에는 그 원고가 없으므로, `src/` 를 통째로 복사하면
+   **관리화면에서 쓴 글이 통째로 사라진다.** 실제로 213줄짜리 원고가 날아갔다(복구함).
+
+   ```bash
+   # ⚠️ src/content 를 제외하고 적용한다
+   rsync -a --delete --exclude 'content/' /tmp/t8/tag-eight/src/ ./src/
+   for D in public functions docs; do rm -rf "./$D" && cp -R "/tmp/t8/tag-eight/$D" "./$D"; done
+   cp /tmp/t8/tag-eight/{astro.config.mjs,tsconfig.json,package.json,package-lock.json,PRD.md,HANDOVER.md} ./
+   ```
+
+   **원칙 — 원고는 관리화면, 코드는 zip.** 영역이 갈리면 충돌도 사고도 안 난다.
+   Claude 가 원고 파일 자체를 새로 만들어야 할 때만 예외로 하고, 그때 따로 알린다.
+
+🔴 **push 전에 반드시 `git pull --rebase origin main`.**
+   관리화면이 원격에 커밋을 넣기 때문에 로컬과 자주 갈라진다.
+   충돌 파일이 원고라면 **원격을 살린다**(rebase 중에는 `--ours` 가 원격 쪽이다):
+   ```bash
+   git checkout --ours src/content/insight/<파일>.md
+   git add src/content/insight/<파일>.md
+   git rebase --continue     # vim 이 뜨면 :wq
+   ```
+
 ⚠️ `update.sh` 는 Downloads 안에서 **가장 최근 zip**을 집는다.
    실행 첫 줄에 찍히는 `▶ 사용할 파일` 버전이 받은 것과 같은지 반드시 확인한다.
    (2026-08-24, v136을 안 받은 채 v135로 빌드해 「수정이 반영 안 된다」로 헤맴)
