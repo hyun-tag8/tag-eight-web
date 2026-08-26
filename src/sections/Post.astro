@@ -8,13 +8,26 @@ import Arrow from '../components/Arrow.astro';
 import ClosingCta from '../components/ClosingCta.astro';
 import { t, localePath, type Lang } from '../data/i18n';
 import { render } from 'astro:content';
-import { fmtDate, type Post } from '../lib/insight';
+import { fmtDate, getByCategory, CAT_SLUG, type Post, type Category } from '../lib/insight';
 
 interface Props { lang: Lang; post: Post }
 const { lang, post } = Astro.props;
 const d = t[lang];
 // Astro 6: entry.render() 폐지 → astro:content 의 render(entry)
 const { Content } = await render(post);
+
+/* 前/次 는 같은 분류 안에서 돈다.
+   분류를 넘어 이동하면 「韓国を読んでいたのに台湾が出た」가 되어 문맥이 끊긴다.
+   목록과 같은 정렬(featured → 날짜 내림차순)이므로 화면 순서와 어긋나지 않는다. */
+const cat = post.data.category as Category;
+const siblings = await getByCategory(lang, cat);
+const idx = siblings.findIndex((e) => e.data.postId === post.data.postId);
+/* 끝에서는 반대편으로 넘어간다(순환). 한 편뿐이면 네비 자체를 숨긴다 */
+const prev = siblings.length > 1 ? siblings[(idx - 1 + siblings.length) % siblings.length] : null;
+const next = siblings.length > 1 ? siblings[(idx + 1) % siblings.length] : null;
+/* guide 는 분류 목록 페이지가 없다 — 그때는 INSIGHT 로 되돌린다 */
+const catLabel = cat === 'guide' ? d.journal.eyebrow : d.journal.cat[cat];
+const catHref = cat === 'guide' ? '/insight' : `/insight/${CAT_SLUG[cat]}`;
 ---
 <article data-layout="post-v180">
   <header class="case-head">
@@ -55,8 +68,31 @@ const { Content } = await render(post);
     </div>
   </section>
 
-  <a class="case-back" href={localePath(lang, '/insight')}>
-    <span>{d.journal.backToList}</span>
+  {/* 前/次 — WORKS 상세와 같은 문법. 같은 분류 안에서만 돈다 */}
+  {prev && next && (
+    <nav class="case-nav" aria-label="insight">
+      <div class="wrap case-nav__in">
+        <a class="case-nav__item" href={localePath(lang, `/insight/${prev.data.postId}`)}>
+          <span class="case-nav__meta">
+            <Arrow dir="left" variant="ring" cls="case-nav__arrow" />
+            <span class="case-nav__no">{d.journal.navPrev}</span>
+          </span>
+          <span class="case-nav__title"><T text={prev.data.title} lang={lang} /></span>
+        </a>
+        <a class="case-nav__item case-nav__item--next" href={localePath(lang, `/insight/${next.data.postId}`)}>
+          <span class="case-nav__meta">
+            <span class="case-nav__no">{d.journal.navNext}</span>
+            <Arrow dir="right" variant="ring" cls="case-nav__arrow" />
+          </span>
+          <span class="case-nav__title"><T text={next.data.title} lang={lang} /></span>
+        </a>
+      </div>
+    </nav>
+  )}
+
+  {/* 목록으로 — 읽던 분류로 되돌린다. INSIGHT 최상위로 던지면 다시 찾아 들어가야 한다 */}
+  <a class="case-back" href={localePath(lang, catHref)}>
+    <span>{d.journal.navAll.replace('{cat}', catLabel)}</span>
   </a>
 
   <ClosingCta lang={lang} />

@@ -111,7 +111,7 @@ collections:
         widget: list
         required: false
         default: []
-        hint: 2つまでを推奨。例）検索 / 韓国市場
+        hint: 主要メディア戦略のキーワードを。2つまで推奨。例）NAVER戦略 / Instagram戦略 / PPL / プレスリリース
 
       - label: 一覧の先頭に固定
         name: featured

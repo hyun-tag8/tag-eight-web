@@ -5,6 +5,13 @@
  * INSIGHT 첫 화면의 3행 가로 배열은 「최근 것」만 보여준다.
  * 글이 쌓이면 옆으로 밀려 사라지므로, 분류마다 전부 볼 수 있는 자리가 필요하다.
  * 목록 문법은 WORKS·GUIDE 와 같다 — 행 전체 반전.
+ *
+ * 열 구성은 날짜 · 제목 · 태그. 요약문은 싣지 않는다 —
+ * 목록에서 필요한 건 「무엇에 대한 글인가」이고,
+ * 그건 요약 두 줄보다 「NAVER戦略」 한 단어가 빠르다.
+ *
+ * ⚠ 삼항(posts.length === 0 ? A : B)의 각 분기에는 요소가 하나만 온다.
+ *   분기 안에 {\/* *\/} 주석을 넣으면 컴파일이 깨진다.
  */
 import T from '../components/T.astro';
 import ClosingCta from '../components/ClosingCta.astro';
@@ -26,7 +33,7 @@ const posts = await getByCategory(lang, cat);
   </div>
 </section>
 
-<section class="sec" data-layout="catlist-v181">
+<section class="sec" data-layout="catlist-v182">
   <div class="wrap">
     {posts.length === 0 ? (
       <div class="empty">{d.journal.empty}</div>
@@ -37,8 +44,12 @@ const posts = await getByCategory(lang, cat);
             <span class="guide__no">{fmtDate(p.data.date)}</span>
             <span class="guide__body">
               <span class="guide__title"><T text={p.data.title} lang={lang} /></span>
-              {p.data.excerpt && <span class="guide__ex"><T text={p.data.excerpt} lang={lang} /></span>}
             </span>
+            {p.data.tags.length > 0 && (
+              <span class="guide__tags">
+                {p.data.tags.map((tg) => <span class="guide__tag">{tg}</span>)}
+              </span>
+            )}
           </a>
         ))}
       </div>

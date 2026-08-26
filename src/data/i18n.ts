@@ -97,6 +97,10 @@ type Dict = {
     homeLabel: string; homeHead: string;
     /** 기사 하단 CTA */
     ctaHead: string; ctaBody: string; ctaBtn: string;
+    /** 기사 하단 네비 — 같은 분류 안에서 이동한다 */
+    navPrev: string; navNext: string;
+    /** 「韓国インサイトをすべて見る」의 틀. {cat} 자리에 분류명이 들어간다 */
+    navAll: string;
   };
   /** WHY TAG EIGHT — 사명의 유래. ABOUT 의 클로징 */
   why: { eyebrow: string; lines: string[][] };
@@ -340,6 +344,9 @@ export const t: Record<Lang, Dict> = {
       ctaHead: 'この件について、話しませんか。',
       ctaBody: '実際の進め方、期間、費用感は案件によって変わります。具体的な条件をうかがったうえでお答えします。',
       ctaBtn: 'この件で相談する',
+      navPrev: '前の記事',
+      navNext: '次の記事',
+      navAll: '{cat}をすべて見る',
     },
     contact: {
       eyebrow: 'CONTACT',
@@ -594,6 +601,9 @@ export const t: Record<Lang, Dict> = {
       ctaHead: '이 건에 대해, 이야기 나누시겠습니까.',
       ctaBody: '실제 진행 방식, 기간, 비용은 안건에 따라 달라집니다. 구체적인 조건을 듣고 답변드립니다.',
       ctaBtn: '이 건으로 상담하기',
+      navPrev: '이전 글',
+      navNext: '다음 글',
+      navAll: '{cat} 전체 보기',
     },
     contact: {
       eyebrow: 'CONTACT',
@@ -848,6 +858,9 @@ export const t: Record<Lang, Dict> = {
       ctaHead: '要不要就這件事聊聊？',
       ctaBody: '實際的執行方式、期程與費用會依專案而異。了解具體條件後，我們會給您明確的答覆。',
       ctaBtn: '就此洽詢',
+      navPrev: '上一篇',
+      navNext: '下一篇',
+      navAll: '查看全部{cat}',
     },
     contact: {
       eyebrow: 'CONTACT',
