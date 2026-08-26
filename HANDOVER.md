@@ -18,6 +18,15 @@
    `astro/tsconfigs/strict` 를 참조하는데 거기엔 node_modules 가 없어
    프로젝트 tsconfig 를 아무리 고쳐도 `Tsconfig not found` 가 계속 났다.
 
+📊 **애널리틱스 — Cloudflare Web Analytics** (2026-08-26 설치)
+   토큰 `90311ead309f471f9742054fbfb8b1cf` / `src/components/Head.astro` 에 삽입.
+   쿠키를 쓰지 않고 개인을 추적하지 않으므로 **동의 배너가 필요 없다.**
+   ⚠️ 호스트명 단위 집계. 현재 등록: `tag-eight-web.pages.dev`.
+      **tag-8.com 연결 후 대시보드에서 그 호스트를 추가할 것**(토큰은 그대로).
+   ⚠️ 이 도구는 유입 경로까지만 보여준다. 「어떤 검색어로 왔는가」는
+      **Google Search Console** 이 필요하다 — 도메인 연결 후 등록한다.
+   보는 곳: Cloudflare → Analytics → Web analytics
+
 🔴 **zip 적용은 `~/Downloads/apply.sh` 한 줄로만 한다.** (2026-08-26)
    명령을 손으로 붙여넣으면 위 화살표(↑)로 옛 명령을 불러 쓰다 사고가 난다.
    실제로 `rsync -a --delete /tmp/t8/tag-eight/src/ ./src/` (src 통째)가 한 번 섞여 실행되어

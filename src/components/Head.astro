@@ -102,3 +102,22 @@ const jsonLd = JSON.stringify(organizationJsonLd());
 <style is:inline set:html={`:root { --cjk: ${cjkFamily[lang]}, system-ui, sans-serif; }`}></style>
 
 <script type="application/ld+json" is:inline set:html={jsonLd} />
+
+{/* ── Cloudflare Web Analytics ──────────────────────────
+    쿠키를 쓰지 않고 개인을 추적하지 않는다. 그래서 동의 배너가 필요 없다.
+    (GA4 였다면 일본 개인정보보호법·EU GDPR 대응으로 배너가 필요했다)
+
+    ⚠ 호스트명 단위로 집계된다. 현재 등록된 것은 tag-eight-web.pages.dev 다.
+      tag-8.com 을 연결한 뒤에는 Cloudflare 대시보드에서 그 호스트도 추가해야
+      데이터가 끊기지 않는다. 토큰은 그대로 쓰면 된다.
+
+    ⚠ 이 도구는 유입 경로(referrer)까지만 보여주고 검색어는 보여주지 않는다.
+      「어떤 키워드로 찾아왔는가」는 Google Search Console 이 필요하다.
+
+    토큰은 HTML 에 그대로 실리는 공개값이라 저장소에 두어도 된다. */}
+<script
+  type="module"
+  src="https://static.cloudflareinsights.com/beacon.min.js"
+  data-cf-beacon='{"token": "90311ead309f471f9742054fbfb8b1cf"}'
+  is:inline
+></script>
