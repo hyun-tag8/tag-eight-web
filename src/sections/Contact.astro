@@ -21,7 +21,7 @@ const errCode = Astro.url.searchParams.get('e');
     이전에는 머리 → 오피스 사진 → 연락처 → 폼 순으로 쌓여 3293px(3화면)였다.
     문의하러 온 사람이 스크롤을 세 번 하는 구조였다.
     오피스 사진은 COMPANY 에 있으므로 여기서는 지도로 바꾼다. */}
-<section class="ctpanel tone" data-layout="contact-v174">
+<section class="ctpanel tone" data-layout="contact-v175">
   <OfficeMap mapLink={f.mapLink} label={company.addressJa} />
 
   <div class="ctpanel__in">
@@ -74,9 +74,12 @@ const errCode = Astro.url.searchParams.get('e');
           <input id="cf-email" name="email" type="email" required autocomplete="email" />
         </div>
 
+        {/* ⚠ select 는 첫 항목이 자동 선택된다. 빈 플레이스홀더를 앞에 두지 않으면
+            아무도 고르지 않은 문의가 전부 「韓国のご相談」으로 접수된다 */}
         <div class="cform__row">
-          <label for="cf-subject">{f.subject}</label>
-          <select id="cf-subject" name="subject">
+          <label for="cf-subject">{f.subject} <span class="cform__req">{f.required}</span></label>
+          <select id="cf-subject" name="subject" required>
+            <option value="" disabled selected>{f.subjectPlaceholder}</option>
             {f.subjects.map((s) => <option value={s}>{s}</option>)}
           </select>
         </div>

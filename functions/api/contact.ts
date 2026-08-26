@@ -210,6 +210,9 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
 
     if (!company || !name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return back('/contact/?e=1');
     if (consent !== 'agree') return back('/contact/?e=1');
+    // 용건은 담당 배정의 기준이다. 비어 있으면 어느 나라 안건인지 알 수 없다.
+    // 클라이언트 required 는 우회되므로 서버에서도 막는다.
+    if (!subject) return back('/contact/?e=1');
 
     const send = makeSender(env);
     const to = env.MAIL_TO || 'info@tag-8.com';
@@ -238,7 +241,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       fromEmail,
       to,
       replyTo: email,
-      subject: `【サイト問い合わせ】${company} / ${name}`,
+      subject: `【サイト問い合わせ】${subject}｜${company} / ${name}`,
       html: `<div style="font-family:sans-serif;font-size:14px;line-height:1.8"><table>${table}</table>
         <p style="margin-top:24px;color:#adadad;font-size:12px">lang: ${lang} / ${new Date().toISOString()}</p></div>`,
     });

@@ -95,6 +95,8 @@ type Dict = {
       company: string; name: string; email: string; subject: string;
       message: string; submit: string; required: string; note: string;
       subjects: string[];
+      /** select 의 기본 상태. 고르지 않으면 전송되지 않는다 */
+      subjectPlaceholder: string;
       /** 전송 실패 안내 */
       errInput: string; errServer: string;
       consent: string; consentLink: string; mapLink: string;
@@ -334,6 +336,7 @@ export const t: Record<Lang, Dict> = {
         submit: '送信する',
         required: '必須',
         note: 'ご記入内容は、お問い合わせ対応にのみ使用します。',
+        subjectPlaceholder: '選択してください',
         subjects: ['韓国のご相談', '台湾のご相談', '日本のご相談', '採用について', 'その他'],
       errInput: '入力内容をご確認ください。',
       errServer: '送信に失敗しました。お手数ですが info@tag-8.com へ直接ご連絡ください。',
@@ -577,6 +580,7 @@ export const t: Record<Lang, Dict> = {
         submit: '보내기',
         required: '필수',
         note: '기재하신 내용은 문의 대응에만 사용합니다.',
+        subjectPlaceholder: '선택해 주세요',
         subjects: ['한국 관련 상담', '대만 관련 상담', '일본 관련 상담', '채용 문의', '기타'],
       errInput: '입력 내용을 확인해 주세요.',
       errServer: '전송에 실패했습니다. 번거로우시겠지만 info@tag-8.com 으로 직접 연락 주세요.',
@@ -820,6 +824,7 @@ export const t: Record<Lang, Dict> = {
         submit: '送出',
         required: '必填',
         note: '填寫內容僅用於回覆本次洽詢。',
+        subjectPlaceholder: '請選擇',
         subjects: ['韓國相關洽詢', '台灣相關洽詢', '日本相關洽詢', '徵才相關', '其他'],
       errInput: '請確認輸入內容。',
       errServer: '傳送失敗。麻煩您直接來信 info@tag-8.com。',

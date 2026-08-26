@@ -951,6 +951,9 @@ a { color: inherit; text-decoration: none; }
   padding: .3rem 0 .5rem; border-radius: 0; transition: border-color .2s;
 }
 .cform select { appearance: none; cursor: pointer; }
+/* 아직 고르지 않은 상태를 회색으로 알린다. 검정이면 이미 선택한 것처럼 보인다 */
+.cform select:invalid { color: var(--ink-25); }
+.cform select option { color: var(--ink); }
 .cform textarea { resize: vertical; min-height: 5.5rem; }
 .cform input:focus, .cform select:focus, .cform textarea:focus { outline: none; border-bottom-color: var(--ink); }
 /* 제출 버튼 — 박스형(.btn 문법). 호버 시 검정 반전 + 꺾쇠가 열리고 글자가 커진다.
