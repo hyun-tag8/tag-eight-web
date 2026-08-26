@@ -39,7 +39,7 @@ const recs = siblings.filter((e) => e.data.postId !== post.data.postId).slice(0,
 const { headings } = await render(post);
 const toc = headings.filter((h) => h.depth === 2);
 ---
-<article data-layout="post-v191">
+<article data-layout="post-v199">
   <header class="case-head">
     <div class="wrap">
       <p class="case-head__no post-head__date">{fmtDate(post.data.date)}</p>
@@ -95,8 +95,8 @@ const toc = headings.filter((h) => h.depth === 2);
             </div>
           )}
 
-          <a class="btn pside__cta" href={`${localePath(lang, '/contact')}?s=${post.data.postId}`}>
-            <span>{d.journal.ctaBtn}</span><span class="btn__slot"><Arrow variant="chev" cls="btn__arrow" /></span>
+          <a class="ulink pside__cta" href={`${localePath(lang, '/contact')}?s=${post.data.postId}`}>
+            <span>{d.journal.ctaBtn}</span><Arrow variant="chev" cls="ulink__arw" />
           </a>
         </div>
       </aside>
@@ -108,13 +108,19 @@ const toc = headings.filter((h) => h.depth === 2);
       「読んで終わり」를 막는 유일한 장치다 */}
   <section class="sec postcta">
     <div class="wrap">
-      <p class="postcta__head"><T text={d.journal.ctaHead} lang={lang} /></p>
-      <p class="postcta__body"><T text={d.journal.ctaBody} lang={lang} /></p>
-      <p style="margin-top:clamp(2rem,5vh,2.75rem)">
-        <a class="btn" href={`${localePath(lang, '/contact')}?s=${post.data.postId}`}>
-          <span>{d.journal.ctaBtn}</span><span class="btn__slot"><Arrow variant="chev" cls="btn__arrow" /></span>
+      <p class="postcta__head postcta__ask"><T text={d.journal.ctaHead} lang={lang} /></p>
+      <p class="postcta__body postcta__ask"><T text={d.journal.ctaBody} lang={lang} /></p>
+      {/* ⚠ 상담 버튼은 좁은 화면에서만 나온다.
+          넓은 화면에서는 사이드바에 같은 버튼이 계속 따라다니므로 여기 또 두면 중복이다.
+          반대로 사이드바가 없는 좁은 화면에서는 여기가 유일한 창구가 된다. */}
+      <div class="postcta__acts">
+        <a class="ulink postcta__ask" href={`${localePath(lang, '/contact')}?s=${post.data.postId}`}>
+          <span>{d.journal.ctaBtn}</span><Arrow variant="chev" cls="ulink__arw" />
         </a>
-      </p>
+        <a class="ulink" href={localePath(lang, catHref)}>
+          <span>{d.journal.navAll.replace('{cat}', catLabel)}</span><Arrow variant="chev" cls="ulink__arw" />
+        </a>
+      </div>
     </div>
   </section>
 
@@ -139,11 +145,6 @@ const toc = headings.filter((h) => h.depth === 2);
       </div>
     </nav>
   )}
-
-  {/* 목록으로 — 읽던 분류로 되돌린다. INSIGHT 최상위로 던지면 다시 찾아 들어가야 한다 */}
-  <a class="case-back" href={localePath(lang, catHref)}>
-    <span>{d.journal.navAll.replace('{cat}', catLabel)}</span>
-  </a>
 
   <ClosingCta lang={lang} />
 
