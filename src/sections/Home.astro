@@ -6,7 +6,7 @@ import ClosingCta from '../components/ClosingCta.astro';
 import { getCases } from '../data/cases';
 import { company } from '../data/company';
 import { t, localePath, type Lang } from '../data/i18n';
-import { getHomePicks, fmtDate, CAT_SLUG } from '../lib/insight';
+import { getHomeStream, fmtDate, CAT_SLUG } from '../lib/insight';
 import NewBadge from '../components/NewBadge.astro';
 
 interface Props { lang: Lang }
@@ -33,7 +33,7 @@ const svcImg = ['think', 'create', 'activate'];
 /* 홈에 띄울 3건 — 분류마다 최신 1건씩.
    「최신 3건」으로 뽑으면 한국 글만 3개 뜨는 날이 생기고,
    그날은 대만을 다룬다는 신호가 사라진다. */
-const picks = await getHomePicks(lang);
+const picks = await getHomeStream(lang, 3);
 ---
 
 <!-- 1. 히어로 — 3분할 세로 패널. 각 도시의 타임랩스 위에 아이덴티티가 서서히 떠오른다.
@@ -108,27 +108,35 @@ const picks = await getHomePicks(lang);
       <p class="seclabel">{d.journal.homeLabel}</p>
       <h2 class="h-lg" style="margin-top:clamp(1.75rem,4vh,2.5rem)"><T text={d.journal.homeHead} lang={lang} /></h2>
 
-      {/* 홈은 분류마다 1건이라 가로 3분할이 맞다.
-          INSIGHT 페이지의 3행 가로 배열은 「쌓인다」를 보여주는 자리이고,
-          여기는 「세 시장을 다룬다」만 전하면 된다 */}
-      <div class="hins" style="margin-top:clamp(2.5rem,6vh,3.5rem)">
-        {picks.map(({ cat, post }) => (
+      {/* 홈도 INSIGHT 페이지와 같은 3열. 다만 분류마다 최신 3건까지 세로로 쌓는다.
+          1건만 세우면 「가끔 쓰는 곳」으로 보이고, 쌓여 있으면 「계속 쓰는 곳」이 된다.
+          ⚠ 비어 있는 분류도 열을 남긴다 — 사라지면 그 시장은 안 한다로 읽힌다 */}
+      <div class="hins" style="margin-top:clamp(2rem,4.5vh,2.75rem)">
+        {picks.map(({ cat, posts }) => (
           <div class="hins__col">
             <p class="hins__cat">
               <a class="srow__link" href={localePath(lang, `/insight/${CAT_SLUG[cat as 'korea' | 'taiwan' | 'notice']}`)}>
                 <span>{d.journal.cat[cat as 'korea' | 'taiwan' | 'notice']}</span><Arrow variant="chev" cls="srow__arw" />
               </a>
             </p>
-            <a class="sitem" href={localePath(lang, `/insight/${post.data.postId}`)}>
-              <span class="sitem__date">{fmtDate(post.data.date)}</span>
-              <span class="sitem__title"><T text={post.data.title} lang={lang} /></span>
-              <NewBadge date={post.data.date} />
-            </a>
+            {posts.length === 0 ? (
+              <p class="srow__empty">{d.journal.catEmpty}</p>
+            ) : (
+              <div class="hins__list">
+                {posts.map((post) => (
+                  <a class="sitem" href={localePath(lang, `/insight/${post.data.postId}`)}>
+                    <span class="sitem__date">{fmtDate(post.data.date)}</span>
+                    <span class="sitem__title"><T text={post.data.title} lang={lang} /></span>
+                    <NewBadge date={post.data.date} />
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
         ))}
       </div>
 
-      <p style="margin-top:clamp(2.5rem,6vh,3.5rem)">
+      <p style="margin-top:clamp(2rem,4.5vh,2.75rem)">
         <a class="btn" href={localePath(lang, '/insight')}>
           <span>{d.nav.insight}</span><span class="btn__slot"><Arrow variant="chev" cls="btn__arrow" /></span>
         </a>

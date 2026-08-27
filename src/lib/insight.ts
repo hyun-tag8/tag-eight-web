@@ -64,6 +64,15 @@ export async function getHomePicks(lang: Lang): Promise<{ cat: Category; post: P
   return STREAM.map((c) => ({ cat: c, post: s[c][0] })).filter((x): x is { cat: Category; post: Post } => !!x.post);
 }
 
+/**
+ * 홈의 3열 — 분류마다 최신 n건.
+ * ⚠ 비어 있는 분류도 키를 남긴다. 열이 사라지면 「그 시장은 안 한다」로 읽힌다. (2026-08-27)
+ */
+export async function getHomeStream(lang: Lang, n = 3): Promise<{ cat: Category; posts: Post[] }[]> {
+  const s = await getStream(lang);
+  return STREAM.map((c) => ({ cat: c, posts: s[c].slice(0, n) }));
+}
+
 /** NEW 배지가 붙는 기간(일). 판정은 브라우저에서 한다 — 아래 isFresh 주석 참조 */
 export const NEW_DAYS = 7;
 
