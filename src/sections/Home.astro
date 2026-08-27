@@ -111,10 +111,10 @@ const picks = await getHomeStream(lang, 3);
       {/* 홈도 INSIGHT 페이지와 같은 3열. 다만 분류마다 최신 3건까지 세로로 쌓는다.
           1건만 세우면 「가끔 쓰는 곳」으로 보이고, 쌓여 있으면 「계속 쓰는 곳」이 된다.
           ⚠ 비어 있는 분류도 열을 남긴다 — 사라지면 그 시장은 안 한다로 읽힌다 */}
-      <div class="hins" style="margin-top:clamp(2rem,4.5vh,2.75rem)">
+      <div class="hins srows" style="margin-top:clamp(2rem,4.5vh,2.75rem)">
         {picks.map(({ cat, posts }) => (
-          <div class="hins__col">
-            <p class="hins__cat">
+          <div class="srow">
+            <p class="srow__head">
               <a class="srow__link" href={localePath(lang, `/insight/${CAT_SLUG[cat as 'korea' | 'taiwan' | 'notice']}`)}>
                 <span>{d.journal.cat[cat as 'korea' | 'taiwan' | 'notice']}</span><Arrow variant="chev" cls="srow__arw" />
               </a>
@@ -122,7 +122,7 @@ const picks = await getHomeStream(lang, 3);
             {posts.length === 0 ? (
               <p class="srow__empty">{d.journal.catEmpty}</p>
             ) : (
-              <div class="hins__list">
+              <div class="slist">
                 {posts.map((post) => (
                   <a class="sitem" href={localePath(lang, `/insight/${post.data.postId}`)}>
                     <span class="sitem__date">{fmtDate(post.data.date)}</span>
