@@ -41,7 +41,7 @@ collections:
     # 파일명 = 날짜 + 식별자 + 언어. 같은 글의 다른 언어판은 postId 를 같게 쓴다.
     slug: '{{year}}-{{month}}-{{day}}-{{fields.postId}}-{{fields.lang}}'
     # 목록 한 줄. 언어·분류·비공개 여부가 한눈에 보여야 「어느 글이 어디까지 나갔나」를 안다
-    summary: '{{fields.lang}} · {{fields.category}}{{#if fields.draft}} · 下書き{{/if}} — {{title}}'
+    summary: '{{fields.lang}} · {{fields.category}} — {{title}}'
     sortable_fields: ['date', 'title', 'lang']
     view_filters:
       - label: 解説記事
