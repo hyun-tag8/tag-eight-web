@@ -38,13 +38,40 @@ fi
 #    ⚠ functions/ 를 빠뜨리면 안 된다.
 #      Cloudflare Pages Function(문의 폼 API)이 여기 있는데,
 #      2026-08-21 까지 이 목록에서 누락돼 있어 폼 코드 수정이 반영되지 않았다.
+#    ⚠⚠ src/content 는 절대 지우지 않는다.
+#      관리화면이 GitHub 에 직접 커밋한 INSIGHT 원고가 여기 있다.
+#      zip 에는 이 폴더가 없으므로 src 를 통째로 지우면 원고가 사라진다.
 for D in src public functions docs; do
-  if [ -d "${SRC_ROOT}/${D}" ]; then
+  [ -d "${SRC_ROOT}/${D}" ] || continue
+  if [ "${D}" = "src" ]; then
+    KEEP="$(mktemp -d)"
+    if [ -d "${PROJECT_DIR}/src/content" ]; then
+      cp -R "${PROJECT_DIR}/src/content" "${KEEP}/content"
+      BEFORE="$(find "${KEEP}/content" -type f | wc -l | tr -d ' ')"
+    else
+      BEFORE=0
+    fi
+    rm -rf "${PROJECT_DIR:?}/src"
+    cp -R "${SRC_ROOT}/src" "${PROJECT_DIR}/src"
+    if [ -d "${KEEP}/content" ]; then
+      rm -rf "${PROJECT_DIR}/src/content"
+      cp -R "${KEEP}/content" "${PROJECT_DIR}/src/content"
+    fi
+    AFTER="$(find "${PROJECT_DIR}/src/content" -type f 2>/dev/null | wc -l | tr -d ' ')"
+    rm -rf "${KEEP}"
+    if [ "${BEFORE}" != "${AFTER}" ]; then
+      echo "✗ src/content 파일 수가 ${BEFORE} → ${AFTER} 로 바뀌었다. 커밋하지 말 것."
+      exit 1
+    fi
+    echo "  ✓ src/ 갱신 (content ${AFTER}건 보존)"
+  else
     rm -rf "${PROJECT_DIR:?}/${D}"
     cp -R "${SRC_ROOT}/${D}" "${PROJECT_DIR}/${D}"
     echo "  ✓ ${D}/ 갱신"
   fi
 done
+
+find "${PROJECT_DIR}/src" -type d -name "* [0-9]" -empty -delete 2>/dev/null || true
 
 # 4) 설정 파일은 바뀐 것만 복사
 #

@@ -20,3 +20,4 @@ Thumbs.db
 # 로그
 npm-debug.log*
 yarn-error.log*
+*.bak
