@@ -27,14 +27,11 @@ const guides = await getGuides(lang);
 const stream = await getStream(lang);
 /* 첫 화면의 대형 카드 — 분류마다 최신 1건씩, 좌우로 넘긴다 */
 const leads = await getLeads(lang);
-/* 대형 카드에 선 글은 아래 3행에서 뺀다 — 같은 화면에 두 번 나오면 목록이 어색해진다 */
-const leadIds = new Set(leads.map((l) => l.post.data.postId));
-/* ⚠ 그 분류에 글이 한 건뿐이면 3행이 통째로 비어 「準備中」이 뜬다.
-     바로 위 카드에 있는데도 「아직 없다」로 읽히므로, 뺀 결과가 0이면 빼지 않는다. (2026-08-27) */
-const rows = (c: (typeof STREAM)[number]) => {
-  const kept = stream[c].filter((p) => !leadIds.has(p.data.postId));
-  return kept.length > 0 ? kept : stream[c];
-};
+/* ⚠ 대형 카드에 선 글도 아래 3행에 그대로 남긴다.
+     이전에는 중복을 피하려고 뺐지만, 그러면 2건 있는 분류가 1건만 있는 것처럼 보인다.
+     대형 카드는 「지금 읽을 것」, 3행은 「그 분류에 무엇이 쌓여 있는가」로 역할이 다르다.
+     목록이 그 분류의 전체 재고를 보여주지 않으면 축적이 전달되지 않는다. (2026-08-28) */
+const rows = (c: (typeof STREAM)[number]) => stream[c];
 const hasStream = STREAM.some((c) => stream[c].length > 0);
 ---
 {/* ⚠ 다른 하위 페이지(WORKS·COMPANY 등)는 「라벨 + 큰 제목 + 리드문」 3단이지만
