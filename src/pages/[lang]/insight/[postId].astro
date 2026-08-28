@@ -21,6 +21,7 @@ const { post } = Astro.props;
 const lang = Astro.params.lang as Lang;
 ---
 <Base lang={lang} title={`${post.data.title}｜INSIGHT｜TAG EIGHT`}
-      description={post.data.excerpt ?? post.data.title} path={`/insight/${post.data.postId}`}>
+      description={post.data.excerpt ?? post.data.title} path={`/insight/${post.data.postId}`}
+      image={post.data.cover}>
   <Post lang={lang} post={post} />
 </Base>

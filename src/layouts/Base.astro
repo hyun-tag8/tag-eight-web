@@ -5,13 +5,13 @@ import Footer from '../components/Footer.astro';
 import { langMeta, type Lang } from '../data/i18n';
 import '../styles/global.css';
 
-interface Props { lang: Lang; title: string; description: string; path: string; overHero?: boolean; noindex?: boolean; handwriting?: boolean }
-const { lang, title, description, path, overHero = false, noindex = false, handwriting = false } = Astro.props;
+interface Props { lang: Lang; title: string; description: string; path: string; overHero?: boolean; noindex?: boolean; handwriting?: boolean; image?: string }
+const { lang, title, description, path, overHero = false, noindex = false, handwriting = false, image } = Astro.props;
 ---
 <!doctype html>
 <html lang={langMeta[lang].htmlLang}>
   <head>
-    <Head lang={lang} title={title} description={description} path={path} noindex={noindex} handwriting={handwriting} />
+    <Head lang={lang} title={title} description={description} path={path} noindex={noindex} handwriting={handwriting} image={image} />
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>

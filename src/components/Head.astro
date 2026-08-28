@@ -13,9 +13,15 @@ interface Props {
   noindex?: boolean;
   /** 손글씨 폰트를 로드한다. CJK 라 무거우므로 쓰는 페이지에서만 켠다 */
   handwriting?: boolean;
+  /** OG 이미지 경로. 기사면 그 기사의 cover 를 넘긴다. 없으면 사이트 공통 /og.jpg */
+  image?: string;
 }
 
-const { lang, title, description, path, noindex = false, handwriting = false } = Astro.props;
+const { lang, title, description, path, noindex = false, handwriting = false, image } = Astro.props;
+
+/* ⚠ OG 이미지는 절대 URL 이어야 SNS 가 읽는다. 상대 경로면 카드가 비어 보인다.
+   기사는 cover 를, 그 외 페이지는 공통 /og.jpg 를 쓴다. (2026-08-28) */
+const ogImage = new URL(image ?? '/og.jpg', Astro.site ?? company.url).toString();
 
 /* 손글씨 폰트는 언어마다 다르다 — 하나로 3개 문자권을 못 덮는다.
    ja  Klee One       연필로 쓴 교과서체. 격식을 잃지 않는다
@@ -87,11 +93,9 @@ const jsonLd = JSON.stringify(organizationJsonLd());
 <meta name="twitter:card" content="summary_large_image" />
 
 {/* OG 이미지 — 링크를 공유했을 때 뜨는 카드. 절대 URL 이어야 한다 */}
-<meta property="og:image" content={new URL('/og.jpg', Astro.site ?? company.url).toString()} />
-<meta property="og:image:width" content="1200" />
-<meta property="og:image:height" content="630" />
-<meta property="og:image:alt" content={company.legalNameEn} />
-<meta name="twitter:image" content={new URL('/og.jpg', Astro.site ?? company.url).toString()} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:image:alt" content={title} />
+<meta name="twitter:image" content={ogImage} />
 
 <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
