@@ -16,6 +16,7 @@ import Sentences from '../components/Sentences.astro';
 import T from '../components/T.astro';
 import Arrow from '../components/Arrow.astro';
 import NewBadge from '../components/NewBadge.astro';
+import PromoBadge from '../components/PromoBadge.astro';
 import ClosingCta from '../components/ClosingCta.astro';
 import { t, localePath, type Lang } from '../data/i18n';
 import { getGuides, getStream, getLeads, fmtDate, STREAM, CAT_SLUG } from '../lib/insight';
@@ -64,7 +65,7 @@ const hasStream = STREAM.some((c) => stream[c].length > 0);
               <span class="ilead__title"><T text={post.data.title} lang={lang} /></span>
               {post.data.excerpt && (
                 <span class="ilead__ex">
-                  <T text={post.data.excerpt} lang={lang} /><NewBadge date={post.data.date} />
+                  <T text={post.data.excerpt} lang={lang} /><>{post.data.promo && <PromoBadge />}<>{post.data.promo && <PromoBadge />}<NewBadge date={post.data.date} /></></>
                 </span>
               )}
             </a>
@@ -165,7 +166,7 @@ const hasStream = STREAM.some((c) => stream[c].length > 0);
                 <a class="sitem" href={localePath(lang, `/insight/${p.data.postId}`)}>
                   <span class="sitem__date">{fmtDate(p.data.date)}</span>
                   <span class="sitem__title"><T text={p.data.title} lang={lang} /></span>
-                  <NewBadge date={p.data.date} />
+                  <>{p.data.promo && <PromoBadge />}<>{p.data.promo && <PromoBadge />}<NewBadge date={p.data.date} /></></>
                 </a>
               ))}
             </div>

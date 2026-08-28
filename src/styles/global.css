@@ -1041,6 +1041,12 @@ a { color: inherit; text-decoration: none; }
   animation: nbadge-pulse 2s ease-in-out infinite;
 }
 .sitem:hover .nbadge { color: #F37021; border-color: #F37021; }
+/* 募集 배지 — NEW 와 나란히 설 수 있으므로 채움으로 구분한다 */
+.pbadge {
+  font-family: var(--sans); font-size: .58rem; font-weight: 600; letter-spacing: .12em;
+  color: #fff; background: #F37021; border: 1px solid #F37021; border-radius: 1px;
+  padding: .1rem .32rem; line-height: 1.4; white-space: nowrap;
+}
 @keyframes nbadge-pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: .45; }

@@ -8,6 +8,7 @@ import { company } from '../data/company';
 import { t, localePath, type Lang } from '../data/i18n';
 import { getHomeStream, fmtDate, CAT_SLUG } from '../lib/insight';
 import NewBadge from '../components/NewBadge.astro';
+import PromoBadge from '../components/PromoBadge.astro';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
@@ -127,7 +128,7 @@ const picks = await getHomeStream(lang, 3);
                   <a class="sitem" href={localePath(lang, `/insight/${post.data.postId}`)}>
                     <span class="sitem__date">{fmtDate(post.data.date)}</span>
                     <span class="sitem__title"><T text={post.data.title} lang={lang} /></span>
-                    <NewBadge date={post.data.date} />
+                    <>{post.data.promo && <PromoBadge />}<>{post.data.promo && <PromoBadge />}<NewBadge date={post.data.date} /></></>
                   </a>
                 ))}
               </div>

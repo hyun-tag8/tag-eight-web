@@ -40,6 +40,13 @@ const insight = defineCollection({
      * ⚠ 없어도 화면이 깨지지 않아야 한다 — 이미지 제작이 발행 속도를 막으면 안 된다.
      */
     cover: z.string().optional(),
+    /**
+     * 企画・プロモーション募集の記事に立てる。お知らせ分類で使う。
+     * ⚠ INSIGHT に募集専用の分類はつくらない。市場を読む場所に商品を混ぜると、
+     *   「出典を示せないものは載せない」で積んだ信頼が薄まる。
+     *   お知らせに入れて、印だけを変える。(2026-08-28)
+     */
+    promo: z.boolean().default(false),
     /** 목록 상단 고정 */
     featured: z.boolean().default(false),
     /** true 면 빌드에서 제외. 관리화면의 「비공개」 */
