@@ -2,7 +2,7 @@
 lang: ja
 category: notice
 postId: site-renewal-2026
-title: TAG EGIHTのウェブサイトをリニューアルしました
+title: TAG EIGHTのウェブサイトをリニューアルしました
 excerpt: 2026年8月全リニューアル公開。市場の動きを扱うINSIGHTを新設しました。
 date: 2026-08-28
 tags: []
