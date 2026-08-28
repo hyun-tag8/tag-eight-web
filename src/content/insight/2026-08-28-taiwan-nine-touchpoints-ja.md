@@ -8,9 +8,8 @@ excerpt: |-
   台湾で「確かめる場所」をどこに置くか。
 date: 2026-08-28
 tags:
-  - 台湾市場
-  - 訪日インバウンド
-  - 訪日台湾
+  - 台湾消費者
+  - 検索行動
 cover: /img/insight/insight-taiwan-touchpoints-cover.webp
 featured: false
 draft: false

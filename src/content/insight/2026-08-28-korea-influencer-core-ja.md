@@ -7,8 +7,8 @@ excerpt: 韓国向けの施策は続けてはいる。でも効いているの�
 date: 2026-08-28
 tags:
   - 訪日韓国人
-  - 韓国インバウンド
-  - 韓国インフルエンサー
+  - インフルエンサー起用
+  - NAVER戦略
 cover: /img/insight/insight-korea-influencer-cover.webp
 featured: false
 draft: false

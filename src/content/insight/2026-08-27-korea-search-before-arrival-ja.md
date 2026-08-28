@@ -8,8 +8,9 @@ excerpt: |-
   韓国の検索環境で「判断できる情報」をどう整えるか。
 date: 2026-08-26
 tags:
-  - NAVER戦略
   - 訪日韓国人
+  - NAVER戦略
+  - 検索行動
 cover: /img/insight/insight-korea-search-cover.webp
 featured: false
 draft: false
