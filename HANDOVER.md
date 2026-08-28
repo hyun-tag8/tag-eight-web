@@ -1,139 +1,102 @@
-# TAG EIGHT 사이트 — 인수인계 (2026-08-24)
+# TAG EIGHT 사이트 — 인수인계 (2026-08-28 실측판)
 
-## 0. 새 대화창에서 가장 먼저 할 일
+> 이 문서의 0~3장·8~11장은 **2026-08-28 22시(JST) 실측**으로 다시 썼다.
+> 4~7장(디자인 원칙·기술 함정·카피 확정본·대화 스타일)은 원본 그대로 유지한다.
 
+## 0. 새 세션에서 가장 먼저 할 일
+
+```bash
+cd ~/"#tageight HP/tag-eight-web"     # ← 작업 폴더는 여기 하나뿐이다
+git fetch origin && git status -sb     # 관리화면(CMS)이 원격에 직접 커밋한다
+ls src/content/insight | wc -l         # 원고 수를 먼저 센다
+curl -sI https://tag-8.com | head -3   # 라이브 확인
 ```
-1. 최신 zip 확인:  tag-eight-web_v171.zip
-2. 로컬 경로:      ~/Downloads/tag-eight-web   (Mac mini)
-3. PRD 읽기:       PRD.md  ← 모든 결정의 근거가 여기 있다
-4. 트랜스크립트:    /mnt/transcripts/  (journal.txt 에 카탈로그)
-```
 
-🔴 **작업 폴더는 `~/Downloads/tag-eight-web-old` 다.** 여기에만 `.git`(origin/main)이 있다.
-   `~/Downloads/tag-eight-web` 은 2026-08-24 에 잘못 만든 사본 — 삭제 대상.
-   폴더 이름이 반대라 하루를 날렸다. 정리할 것.
-
-🔴 **`~/Downloads/tsconfig.json` 을 되살리지 말 것.** (`_stray-tsconfig.json.bak` 로 격리)
-   Vite 는 tsconfig 를 **상위 폴더까지 거슬러 찾는다.** Downloads 에 놓인 이 파일이
-   `astro/tsconfigs/strict` 를 참조하는데 거기엔 node_modules 가 없어
-   프로젝트 tsconfig 를 아무리 고쳐도 `Tsconfig not found` 가 계속 났다.
-
-📊 **애널리틱스 — Cloudflare Web Analytics** (2026-08-26 설치)
-   토큰 `90311ead309f471f9742054fbfb8b1cf` / `src/components/Head.astro` 에 삽입.
-   쿠키를 쓰지 않고 개인을 추적하지 않으므로 **동의 배너가 필요 없다.**
-   ⚠️ 호스트명 단위 집계. 현재 등록: `tag-eight-web.pages.dev`.
-      **tag-8.com 연결 후 대시보드에서 그 호스트를 추가할 것**(토큰은 그대로).
-   ⚠️ 이 도구는 유입 경로까지만 보여준다. 「어떤 검색어로 왔는가」는
-      **Google Search Console** 이 필요하다 — 도메인 연결 후 등록한다.
-   보는 곳: Cloudflare → Analytics → Web analytics
-
-🔴 **zip 적용은 `~/Downloads/apply.sh` 한 줄로만 한다.** (2026-08-26)
-   명령을 손으로 붙여넣으면 위 화살표(↑)로 옛 명령을 불러 쓰다 사고가 난다.
-   실제로 `rsync -a --delete /tmp/t8/tag-eight/src/ ./src/` (src 통째)가 한 번 섞여 실행되어
-   **원고가 세 번 날아갔다.** src/ 를 통째로 동기화하면 zip 에 없는 `src/content/` 가 지워진다.
-
-   apply.sh 는 ① 최신 zip 자동 선택 ② `git pull --rebase` ③ src 하위 폴더만 개별 동기화
-   ④ 빌드 ⑤ **원고 폴더가 없으면 멈추고 경고** 까지 한다.
-   스크립트가 없어졌다면 이 문서의 이력이나 트랜스크립트에서 복원할 것.
-
-🔴 **`src/content/journal/`·`src/content/works/` 를 되살리지 말 것.** (2026-08-26)
-   컬렉션은 `insight` 하나뿐인데, 안 쓰는 두 폴더가 `.gitkeep` 과 함께 zip 에 섞여 있었다.
-   그 탓에 적용 명령이 `src/content/` 를 건드리게 되어 **원고가 두 번 날아갔다.**
-   v190 부터 zip 자체에서 `src/content/` 를 제외했다(스키마 `content.config.ts` 만 포함).
-
-🔴 **zip 적용 시 `src/content/` 를 덮지 말 것.** (2026-08-26 사고)
-   INSIGHT 원고는 **관리화면(Sveltia CMS)이 GitHub 에 직접 커밋**한다.
-   Claude 가 만든 zip 에는 그 원고가 없으므로, `src/` 를 통째로 복사하면
-   **관리화면에서 쓴 글이 통째로 사라진다.** 실제로 213줄짜리 원고가 날아갔다(복구함).
-
-   ```bash
-   # ⚠️ src/content 를 제외하고 적용한다
-   rsync -a --delete --exclude 'content/' /tmp/t8/tag-eight/src/ ./src/
-   for D in public functions docs; do rm -rf "./$D" && cp -R "/tmp/t8/tag-eight/$D" "./$D"; done
-   cp /tmp/t8/tag-eight/{astro.config.mjs,tsconfig.json,package.json,package-lock.json,PRD.md,HANDOVER.md} ./
-   ```
-
-   **원칙 — 원고는 관리화면, 코드는 zip.** 영역이 갈리면 충돌도 사고도 안 난다.
-   Claude 가 원고 파일 자체를 새로 만들어야 할 때만 예외로 하고, 그때 따로 알린다.
+🔴 **작업 폴더는 `~/#tageight HP/tag-eight-web` 다.**
+`~/Downloads/tag-eight-web-old` 는 옛 경로다. 이 문서 구판의 기재는 폐기.
 
 🔴 **push 전에 반드시 `git pull --rebase origin main`.**
-   관리화면이 원격에 커밋을 넣기 때문에 로컬과 자주 갈라진다.
-   충돌 파일이 원고라면 **원격을 살린다**(rebase 중에는 `--ours` 가 원격 쪽이다):
-   ```bash
-   git checkout --ours src/content/insight/<파일>.md
-   git add src/content/insight/<파일>.md
-   git rebase --continue     # vim 이 뜨면 :wq
-   ```
+INSIGHT 원고는 관리화면(Sveltia CMS)이 GitHub 에 직접 커밋한다. 로컬과 자주 갈라진다.
+충돌 파일이 원고라면 **원격을 살린다**(rebase 중에는 `--ours` 가 원격 쪽이다):
 
-⚠️ `update.sh` 는 Downloads 안에서 **가장 최근 zip**을 집는다.
-   실행 첫 줄에 찍히는 `▶ 사용할 파일` 버전이 받은 것과 같은지 반드시 확인한다.
-   (2026-08-24, v136을 안 받은 채 v135로 빌드해 「수정이 반영 안 된다」로 헤맴)
+```bash
+git checkout --ours src/content/insight/<파일>.md
+git add src/content/insight/<파일>.md
+git rebase --continue     # vim 이 뜨면 :wq
+```
 
-**PRD.md 가 단일 진실 소스다.** 「왜 이렇게 했는가」와 「왜 이건 안 하는가」가 전부 기록돼 있다.
-같은 논의를 반복하지 않으려면 손대기 전에 해당 섹션을 먼저 읽는다.
+🔴 **원칙 — 원고는 관리화면, 코드는 zip/커밋.** 영역이 갈리면 사고가 안 난다.
+`src/content/` 를 덮어쓰는 조작(rsync·rm -rf·cp -R)은 **금지**. 실제로 원고가 세 번 날아갔다.
+`update.sh` 는 패치본(`src/content` 퇴피 → 복원 → 파일 수 불일치 시 exit 1)이다.
+`update.sh.bak` 은 사고를 냈던 구판이니 되살리지 말 것.
+
+⚠️ **다운로드 파일은 `~/Desktop` 으로 떨어진다.** `~/Downloads` 가 아니다. 08-28 에 이걸로 헤맸다.
+
+⚠️ **터미널 붙여넣기가 자주 끊긴다.** 명령은 처음부터 짧게 나눠서 준다.
+
+⚠️ **`docs/INSIGHT_발행가이드.md` 가 mount 경유 `git status` 에서 untracked 로 뜬다.**
+인덱스에는 이미 추적 중이다(한글 파일명 NFD/NFC 문제). **`git add` 하지 말 것** — 중복 파일이 생긴다.
+맥 로컬 터미널의 `git status` 를 기준으로 판단한다.
 
 ---
 
-## 1. 프로젝트 기본
+## 1. 프로젝트 기본 (2026-08-28 실측)
 
 | | |
 |---|---|
 | 스택 | Astro SSG + Cloudflare Pages + GitHub |
-| 언어 | ja(기본) / ko / zh-TW — **58 페이지** |
-| 배포 | GitHub `hyun-tag8/tag-eight-web` → `tag-eight-web.pages.dev` (자동 배포) |
-| 현재 버전 | **v171** |
-| 로컬 확인 | `./update.sh` → `localhost:4321` (Mac mini, Node v24) |
+| 저장소 | `hyun-tag8/tag-eight-web` (정본) |
+| 작업 폴더 | `~/#tageight HP/tag-eight-web` |
+| 라이브 | **https://tag-8.com** (Cloudflare) · `tag-eight-web.pages.dev` 도 200 |
+| HEAD | `2bd4d34` 2026-08-28 16:47 「og: 공통 OG 이미지 교체」 · origin/main 과 **0/0 동기** |
+| 언어 | ja(기본) / ko / zh-TW — **sitemap 72 URL** |
+| 관리화면 | `/admin` 200 · `config.yml base_url: https://tag-8.com` (도메인 전환 완료) |
+| 애널리틱스 | Cloudflare Web Analytics · 토큰 `90311ead309f471f9742054fbfb8b1cf` · `src/components/Head.astro` |
 
-### QA 스크립트 (`/home/claude/`)
-```
-qa.py          47p × 3뷰포트 — 가로넘침 / JS에러 / alt누락
-footercheck.py 푸터 아래 빈 공간
-lines2.py      멤버 소개문 줄 수 (2줄 고정 규칙 검증)
-```
-**변경 후 반드시 3개 다 돌린다.**
+### DNS·메일 (2026-08-28 실측, `dig @1.1.1.1`)
 
-### 빌드·패키징 루틴
-```bash
-cd "/home/claude/site/tag-eight 21" && npm run build
-pkill -f "http.server 4321"; cd dist && python3 -m http.server 4321 --bind 127.0.0.1 &
-# 검증 후
-cd /home/claude && rm -rf pkg && mkdir -p pkg/tag-eight
-cd "/home/claude/site/tag-eight 21" && cp -R src public functions /home/claude/pkg/tag-eight/
-cp astro.config.mjs tsconfig.json package.json README.md DEPLOY.md PRD.md \
-   CONTACT_SETUP.md deploy.sh update.sh /home/claude/pkg/tag-eight/
-cd /home/claude/pkg && zip -qr /mnt/user-data/outputs/tag-eight-web_v125.zip tag-eight
-```
+| 항목 | 실측값 | 판정 |
+|---|---|---|
+| NS | maeve / carter.ns.cloudflare.com | ✅ |
+| A @ / www | Cloudflare proxy (172.67.184.45 / 104.21.48.109) | ✅ |
+| www → root | **HTTP/2 301 → https://tag-8.com/** | ✅ |
+| MX | Google 5건 (1/5/5/10/10) | ✅ |
+| SPF | `v=spf1 include:_spf.google.com ~all` | ✅ (`?all` → `~all` 로 고쳐짐) |
+| DKIM | `google._domainkey` 408자 = **2048bit** | ✅ (재발급 완료) |
+| DMARC | `p=none; rua=mailto:info@tag-8.com; fo=1` | ✅ |
+| og.jpg | content-length **35888** (심플판) | ✅ |
 
 ---
 
-## 2. 🔴 공개 블로커 (우선순위순)
+## 2. 완료된 것 — 구판의 「공개 블로커」는 전부 해소
 
-| # | 항목 | 비고 |
-|---|---|---|
-| 1 | **zh-TW 케이스 10건 HESTER 사인오프** | v137에 초안 투입 완료. **검수 전까지 공개 보류** |
-| 2 | **애널리틱스 미설치** | 스크립트 0개. 공개 전 설치 안 하면 베이스라인이 사라진다 |
-| 3 | **도메인 tag-8.com 연결** | eNom에서 A레코드만 교체. MX 5개·SPF TXT 절대 미변경 |
-
-**완료됨** — GitHub+Cloudflare 연결(08-20) / 문의폼 GAS+Gmail 경유(08-23, Resend·Formspree 폐기) / Privacy 페이지 / **멤버 5명 사진 본인 확인(08-25 대표 확인 완료)**
-
-## 3. 🟡 진행 예정
-
-| 항목 | 상태 |
+| 구판 기재 | 실제 |
 |---|---|
-| zh-TW 케이스 원고 | **v137에서 10건 투입 완료**(ja 10 / ko 10 / zh-TW 10). HESTER 검수 대기 |
-| INSIGHT 페이지 | 빈 페이지 |
-| 실물 덱 전체 개정 | 사이트 확정 후 맞춘다 |
-| 케이스별 이미지 | `cases.ts` 에 `image` 필드 없음. 현재 도시 히어로 이미지 재사용 |
+| 🔴 도메인 tag-8.com 미연결 | **연결·공개 완료** |
+| 🔴 애널리틱스 미설치 | 설치 완료 (호스트 등록만 대시보드에서 확인) |
+| 🔴 zh-TW 케이스 HESTER 사인오프 | 10건 × 3언어 전부 라이브 |
+| INSIGHT 빈 페이지 | **ja 기사 5건 공개 중** |
+| 개인정보처리방침 미작성 | 3언어 완료·라이브. 동의 체크박스 작동 |
+| 팀 사진 미반영 | 이미 반영돼 있었다(구판 오기). 파일명은 `member-kr/yj/jh/hl/sa` + `ceo.webp` — `member-1~5` 아님 |
+| 문의폼 tel/timing/budget 매핑 | 해소. 현재 폼은 5개 항목 |
 
-### ⚠ 덱과 갈린 항목 (개정 시 일괄 반영)
-```
-MISSION 문구
-자본금 550만 (덱 p14 · 명함 · 견적서는 500만)
-WHAT WE DO 3영역 명칭:
-  戦略設計・現地最適化      → ブランド戦略・現地最適化
-  クリエイティブ制作        → クリエイティブ開発・コンテンツ制作
-  キャンペーン実行・検証     → プロモーション実行・メディア運用
-```
+⚠️ 남은 확인 2건 (외부에서 판별 불가 — 대시보드를 열어야 한다)
+- Cloudflare Web Analytics 에 **`tag-8.com` 호스트가 추가됐는지** (안 돼 있으면 지금 데이터가 안 쌓인다)
+- **Google Search Console 등록·사이트맵(`/sitemap-index.xml`) 제출**
+
+---
+
+## 3. 다음 세션 최우선
+
+| # | 항목 | 근거 |
+|---|---|---|
+| 1 | **태그 3건 정리** | 확정 규칙 위반이 실측됨 (8장 표) |
+| 2 | **원고 규칙서 v2.1** | 말로 정하고 미커밋인 3건 (8장) |
+| 3 | **GUIDE 전략 재설정** | 경쟁사에 선점됨 (9장). 「NAVERブログとは」는 폐기 |
+| 4 | Facebook 캐시 갱신 | `developers.facebook.com/tools/debug/` → Scrape Again. **기존 게시물은 지우고 재업로드해야 이미지가 바뀐다** |
+| 5 | 자료 배포 설계 | PDF 1호 목차 / DL 폼 / Brevo |
+| 6 | ko·zh-TW INSIGHT | 현재 0건. 「준비 중」 표시라 언어 스위치가 헛돈다 |
+| ⏸ | 포스터 v2 | **멤버 AI 이미지 사용 동의 확인 후** |
 
 ---
 
@@ -737,3 +700,118 @@ CONTACT          まだ、選ばれる理由がない。 / そこから始める
 - 피드백은 감각으로 온다(「올드하다」「없어 보인다」「어색하다」) → **기술적 원인을 진단**해서 답한다
 - 시안은 **실제로 만들어서 스크린샷으로 비교**한다. 말로만 설명하지 않는다
 - 변경 후 QA 3종 → 패키징 → `present_files` 까지가 한 세트
+
+---
+
+## 8. INSIGHT 운영 (2026-08-28 현재)
+
+### 발행 경로
+```
+tag-8.com/admin → GitHub 로그인 → 작성 → 保存
+→ 저장소 커밋 → Cloudflare 자동 빌드 → 약 2분 뒤 공개
+```
+| 구성 | 파일 |
+|---|---|
+| 관리화면 | `public/admin/index.html` + `config.yml` (Sveltia CMS) |
+| 로그인 중계 | `functions/api/oauth.ts` |
+| 스키마 | `src/content.config.ts` — `category: guide / korea / taiwan / notice` |
+| 원고 | `src/content/insight/YYYY-MM-DD-<postId>-<lang>.md` |
+| 규칙서 | `docs/INSIGHT_原稿ルール.md` **v2.0 (2026-08-27)** |
+| 발행 가이드 | `docs/INSIGHT_발행가이드.md` (대표용) |
+
+⚠️ 필드를 늘릴 때는 `content.config.ts` 와 `admin/config.yml` **양쪽 다** 고친다. 한쪽만 고치면 빌드가 죽는다.
+⚠️ 내부 파일명·i18n 키는 아직 `journal` 이다. 표시 문자열만 INSIGHT.
+
+### 현재 원고 5건 (전부 ja)
+
+| 파일 | 분류 | date | tags |
+|---|---|---|---|
+| `2026-08-27-korea-search-before-arrival-ja` | korea | 08-26 | NAVER戦略 / 訪日韓国人 |
+| `2026-08-27-threads-in-taiwan-ja` | taiwan | 08-27 | Threads戦略 |
+| `2026-08-28-korea-influencer-core-ja` | korea | 08-28 | 訪日韓国人 / 韓国インバウンド / 韓国インフルエンサー |
+| `2026-08-28-site-renewal-2026-ja` | notice | 08-28 | (없음) · promo: false |
+| `2026-08-28-taiwan-nine-touchpoints-ja` | taiwan | 08-28 | 台湾市場 / 訪日インバウンド / 訪日台湾 |
+
+### 🔴 태그 확정 규칙 vs 실측 — 3건이 위반
+
+**규칙(확정)** — 2~3개 / 「対象」1개 + 「手段·主題」1~2개 / **분류와 같은 뜻의 말 금지**
+(`韓国市場`·`台湾市場`·`韓国インバウンド`) / 같은 태그가 **2건 이상**에 걸리게 / notice 는 비워도 된다
+
+| 기사 | 문제 | 조치 |
+|---|---|---|
+| threads-in-taiwan | 1개뿐 · 対象 없음 | `台湾消費者` 추가 |
+| korea-influencer-core | `韓国インバウンド` = 금지어(분류 사본) | 삭제 · `インフルエンサー起用` 로 정리 |
+| taiwan-nine-touchpoints | `台湾市場` = 금지어 · `訪日インバウンド` 모호 | `台湾消費者` + `検索行動` 계열로 교체 |
+
+⚠️ 태그를 고치면 **`admin/config.yml` 의 hint 와 규칙서 289행**이 이미 확정문이니 그 문언을 기준으로 맞춘다.
+
+### 규칙서 v2.1 에 넣을 미반영 3건 (말로만 정함)
+1. **시장 간 표현 재사용 금지** — 韓国편 문장을 台湾편에 돌려쓰지 않는다
+2. **클로징 금지 패턴**
+3. **데이터 신선도** — 발표 1년 이내를 원칙으로
+
+### 검증된 데이터 (기사에 실제로 실린 것만)
+| 출처 | 내용 | 기준·발표 |
+|---|---|---|
+| 観光庁 インバウンド消費動향調査 年次報告書 | 韓国 출발 전 정보원 SNS 47.1% / 動画 43.8% / 개인 블로그 42.9% | 2025년 조사 · **2026-03-31 공표** |
+| JNTO 訪日外客数 | 2026년 7월 추계치 | **2026-08-19 발표** |
+| Kantar 台灣網路平台使用行為調查 | 9개 접점 / 店外 97% / 검색 54% (N=1,000) | 조사 2025-04-30~05-14 · **2025-07 발표** |
+
+⚠️ 세션 중 언급됐으나 **기사에 안 실린 것**(JTB CD·旅行年報·TWNIC·MIC)은 원문 재확인 전까지 인용 금지.
+
+---
+
+## 9. 경쟁 환경 (2026-08-28 조사)
+
+| | 무기 | 약점 |
+|---|---|---|
+| **CyberAgent** (인바운드소비행동연구실) | 연구조직 2개 · Vol.1~5 월간 연재(한국 04-14 / 대만 05-13 / 미국 06-17 / 중국 07-24 / 현지조사 08-18) · 인터뷰 형식 | 조사와 실행이 별도 조직 · 일본 측 데이터만 |
+| **StockSun** (한국 인바운드 칼럼) | 17,700자 1페이지 완결 · H2 8개 · **FAQ 9개**(생성AI 인용 최적) · 개인 실적으로 신뢰 구축 | 일본 측 데이터만 · 실행 근거 없음 · 대만 없음 |
+| **TAG EIGHT** | 3국 인력 · 현지 1차 데이터 · 실행 실측 · **韓国×台湾 동시** | 분량 · 인지도 · 지속 이력 |
+
+🔴 **겹침** — 양사 모두 결론이 「리피터·선택받을 이유의 설계」다. 우리 L2 와 거의 같은 말.
+우리 쪽이 1차 출처(観光庁·Kantar)라 방어력은 높지만, **먼저 쓴 쪽이 그들이다**(대만 Threads: 그들 05-13 / 우리 08-27).
+
+**전략 결론 — 폭으로는 못 이긴다. 깊이로 이긴다.**
+「일본에서 본 한국·대만」이 그들의 자리고, 「현지에서 본」이 우리 자리다.
+
+### GUIDE 전략 전환 (다음 세션 최우선)
+- ❌ 「NAVERブログとは」「インフルエンサー起用とは」 — **폐기.** 17,700자에 선점됨
+- ✅ B안: 그들이 못 쓰는 주제 — 한국 측 데이터 / 대만 / 실행 실측
+- ✅ C안: 비교 — 「韓国と台湾、情報の集め方はどう違うのか」(아무도 안 씀)
+- guide 분량 기준 **2,300~2,700자 → 4,000~6,000자 + FAQ 필수**
+
+### 미결정 브랜드 판단 2건
+1. **話者 도입** — 지금은 「私たち」(회사)가 말한다. 양 경쟁사는 사람이 말한다.
+   대표(李 東眩 / Creative Director)를 세울지. **두 경쟁사에서 공통으로 나온 신호라 우연이 아니다.**
+2. **연재 번호(Vol.N)** — 붙이면 「계속 나온다」가 전달되지만, 멈출 수 없다
+
+---
+
+## 10. 사고·주의 추가분 (2026-08-27~28)
+
+🔴 **브랜드 어휘 점검은 이미지 자산 내부까지.**
+`og.jpg` 안에 폐기 어휘 「Cross-Border Marketing & Creative Agency」가 **그림으로** 박혀 있어
+코드 검색으로 안 잡혔고, 그대로 Facebook 에 나갔다(2026-08-28 교체).
+→ 남은 점검 대상: **명함 / 메일 서명 / 회사소개서 PPTX / 로고 주변 태그라인**
+
+🔴 **404 하나만 보고 「삭제됐다」고 결론내지 말 것.**
+08-28 에 `guide` 카테고리를 「삭제됨」으로 오판한 이력이 있다.
+실제로는 `content.config.ts` enum 에 `guide` 가 살아 있고, **원고가 0건이라 페이지가 안 생길 뿐**이다
+(실측: `/insight/guide/` 404, enum 에는 존재).
+
+⚠️ **다운로드는 `~/Desktop`.**
+⚠️ **터미널 붙여넣기 절단** — 명령을 짧게 나눈다.
+⚠️ **한글 파일명 NFD/NFC** — `docs/INSIGHT_발행가이드.md` 가 untracked 로 보여도 `git add` 금지.
+⚠️ **AI 가상인물 고지(R10, 2026-06-01 시행)** — 사이트 단위로 한 번에 처리해야 한다(미결).
+⚠️ **멤버 AI 이미지** — 본인 동의 확인 전까지 포스터 v2 보류.
+
+---
+
+## 11. 이 문서의 갱신 규칙
+
+「인수인계 갱신」이라고 하면 **그 시점을 실측해서** 이 파일을 다시 낸다. 추측으로 채우지 않는다.
+갱신 시 최소 3회 대조: ① 그날 커밋 전부 ② 실측 수치 전부 ③ 사고·주의 전부.
+
+⚠️ **갱신본은 반드시 저장소에 커밋한다.** 08-27·08-28 갱신본은 다운로드 파일로만 나가고
+저장소에 안 들어와서, 다음 세션이 08-24 판을 읽는 사고가 났다. 그게 이 문서를 다시 쓴 이유다.
