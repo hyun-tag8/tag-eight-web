@@ -130,6 +130,10 @@ const PREFILL = Object.fromEntries(
         <p class="cform__err" role="alert" hidden
            data-e1={f.errInput} data-e2={f.errServer}></p>
         <p class="meta cform__note">{f.note}</p>
+        {/* ⚠ 봇 차단 — Cloudflare Turnstile. _gotcha(허니팟)를 통과하는 봇을 여기서 막는다.
+            Managed 모드라 사람은 대개 아무것도 누르지 않고 통과한다. (2026-09-01) */}
+        <div class="cf-turnstile cform__ts" data-sitekey="0x4AAAAAAAEjc0KLvvVj1hxnZ" data-theme="light"></div>
+
         {/* 박스형 버튼 — 사이트 공통 .btn 문법. 테두리가 있으므로 꺾쇠는 호버 때만 열린다 */}
         <button class="btn cform__btn" type="submit">
           <span>{f.submit}</span><span class="btn__slot"><Arrow variant="chev" cls="btn__arrow" /></span>
@@ -139,7 +143,8 @@ const PREFILL = Object.fromEntries(
   </div>
 
   {/* 기사ID → 用件·제목 대응표. 스크립트가 ?s= 를 이걸로 푼다 */}
-  <script type="application/json" id="ct-prefill" set:html={JSON.stringify(PREFILL)}></script>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer is:inline></script>
+<script type="application/json" id="ct-prefill" set:html={JSON.stringify(PREFILL)}></script>
 </section>
 
 <script>

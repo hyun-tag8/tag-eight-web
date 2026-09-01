@@ -51,6 +51,7 @@ interface Env {
   RESEND_API_KEY?: string;
   MAIL_TO?: string;
   MAIL_FROM?: string;
+  TURNSTILE_SECRET?: string;
 }
 
 /** 발송사에 넘기기 전의 공통 형태 */
@@ -198,6 +199,23 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     // 봇 트랩. 사람에게는 보이지 않는 항목이라 값이 있으면 봇이다.
     // 봇에게는 성공한 것처럼 보여주고 실제로는 보내지 않는다.
     if (clean(form.get('_gotcha'), 50)) return back('/contact/thanks/');
+
+    // ⚠ Cloudflare Turnstile 검증 — 허니팟을 통과하는 봇을 여기서 막는다.
+    //   SECRET 이 설정돼 있을 때만 검사한다. 미설정이면 종전대로 통과(폼이 죽지 않게).
+    if (env.TURNSTILE_SECRET) {
+      const token = clean(form.get('cf-turnstile-response'), 2048);
+      const ip = request.headers.get('CF-Connecting-IP') || '';
+      const body = new URLSearchParams({ secret: env.TURNSTILE_SECRET, response: token });
+      if (ip) body.set('remoteip', ip);
+      try {
+        const r = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+          method: 'POST', body,
+        });
+        const out = (await r.json()) as { success?: boolean };
+      } catch {
+        return back('/contact/?e=1');
+      }
+    }
 
     const lang = pickLang(clean(form.get('_lang'), 10));
     const company = clean(form.get('company'), LIMITS.company);
