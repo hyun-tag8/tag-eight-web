@@ -56,9 +56,12 @@ const { label } = Astro.props;
         scrollWheelZoom: false,   // 스크롤로 페이지를 내리다 지도가 확대되는 사고를 막는다
         attributionControl: true,
       });
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      /* ⚠ CARTO 무료 베이스맵이 도메인 등록(API 키)을 요구하게 되어 「API KEY REQUIRED」
+           워터마크가 박혔다. OpenStreetMap 은 키·계정 불필요. 컬러 타일이므로
+           아래 CSS 필터로 사이트의 다크 흑백 톤에 맞춘다. (2026-09-01) */
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
-        attribution: '&copy; OpenStreetMap &copy; CARTO',
+        attribution: '&copy; OpenStreetMap contributors',
       }).addTo(map);
 
       // 핀 — 이미지 대신 SVG. 선 굵기가 사이트 괘선과 같다
