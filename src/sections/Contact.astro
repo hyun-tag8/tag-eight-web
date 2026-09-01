@@ -5,7 +5,6 @@ import { t, langMeta, localePath, type Lang } from '../data/i18n';
 import OfficeMap from '../components/OfficeMap.astro';
 import { GMAPS_URL } from '../data/office';
 import { getPosts } from '../lib/insight';
-import { DIAG_PREFILL } from '../data/diagnosis';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
@@ -40,8 +39,6 @@ const PREFILL = Object.fromEntries(
     },
   ])
 );
-/* ?s=diagnosis — 現地実測診断 페이지에서 넘어온 문의. 用件은 韓国, 相談内容 첫 줄을 채운다 */
-PREFILL['diagnosis'] = { s: f.subjects[0], t: DIAG_PREFILL[lang] };
 ---
 {/* 지도 패널 — 왼쪽에 위치와 연락처, 오른쪽에 폼 카드.
     이전에는 머리 → 오피스 사진 → 연락처 → 폼 순으로 쌓여 3293px(3화면)였다.

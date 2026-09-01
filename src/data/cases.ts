@@ -495,8 +495,6 @@ export function routeKey(route: string): string {
  * 검색·AI 에 읽히는 상태를 만드는 게 이 사이트의 목적이므로, 여기서 막는다.
  */
 export function langsFor(path: string): Lang[] {
-  // 現地実測診断 상품 페이지는 ja 전용 (src/data/diagnosis.ts)
-  if (path === '/diagnosis' || path === '/diagnosis/') return ['ja'];
   const m = path.match(/^\/works\/([^/]+)\/?$/);
   if (!m) return [...LANGS];
   return LANGS.filter((l) => getCases(l).some((c) => c.slug === m[1]));
