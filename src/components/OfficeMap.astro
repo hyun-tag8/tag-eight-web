@@ -59,9 +59,13 @@ const { label } = Astro.props;
       /* ⚠ CARTO 무료 베이스맵이 도메인 등록(API 키)을 요구하게 되어 「API KEY REQUIRED」
            워터마크가 박혔다. OpenStreetMap 은 키·계정 불필요. 컬러 타일이므로
            아래 CSS 필터로 사이트의 다크 흑백 톤에 맞춘다. (2026-09-01) */
-      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      /* ⚠ 지도 배경 = MapTiler darkmatter. 원래 검정 다크맵이라 invert 필터가 불필요하다.
+           CARTO 무료판이 API키를 요구하게 되어 OSM(회색)으로 갔다가, 회색이 사이트의
+           검정 톤과 맞지 않아 MapTiler 로 옮겼다. 키는 공개 키이며 tag-8.com 오리진에
+           묶여 있다. {r} 은 레티나 화면에서 @2x 타일을 자동 요청. (2026-09-01) */
+      L.tileLayer('https://api.maptiler.com/maps/darkmatter/256/{z}/{x}/{y}{r}.png?key=J2EkKNo7Lk7Bv8CZ8tZb', {
         maxZoom: 19,
-        attribution: '&copy; OpenStreetMap contributors',
+        attribution: '&copy; MapTiler &copy; OpenStreetMap contributors',
       }).addTo(map);
 
       // 핀 — 이미지 대신 SVG. 선 굵기가 사이트 괘선과 같다
