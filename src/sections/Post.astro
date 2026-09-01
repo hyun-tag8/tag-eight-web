@@ -9,6 +9,7 @@ import ClosingCta from '../components/ClosingCta.astro';
 import { t, localePath, type Lang } from '../data/i18n';
 import { render } from 'astro:content';
 import { fmtDate, getByCategory, CAT_SLUG, type Post, type Category } from '../lib/insight';
+import { diagnosis as diag, DIAG_PATH, DIAG_LANGS } from '../data/diagnosis';
 
 interface Props { lang: Lang; post: Post }
 const { lang, post } = Astro.props;
@@ -27,6 +28,11 @@ const prev = siblings.length > 1 ? siblings[(idx - 1 + siblings.length) % siblin
 const next = siblings.length > 1 ? siblings[(idx + 1) % siblings.length] : null;
 /* guide 는 분류 목록 페이지가 없다 — 그때는 INSIGHT 로 되돌린다 */
 const catLabel = cat === 'guide' ? d.journal.eyebrow : d.journal.cat[cat];
+/* 韓国 분류 기사(진단 페이지가 있는 언어)는 CTA 를 일반 문의가 아니라 現地実測診断으로 보낸다.
+   기사 = 리드젠이 아니라 진단의 입구 (독트린 2026-09-01). 그 외 분류는 종전대로 ?s=<postId> */
+const toDiag = cat === 'korea' && DIAG_LANGS.includes(lang);
+const ctaHref = toDiag ? localePath(lang, DIAG_PATH) : `${localePath(lang, '/contact')}?s=${post.data.postId}`;
+const ctaLabel = toDiag ? diag.cta.fromPost : d.journal.ctaBtn;
 const catHref = cat === 'guide' ? '/insight' : `/insight/${CAT_SLUG[cat]}`;
 
 /* 사이드바의 おすすめ記事 — 같은 분류의 다른 글 3건.
@@ -95,8 +101,8 @@ const toc = headings.filter((h) => h.depth === 2);
             </div>
           )}
 
-          <a class="ulink pside__cta" href={`${localePath(lang, '/contact')}?s=${post.data.postId}`}>
-            <span>{d.journal.ctaBtn}</span><Arrow variant="chev" cls="ulink__arw" />
+          <a class="ulink pside__cta" href={ctaHref}>
+            <span>{ctaLabel}</span><Arrow variant="chev" cls="ulink__arw" />
           </a>
         </div>
       </aside>
@@ -114,8 +120,8 @@ const toc = headings.filter((h) => h.depth === 2);
           넓은 화면에서는 사이드바에 같은 버튼이 계속 따라다니므로 여기 또 두면 중복이다.
           반대로 사이드바가 없는 좁은 화면에서는 여기가 유일한 창구가 된다. */}
       <div class="postcta__acts">
-        <a class="ulink postcta__ask" href={`${localePath(lang, '/contact')}?s=${post.data.postId}`}>
-          <span>{d.journal.ctaBtn}</span><Arrow variant="chev" cls="ulink__arw" />
+        <a class="ulink postcta__ask" href={ctaHref}>
+          <span>{ctaLabel}</span><Arrow variant="chev" cls="ulink__arw" />
         </a>
         <a class="ulink" href={localePath(lang, catHref)}>
           <span>{d.journal.navAll.replace('{cat}', catLabel)}</span><Arrow variant="chev" cls="ulink__arw" />
