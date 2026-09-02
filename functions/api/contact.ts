@@ -204,6 +204,9 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     //   SECRET 이 설정돼 있을 때만 검사한다. 미설정이면 종전대로 통과(폼이 죽지 않게).
     if (env.TURNSTILE_SECRET) {
       const token = clean(form.get('cf-turnstile-response'), 2048);
+      // 토큰이 아예 없는 요청 = 폼을 거치지 않은 직접 POST. 그 자리에서 끝낸다.
+      // (2026-09-02 스팸: ご相談内容「???」— select 로는 나올 수 없는 값 = 직접 POST 의 증거)
+      if (!token) return back('/contact/?e=1');
       const ip = request.headers.get('CF-Connecting-IP') || '';
       const body = new URLSearchParams({ secret: env.TURNSTILE_SECRET, response: token });
       if (ip) body.set('remoteip', ip);
@@ -212,6 +215,8 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
           method: 'POST', body,
         });
         const out = (await r.json()) as { success?: boolean };
+        // ⚠ 09-01 판의 버그: out 을 받아놓고 success 를 확인하지 않아 검증이 무효였다.
+        if (!out.success) return back('/contact/?e=1');
       } catch {
         return back('/contact/?e=1');
       }
