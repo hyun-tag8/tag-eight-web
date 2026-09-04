@@ -33,14 +33,22 @@ const HAND: Record<Lang, string> = {
   'zh-tw': 'LXGW+WenKai+TC:wght@400;700',
 };
 
-const canonical = new URL(localePath(lang, path), Astro.site ?? company.url).toString();
+/* ⚠ canonical/hreflang 은 말미 슬래시로 통일한다. (2026-09-04 실측)
+   Cloudflare Pages 는 비슬래시 URL 을 308 로 슬래시판에 돌리고, 사이트맵도 슬래시판을 싣는다.
+   비슬래시를 가리키면 신호가 갈라져 GSC 「代替ページ」判定이 난다. */
+const abs = (l: Lang, p: string) => {
+  const u = new URL(localePath(l, p), Astro.site ?? company.url);
+  if (!u.pathname.endsWith('/')) u.pathname += '/';
+  return u.toString();
+};
+const canonical = abs(lang, path);
 
 // hreflang — 그 경로가 실제로 존재하는 언어만.
 // 없는 페이지를 가리키면 색인 오류(alternate page with 404)가 난다.
 const available = langsFor(path);
 const alternates = available.map((l) => ({
   hreflang: langMeta[l].htmlLang,
-  href: new URL(localePath(l, path), Astro.site ?? company.url).toString(),
+  href: abs(l, path),
 }));
 
 // CJK 명조는 활성 언어 것만 불러온다. 3개를 다 불러오면 수 MB가 된다.
@@ -80,7 +88,7 @@ const jsonLd = JSON.stringify(organizationJsonLd());
   <link
     rel="alternate"
     hreflang="x-default"
-    href={new URL(localePath('ja', path), Astro.site ?? company.url).toString()}
+    href={abs('ja', path)}
   />
 )}
 

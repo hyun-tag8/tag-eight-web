@@ -1,7 +1,7 @@
 User-agent: *
 Allow: /
 
-# 관리화면은 색인하지 않는다
+# 管理画面はインデックスさせない
 Disallow: /admin/
 
 Sitemap: https://tag-8.com/sitemap-index.xml

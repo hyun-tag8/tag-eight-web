@@ -3,7 +3,7 @@
 import Base from '../../../layouts/Base.astro';
 import CategoryList from '../../../sections/CategoryList.astro';
 import { t, LANGS, type Lang } from '../../../data/i18n';
-import { STREAM, CAT_SLUG, type Category } from '../../../lib/insight';
+import { STREAM, CAT_SLUG, getByCategory, type Category } from '../../../lib/insight';
 
 export async function getStaticPaths() {
   const out = [];
@@ -18,8 +18,12 @@ export async function getStaticPaths() {
 const { cat } = Astro.props as { cat: Exclude<Category, 'guide'> };
 const lang = Astro.params.lang as Lang;
 const label = t[lang].journal.cat[cat];
+// 기사가 0건인 분류는 noindex — 빈 목록을 색인시키면 저품질 판정만 쌓인다.
+// 번역 기사가 올라오면 자동으로 색인 대상이 된다. (2026-09-04)
+const posts = await getByCategory(lang, cat);
 ---
 <Base lang={lang} title={`${label}｜INSIGHT｜TAG EIGHT`}
-      description={t[lang].meta.insight.description} path={`/insight/${Astro.params.cat}`}>
+      description={t[lang].meta.insight.description} path={`/insight/${Astro.params.cat}`}
+      noindex={posts.length === 0}>
   <CategoryList lang={lang} cat={cat} />
 </Base>

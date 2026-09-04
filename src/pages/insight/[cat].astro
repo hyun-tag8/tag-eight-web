@@ -8,7 +8,7 @@
 import Base from '../../layouts/Base.astro';
 import CategoryList from '../../sections/CategoryList.astro';
 import { t } from '../../data/i18n';
-import { STREAM, CAT_SLUG, type Category } from '../../lib/insight';
+import { STREAM, CAT_SLUG, getByCategory, type Category } from '../../lib/insight';
 
 export async function getStaticPaths() {
   return STREAM.map((c) => ({ params: { cat: CAT_SLUG[c as 'korea' | 'taiwan' | 'notice'] }, props: { cat: c } }));
@@ -17,8 +17,11 @@ export async function getStaticPaths() {
 const { cat } = Astro.props as { cat: Exclude<Category, 'guide'> };
 const lang = 'ja' as const;
 const label = t[lang].journal.cat[cat];
+// 기사 0건이면 noindex — [lang]/insight/[cat].astro 와 같은 규칙. (2026-09-04)
+const posts = await getByCategory(lang, cat);
 ---
 <Base lang={lang} title={`${label}｜INSIGHT｜TAG EIGHT`}
-      description={t[lang].meta.insight.description} path={`/insight/${Astro.params.cat}`}>
+      description={t[lang].meta.insight.description} path={`/insight/${Astro.params.cat}`}
+      noindex={posts.length === 0}>
   <CategoryList lang={lang} cat={cat} />
 </Base>

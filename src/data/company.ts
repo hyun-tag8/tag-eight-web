@@ -14,7 +14,7 @@ export const company = {
   brand: 'TAG EIGHT',
   mark: '#8',
 
-  founded: '2019-05',
+  founded: '2019-05-27', // 설립일. GBP 등록값과 일치 (2026-09-04)
   foundedLabel: '2019年5月',
 
   ceo: '李 東眩',
