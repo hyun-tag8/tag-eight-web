@@ -57,7 +57,24 @@ export function organizationJsonLd() {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: company.legalName,
-    alternateName: [company.legalNameEn, company.brand],
+    /* 요미가나·한글 표기 — 2026-09-02 추가.
+       Google AI 검색이 SalesNow(법인DB) 한 줄만 인용하고, 말레이시아·한국의 동명 회사와
+       섞이는 문제의 대응. 「タグエイト」 표기가 없으면 가나 검색과 엔티티 구분이 안 된다. */
+    alternateName: [company.legalNameEn, company.brand, 'タグエイト', 'タグエイト合同会社', '태그에잇'],
+    /* 회사가 「무엇을 하는가」 — 이게 없으면 AI 는 등기 정보(주소·법인격)밖에 말할 게 없다.
+       문구는 사이트 meta description 확정판과 동일 (L1-J 계열) */
+    description:
+      '韓国・日本・台湾の3市場をつなぐクリエイティブエージェンシー。市場分析からクリエイティブ制作、クリエイターマーケティング、キャンペーン実行までを一気通貫で設計します。',
+    slogan: 'Asia Business Connected Creative Agency',
+    logo: `${company.url}/og.jpg`,
+    knowsAbout: [
+      'インバウンドマーケティング',
+      '韓国市場マーケティング',
+      '台湾市場マーケティング',
+      'NAVER',
+      'インフルエンサーマーケティング',
+      'クリエイターマーケティング',
+    ],
     url: company.url,
     email: company.email,
     telephone: company.tel,

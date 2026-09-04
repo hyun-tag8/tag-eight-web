@@ -14,7 +14,9 @@ const c = d.companySec;
    법인번호·등록번호는 상호 옆 괄호로 접어 행 수를 늘리지 않는다. */
 const rows = [
   /* 法人番号 は登録番号から T を除いた同じ数字なので併記しない */
-  [c.labels.name, `${company.legalName}（${c.labels.invoiceNo} ${company.invoiceNumber}）`],
+  /* 요미가나 병기 (2026-09-02) — 검색엔진·AI 가 「タグエイト」와 이 법인을 잇는 유일한 본문 근거.
+     한국 결제회사 (株)타그에잇 등 동명 타사와의 구분에도 필요하다 */
+  [c.labels.name, `${company.legalName}（タグエイト）（${c.labels.invoiceNo} ${company.invoiceNumber}）`],
   [c.labels.founded, company.foundedLabel],
   [c.labels.ceo, `${company.ceo}（${company.ceoEn} / ${company.ceoTitle}）`],
   [c.labels.capital, company.capitalLabel],
