@@ -1,0 +1,75 @@
+---
+/**
+ * 시장별 랜딩(/korea · /taiwan) — 검색 착지 페이지.
+ *
+ * 진단 페이지(되돌린 diagnosis-v1)와 같은 문법 — case-head / caserows / postcta / ClosingCta.
+ * 새 CSS 를 만들지 않는다. 읽는 순서 = 검색자가 확신에 이르는 순서:
+ *   よくあるご相談 → なぜ効かないのか → 何をするのか → 実測 → 進め方 → FAQ → 相談
+ * 수치는 landing.ts 에서만 온다(자사 집행 실측). 여기서 숫자를 타이핑하지 않는다.
+ */
+import T from '../components/T.astro';
+import Sentences from '../components/Sentences.astro';
+import Arrow from '../components/Arrow.astro';
+import ClosingCta from '../components/ClosingCta.astro';
+import { localePath, type Lang } from '../data/i18n';
+import type { LandingDef } from '../data/landing';
+
+interface Props { lang: Lang; def: LandingDef }
+const { lang, def: g } = Astro.props;
+---
+<article data-layout="landing-v1">
+  <header class="case-head">
+    <div class="wrap">
+      <p class="case-head__no">{g.head.label}</p>
+      <p class="case-head__meta">
+        <span class="case-head__cat">{g.head.scope}</span>
+        <span class="case-head__sep" aria-hidden="true">／</span>
+        <span class="case-head__route">{g.head.range}</span>
+      </p>
+      <h1 class="case-head__title"><T text={g.head.title} lang={lang} /></h1>
+    </div>
+  </header>
+
+  <section class="sec sec--flush caserows">
+    <div class="wrap">
+      {g.sections.map((sec) => (
+        <>
+          <div class="caserow">
+            <p class="caserow__label">{sec.label}</p>
+            <p class="caserow__text"></p>
+          </div>
+          {sec.rows.map((r) => (
+            <div class="caserow">
+              <p class="caserow__label">{r.label}</p>
+              <p class="caserow__text"><Sentences text={r.text} lang={lang} /></p>
+            </div>
+          ))}
+          {sec.essence && (
+            <div class="caserow caserow--essence">
+              <p class="caserow__label"></p>
+              <blockquote class="essence"><Sentences text={sec.essence} lang={lang} /></blockquote>
+            </div>
+          )}
+        </>
+      ))}
+    </div>
+  </section>
+
+  {/* 相談 — 기사 하단 CTA 와 같은 문법. ?s=<시장> 으로 문의 폼을 미리 채운다 */}
+  <section class="sec postcta">
+    <div class="wrap">
+      <p class="postcta__head"><T text={g.cta.head} lang={lang} /></p>
+      <p class="postcta__body"><T text={g.cta.body} lang={lang} /></p>
+      <div class="postcta__acts">
+        <a class="ulink" href={`${localePath(lang, '/contact')}?s=${g.cta.s}`}>
+          <span>{g.cta.btn}</span><Arrow variant="chev" cls="ulink__arw" />
+        </a>
+        <a class="ulink" href={localePath(lang, g.cta.insightPath)}>
+          <span>{g.cta.readInsight}</span><Arrow variant="chev" cls="ulink__arw" />
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <ClosingCta lang={lang} />
+</article>

@@ -1,0 +1,13 @@
+---
+/* 韓国 시장 랜딩 — ja 전용 라우트 (검색 공략 계획 v1 · 2026-09-04).
+   타깃 검색어: 韓国人観光客 集客 / 韓国 インバウンド 集客.
+   langs={LANDING_LANGS} 를 넘겨 hreflang·푸터 언어 스위처가 없는 언어를 가리키지 않게 한다. */
+import Base from '../layouts/Base.astro';
+import Landing from '../sections/Landing.astro';
+import { koreaLanding, LANDING_LANGS } from '../data/landing';
+const lang = 'ja' as const;
+---
+<Base lang={lang} title={koreaLanding.meta.title} description={koreaLanding.meta.description}
+      path={koreaLanding.path} langs={LANDING_LANGS}>
+  <Landing lang={lang} def={koreaLanding} />
+</Base>
