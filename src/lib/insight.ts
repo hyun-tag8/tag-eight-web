@@ -1,5 +1,5 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
-import type { Lang } from '../data/i18n';
+import { LANGS, type Lang } from '../data/i18n';
 
 export type Post = CollectionEntry<'insight'>;
 export type Category = 'guide' | 'korea' | 'taiwan' | 'notice';
@@ -27,6 +27,16 @@ const byDate = (a: Post, b: Post) => {
   if (a.data.featured !== b.data.featured) return a.data.featured ? -1 : 1;
   return b.data.date.getTime() - a.data.date.getTime();
 };
+
+/**
+ * 이 postId 의 번역이 실제로 존재하는 언어 목록.
+ * hreflang 과 푸터 언어 스위처가 쓴다 — langsFor(cases.ts)는 /works/ 만 알고
+ * 기사 경로는 3언어 전부를 돌려주므로, ja 전용 기사가 404 를 가리키게 된다. (2026-09-04 실측)
+ */
+export async function langsForPost(postId: string): Promise<Lang[]> {
+  const all = await getCollection('insight', (e) => !e.data.draft && e.data.postId === postId);
+  return LANGS.filter((l) => all.some((e) => e.data.lang === l));
+}
 
 /** 공개된 글만. draft 는 빌드에서 제외한다 */
 export async function getPosts(lang: Lang): Promise<Post[]> {

@@ -5,13 +5,13 @@ import Footer from '../components/Footer.astro';
 import { langMeta, type Lang } from '../data/i18n';
 import '../styles/global.css';
 
-interface Props { lang: Lang; title: string; description: string; path: string; overHero?: boolean; noindex?: boolean; handwriting?: boolean; image?: string }
-const { lang, title, description, path, overHero = false, noindex = false, handwriting = false, image } = Astro.props;
+interface Props { lang: Lang; title: string; description: string; path: string; overHero?: boolean; noindex?: boolean; handwriting?: boolean; image?: string; /** 이 페이지가 존재하는 언어. 기사처럼 langsFor 가 모르는 경로에서 넘긴다 */ langs?: Lang[] }
+const { lang, title, description, path, overHero = false, noindex = false, handwriting = false, image, langs } = Astro.props;
 ---
 <!doctype html>
 <html lang={langMeta[lang].htmlLang}>
   <head>
-    <Head lang={lang} title={title} description={description} path={path} noindex={noindex} handwriting={handwriting} image={image} />
+    <Head lang={lang} title={title} description={description} path={path} noindex={noindex} handwriting={handwriting} image={image} langs={langs} />
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
@@ -19,6 +19,6 @@ const { lang, title, description, path, overHero = false, noindex = false, handw
     <main id="main">
       <slot />
     </main>
-    <Footer lang={lang} path={path} />
+    <Footer lang={lang} path={path} langs={langs} />
   </body>
 </html>

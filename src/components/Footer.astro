@@ -9,13 +9,13 @@ import { t, langMeta, localePath, type Lang } from '../data/i18n';
 import { langsFor } from '../data/cases';
 import Logo from './Logo.astro';
 
-interface Props { lang: Lang; path: string }
-const { lang, path } = Astro.props;
+interface Props { lang: Lang; path: string; /** 이 페이지가 존재하는 언어. 기사 경로에서 넘긴다 */ langs?: Lang[] }
+const { lang, path, langs } = Astro.props;
 const year = new Date().getFullYear();
 
 // 그 언어에 이 페이지가 없으면 링크하지 않는다.
 // (zh-tw 케이스 상세는 번역 전이라 아직 생성되지 않는다)
-const available = langsFor(path);
+const available = langs ?? langsFor(path);
 ---
 <footer class="site-footer invert">
   <div class="wrap site-footer__row">

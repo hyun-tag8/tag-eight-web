@@ -15,9 +15,11 @@ interface Props {
   handwriting?: boolean;
   /** OG 이미지 경로. 기사면 그 기사의 cover 를 넘긴다. 없으면 사이트 공통 /og.jpg */
   image?: string;
+  /** 이 페이지가 존재하는 언어. 없으면 langsFor(path) 로 판정 */
+  langs?: Lang[];
 }
 
-const { lang, title, description, path, noindex = false, handwriting = false, image } = Astro.props;
+const { lang, title, description, path, noindex = false, handwriting = false, image, langs } = Astro.props;
 
 /* ⚠ OG 이미지는 절대 URL 이어야 SNS 가 읽는다. 상대 경로면 카드가 비어 보인다.
    기사는 cover 를, 그 외 페이지는 공통 /og.jpg 를 쓴다. (2026-08-28) */
@@ -45,7 +47,7 @@ const canonical = abs(lang, path);
 
 // hreflang — 그 경로가 실제로 존재하는 언어만.
 // 없는 페이지를 가리키면 색인 오류(alternate page with 404)가 난다.
-const available = langsFor(path);
+const available = langs ?? langsFor(path);
 const alternates = available.map((l) => ({
   hreflang: langMeta[l].htmlLang,
   href: abs(l, path),
