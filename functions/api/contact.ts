@@ -230,6 +230,8 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     // 동의 체크 — 개인정보보호법 21조. 클라이언트 required 만으로는 우회된다 */
     const consent = clean(form.get('consent'), 16);
     const message = String(form.get('message') ?? '').trim().slice(0, LIMITS.message);
+    // 유입 출처(?s= / 직전 페이지 / 최초 외부 referrer). 부가 정보라 검증하지 않고 표시만 한다
+    const src = clean(form.get('_src'), 500);
 
     if (!company || !name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return back('/contact/?e=1');
     if (consent !== 'agree') return back('/contact/?e=1');
@@ -266,7 +268,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       replyTo: email,
       subject: `【サイト問い合わせ】${subject}｜${company} / ${name}`,
       html: `<div style="font-family:sans-serif;font-size:14px;line-height:1.8"><table>${table}</table>
-        <p style="margin-top:24px;color:#adadad;font-size:12px">lang: ${lang} / ${new Date().toISOString()}</p></div>`,
+        <p style="margin-top:24px;color:#adadad;font-size:12px">lang: ${lang} / ${new Date().toISOString()}${src ? `<br>流入: ${esc(src)}` : ''}</p></div>`,
     });
 
     // ② 자동응답

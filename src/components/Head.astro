@@ -134,6 +134,16 @@ const jsonLd = JSON.stringify(organizationJsonLd());
       「어떤 키워드로 찾아왔는가」는 Google Search Console 이 필요하다.
 
     토큰은 HTML 에 그대로 실리는 공개값이라 저장소에 두어도 된다. */}
+{/* 최초 유입 referrer 보존 — 검색·외부 유입이 사이트 내 이동으로 사라지기 전에 잡아둔다.
+    CONTACT 폼의 출처 필드(_src)가 읽는다. 쿠키 아님·세션 한정·외부 전송 없음 */}
+<script is:inline>
+  try {
+    if (!sessionStorage.getItem('t8ref') && document.referrer && !document.referrer.includes(location.hostname)) {
+      sessionStorage.setItem('t8ref', document.referrer.slice(0, 300));
+    }
+  } catch (e) { /* 막혀 있어도 무해 */ }
+</script>
+
 <script
   type="module"
   src="https://static.cloudflareinsights.com/beacon.min.js"

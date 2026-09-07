@@ -88,6 +88,9 @@ PREFILL['korea'] = { s: f.subjects[0], t: KOREA_PREFILL[lang] };
 
       <form class="cform" method="POST" action={FORM_ACTION || undefined}>
         <input type="hidden" name="_lang" value={langMeta[lang].htmlLang} />
+        {/* 유입 출처 — ?s= 파라미터 · 직전 페이지 · 최초 외부 referrer. 스크립트가 채운다.
+            GA4 없이 「어느 페이지·어느 채널이 문의를 만들었나」를 통지 메일로 받기 위한 것 (2026-09-07) */}
+        <input type="hidden" name="_src" id="cf-src" value="" />
         {/* 봇 트랩. 사람에게는 보이지 않는다 */}
         <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="cform__trap" aria-hidden="true" />
 
@@ -164,6 +167,18 @@ PREFILL['korea'] = { s: f.subjects[0], t: KOREA_PREFILL[lang] };
   }
 
   const src = q.get('s');
+
+  /* 출처 필드 — s 파라미터 / 직전 페이지 / 최초 외부 유입(세션 보존).
+     sessionStorage 가 막힌 환경에서도 폼은 살아야 하므로 전부 try 로 감싼다 */
+  try {
+    let first = '';
+    try {
+      first = sessionStorage.getItem('t8ref') ?? '';
+    } catch { /* 프라이빗 모드 등 */ }
+    const el = document.getElementById('cf-src') as HTMLInputElement | null;
+    if (el) el.value = [`s=${src ?? '-'}`, `prev=${document.referrer || '-'}`, `entry=${first || '-'}`].join(' | ').slice(0, 500);
+  } catch { /* 출처는 부가 정보다. 실패해도 무시 */ }
+
   const raw = document.getElementById('ct-prefill')?.textContent;
   if (src && raw) {
     try {
