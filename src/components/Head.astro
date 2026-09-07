@@ -1,6 +1,6 @@
 ---
 import { company, organizationJsonLd } from '../data/company';
-import { langMeta, localePath, type Lang } from '../data/i18n';
+import { langMeta, localePath, PUBLIC_LANGS, type Lang } from '../data/i18n';
 import { langsFor } from '../data/cases';
 
 interface Props {
@@ -19,7 +19,10 @@ interface Props {
   langs?: Lang[];
 }
 
-const { lang, title, description, path, noindex = false, handwriting = false, image, langs } = Astro.props;
+const { lang, title, description, path, noindex: noindexProp = false, handwriting = false, image, langs } = Astro.props;
+
+/* 비공개 언어(PUBLIC_LANGS 외)는 페이지 전체를 noindex. 가림막의 본체다 */
+const noindex = noindexProp || !PUBLIC_LANGS.includes(lang);
 
 /* ⚠ OG 이미지는 절대 URL 이어야 SNS 가 읽는다. 상대 경로면 카드가 비어 보인다.
    기사는 cover 를, 그 외 페이지는 공통 /og.jpg 를 쓴다. (2026-08-28) */
@@ -47,7 +50,9 @@ const canonical = abs(lang, path);
 
 // hreflang — 그 경로가 실제로 존재하는 언어만.
 // 없는 페이지를 가리키면 색인 오류(alternate page with 404)가 난다.
-const available = langs ?? langsFor(path);
+/* hreflang·언어 스위처는 「존재하는 언어 ∩ 공개 언어」만.
+   공개 언어가 1개뿐이면 hreflang 세트 자체를 내지 않는다(자기 하나뿐인 세트는 무의미) */
+const available = (langs ?? langsFor(path)).filter((l) => PUBLIC_LANGS.includes(l));
 const alternates = available.map((l) => ({
   hreflang: langMeta[l].htmlLang,
   href: abs(l, path),
@@ -85,8 +90,8 @@ const jsonLd = JSON.stringify(organizationJsonLd());
 <meta name="description" content={description} />
 <link rel="canonical" href={canonical} />
 
-{alternates.map((a) => <link rel="alternate" hreflang={a.hreflang} href={a.href} />)}
-{available.includes('ja') && (
+{available.length > 1 && alternates.map((a) => <link rel="alternate" hreflang={a.hreflang} href={a.href} />)}
+{available.length > 1 && available.includes('ja') && (
   <link
     rel="alternate"
     hreflang="x-default"

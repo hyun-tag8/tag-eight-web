@@ -7,6 +7,15 @@ export type Lang = (typeof LANGS)[number];
 
 export const DEFAULT_LANG: Lang = 'ja';
 
+/**
+ * 지금 「공개」하는 언어. (2026-09-07 대표 판단: ko/zh-TW 는 전면 수정 전까지 가린다)
+ *
+ * 여기 없는 언어는 ① noindex ② 사이트맵 제외 ③ 푸터 언어 스위처 비표시 ④ hreflang 제외.
+ * 페이지 자체는 계속 빌드된다 — 색인된 기존 URL 을 404 로 만들지 않기 위해서다.
+ * 되돌릴 때는 이 배열에 언어를 다시 넣고, astro.config.mjs 의 사이트맵 주석을 함께 푼다.
+ */
+export const PUBLIC_LANGS: Lang[] = ['ja'];
+
 /** ja는 접두사 없이 루트(/), 나머지는 /ko, /zh-tw */
 export const langMeta: Record<Lang, { label: string; htmlLang: string; prefix: string }> = {
   ja: { label: '日本語', htmlLang: 'ja', prefix: '' },
