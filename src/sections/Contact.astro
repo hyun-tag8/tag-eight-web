@@ -9,6 +9,10 @@ import { KOREA_PREFILL } from '../data/landing';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
+
+/* Turnstile 위젯 표시 언어 — 기본값은 방문자 브라우저 언어라서
+   일본어 페이지에 한국어 위젯이 뜨는 일이 생긴다(2026-09-10 실측). 페이지 언어에 고정한다 */
+const TS_LANG: Record<Lang, string> = { ja: 'ja', ko: 'ko', 'zh-tw': 'zh-tw' };
 const d = t[lang];
 const f = d.contact.f;
 
@@ -138,7 +142,8 @@ PREFILL['korea'] = { s: f.subjects[0], t: KOREA_PREFILL[lang] };
         <p class="meta cform__note">{f.note}</p>
         {/* ⚠ 봇 차단 — Cloudflare Turnstile. _gotcha(허니팟)를 통과하는 봇을 여기서 막는다.
             Managed 모드라 사람은 대개 아무것도 누르지 않고 통과한다. (2026-09-01) */}
-        <div class="cf-turnstile cform__ts" data-sitekey="0x4AAAAAAEjc0KLvvVj1hxnZ" data-theme="light"></div>
+        <div class="cf-turnstile cform__ts" data-sitekey="0x4AAAAAAEjc0KLvvVj1hxnZ" data-theme="light"
+          data-language={TS_LANG[lang]}></div>
 
         {/* 박스형 버튼 — 사이트 공통 .btn 문법. 테두리가 있으므로 꺾쇠는 호버 때만 열린다 */}
         <button class="btn cform__btn" type="submit">
