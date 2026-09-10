@@ -1,108 +1,93 @@
-# TAG EIGHT 사이트 — 인수인계 (2026-09-01 실측판)
+# TAG EIGHT 사이트 — 인수인계 (2026-09-10 실측판)
 
-> 실측 기준 2026-09-01 12:06 (Asia/Tokyo). **문서와 실측이 다르면 실측을 따른다.**
-> 0~3장·8~12장은 09-01 실측으로 다시 썼다(08-28 판 + 09-01 오전 작업분 통합). 4~7장(디자인 원칙·기술 함정·카피 확정본·대화 스타일)은 원본 유지.
-> 🆕 = 08-28 판 이후 바뀐 것.
+> 실측 기준 2026-09-10 (Asia/Tokyo). **문서와 실측이 다르면 실측을 따른다.**
+> 0~3장·9~11장은 09-10 실측으로 다시 썼다(09-01 판 + 09-02~09-10 작업분 통합). 4~7장(디자인 원칙·기술 함정·카피 확정본·대화 스타일)·8장(INSIGHT 운영)은 원본 유지.
+> 🆕 = 09-01 판 이후 바뀐 것.
 
 ## 0. 새 세션에서 가장 먼저 할 일
 
 ```bash
-cd ~/"#tageight HP/tag-eight-web"     # ← 작업 폴더는 여기 하나뿐이다
+cd ~/tag-eight-web                     # 🆕 저장소는 여기로 이동했다 (아래 주의)
 git pull --rebase origin main          # 관리화면(CMS)이 원격에 직접 커밋한다
 ls src/content/insight | wc -l         # 원고 수 (현재 5)
 git status                             # deleted: 가 나오면 멈춘다
 curl -sI https://tag-8.com | head -3
 ```
 
-🔴 **인수인계 갱신본은 반드시 `HANDOVER.md` 로 커밋한다.** 08-27·08-28·09-01 세 번 연속으로 갱신본이 대화·다운로드에만 남고 저장소에 안 들어와, 다음 창이 구판을 읽는 사고가 반복됐다. 파일로 받았으면 커밋까지가 한 세트다.
-
-🔴 **push 전에 반드시 `git pull --rebase origin main`.** 충돌 파일이 원고라면 원격을 살린다(rebase 중 `--ours` = 원격):
-```bash
-git checkout --ours src/content/insight/<파일>.md && git add src/content/insight/<파일>.md && git rebase --continue
-```
-
-🔴 **원칙 — 원고는 관리화면, 코드는 커밋.** `src/content/` 를 덮어쓰는 조작(rsync·rm -rf·cp -R) 금지. `update.sh` 는 패치본(`src/content` 퇴피→복원→파일 수 불일치 시 exit 1). `update.sh.bak` 은 사고를 냈던 구판 — 되살리지 말 것.
-
-🔴 **이 저장소의 git 조작은 맥 터미널에서만.** Claude 가 원격 마운트 경유로 `git add/status` 를 돌리면 `.git/index.lock` 을 만들고 지우지 못해 네 쪽 git 이 막힌다(08-28 발생). Claude 는 `git log`·`hash-object`·`cat-file`·`ls-remote` 같은 읽기 명령만 쓴다.
-
-⚠️ **다운로드는 `~/Desktop`.** `~/Downloads` 아님.
-⚠️ **터미널 붙여넣기 절단** — 장문 heredoc 이 `>` 에서 멈춘다. 짧은 조각으로. `Ctrl+C` 탈출. 오타(`it add`/`ac "..."`)는 `git add -A`. `gac` 별칭은 bash 세션에서 안 먹음.
-⚠️ **개수 세기는 `grep -o … | wc -l`.** HTML 이 1줄 압축이라 `grep -c` 는 항상 1이다.
-⚠️ **`docs/INSIGHT_발행가이드.md` 가 마운트 경유 status 에서 untracked 로 보여도 `git add` 금지**(한글 NFD/NFC). 맥 터미널의 status 가 기준.
-⚠️ 🆕 **신규 SaaS 가입 최소화** — 계정·청구·약관이 는다(09-01 CARTO trial 회피, MapTiler 무료 선택).
+🔴 🆕 **저장소 경로는 `~/tag-eight-web`.** 구경로 `~/"#tageight HP/tag-eight-web"` 는 Vite 가 `#` 에서 경로를 잘라 빌드가 깨져 이동했다(09-01 밤). **`#` 이 든 경로에 저장소를 두지 말 것.**
+🔴 🆕 **빌드(`npm run build`)는 맥 터미널에서만.** node_modules 의 rolldown 이 맥 네이티브 바이너리라 Claude 의 VM 에서는 돌지 않는다.
+🔴 **인수인계 갱신본은 반드시 `HANDOVER.md` 로 커밋한다.** 파일로 받았으면 커밋까지가 한 세트다.
+🔴 **push 전에 반드시 `git pull --rebase origin main`.** 충돌 파일이 원고라면 원격을 살린다(rebase 중 `--ours` = 원격).
+🔴 **원칙 — 원고는 관리화면, 코드는 커밋.** `src/content/` 를 덮어쓰는 조작 금지. `update.sh` 는 패치본만.
+🔴 **이 저장소의 git 조작은 맥 터미널에서만.** Claude 가 마운트 경유로 쓰기성 git 을 돌리면 `.git/index.lock` 이 남는다(08-28·09-10 재발). 락이 남으면 맥에서 `rm -f .git/index.lock`.
+🔴 🆕 **키·주소·상호 등은 손타이핑 금지 — 정본(company.ts / 대시보드 복사값)에서만.** Turnstile sitekey 오타(A 한 글자 추가)로 문의 폼이 8일간 전멸했고(09-10 발견), 奥付 소재지를 「浜松町」로 잘못 쓴 사고도 있었다(정본은 麹町 半蔵門).
+🔴 🆕 **차단 장치는 「봇이 막힘」과 「사람이 통과함」 양쪽 경로를 테스트해야 완료.** 09-02 Turnstile 엄격화 때 봇 경로만 테스트해, 위젯이 죽어 있던 걸(=사람도 전멸) 8일간 몰랐다.
+⚠️ **다운로드는 `~/Desktop`.** ⚠️ 터미널 장문 heredoc 절단 주의. ⚠️ 개수 세기는 `grep -o … | wc -l`. ⚠️ `docs/INSIGHT_발행가이드.md` 마운트 경유 add 금지(NFD/NFC). ⚠️ 신규 SaaS 가입 최소화.
 
 ---
 
-## 1. 프로젝트 기본 (2026-09-01 실측)
+## 1. 프로젝트 기본 (2026-09-10 실측)
 
 | | |
 |---|---|
 | 스택 | Astro 6 SSG + Cloudflare Pages + GitHub |
 | 저장소 | `hyun-tag8/tag-eight-web` (private, `main`) — 정본 |
-| 작업 폴더 | `~/#tageight HP/tag-eight-web` |
-| 라이브 | https://tag-8.com · `tag-eight-web.pages.dev` 도 200 |
-| HEAD | `ec7ffd9` 2026-09-01 11:59 「map: MapTiler darkmatter」 · origin/main 과 동일 |
-| 언어 | ja(기본) / ko / zh-TW — **sitemap 71 URL** (※08-28 판의 「72」는 오기. 원본 대조 결과 변동 0) |
-| 관리화면 | `/admin/` (Sveltia CMS) · `config.yml base_url: https://tag-8.com` |
-| 애널리틱스 | Cloudflare Web Analytics · 토큰 `90311ead309f471f9742054fbfb8b1cf` · `src/components/Head.astro` |
+| 작업 폴더 | 🆕 `~/tag-eight-web` |
+| 라이브 | https://tag-8.com |
+| HEAD | `440687b` 2026-09-10 「Turnstile表示言語をページ言語に固定」 · origin/main 과 동일 |
+| 언어 | ja 만 공개. 🆕 **ko/zh-TW 는 전면 수정 전까지 비공개**(09-07 대표 판단) — `src/data/i18n.ts` 의 `PUBLIC_LANGS` 스위치. noindex + 사이트맵 제외 + 언어 스위처/hreflang 비표시. 페이지 자체는 빌드돼 404 없음. 재공개 시 배열 복원 + astro.config.mjs 의 i18n 주석 해제 |
+| 사이트맵 | 🆕 **63 URL** (thanks·빈 분류·ko/zh 제외 후) |
+| 관리화면 | `/admin/` (Sveltia CMS) |
+| 애널리틱스 | CF Web Analytics(쿠키리스) + GSC + 🆕 문의 폼 유입 기록(아래 2-6). **GA4 는 보류** — 월 문의 10건 초과 or 광고 집행 시 재검토(09-07 결정) |
 
-### DNS·메일 (2026-09-01 실측, 정상)
-
-```
-NS     carter / maeve.ns.cloudflare.com
-A      Cloudflare proxy · www → 301 → tag-8.com
-MX     Google Workspace 5건
-SPF    v=spf1 include:_spf.google.com ~all
-DKIM   google._domainkey 2048bit
-DMARC  v=DMARC1; p=none; rua=mailto:info@tag-8.com; fo=1
-robots Allow / · Disallow /admin/ · Sitemap 선언
-```
-⚠ DMARC `p=none → p=quarantine` 은 리포트 2~3주 관찰 후(기산 08-26).
-⚠ 위 TXT 레코드 절대 삭제 금지.
-⚠ Cloudflare 금지: Block AI training bots 전면 차단 / robots.txt 변경 / Proxy status 변경.
+### DNS·메일 — 09-01 실측에서 변동 없음 (MX Google Workspace / SPF / DKIM / DMARC p=none). TXT 삭제 금지.
 
 ---
 
-## 2. 🆕 09-01 작업분 — 폼 스팸 대응·지도·OG
+## 2. 🆕 09-02~09-10 작업분
 
-발단: 문의 폼에 **봇 스팸**(会社名=google, 베트남어 가격 문의, 랜덤 gmail). 공격 아님, 무차별 폼봇. 허니팟(`_gotcha`)을 통과하는 봇이라 추가 방어.
-
-| # | 내용 | 실측 |
+| 커밋 | 내용 | 실측 |
 |---|---|---|
-| 1 | Cloudflare **Turnstile** 봇 차단 | ✅ `/contact/` 라이브 · 사람 통과·메일 수신 확인 |
-| 2 | 지도 CARTO → OSM → **MapTiler darkmatter** | ✅ JS 청크(`OfficeMap…js`)에서 타일 URL 확인 |
-| 3 | 지도 핀 오렌지 `#F37021` · 확대 | ✅ |
-| 4 | **og.jpg 교체** (폐기 어휘 → 심플 로고판) | ✅ 35,888B |
+| `f3d27a3` | Turnstile 검증 무효 버그 수정 — success 미확인·토큰 부재 통과 → 직접 POST 스팸 차단 | ✅ 봇 POST → e=1 |
+| `66214c2` | Organization JSON-LD 보강 — 요미가나·한글 alternateName·knowsAbout (구글 엔티티 인식) | ✅ SERP 스니펫 갱신 확인 |
+| `f106fb5` | **P0 SEO** — canonical/hreflang 말미 슬래시 통일 · 빈 분류 noindex · 사이트맵 정리 · robots 주석 ja · foundingDate 2019-05-27 | ✅ 라이브 대조 |
+| `0001d98` | ja 전용 기사의 hreflang·언어 스위처 404 수정 — `langsForPost()` 신설, Base/Head/Footer `langs` prop | ✅ |
+| `348cd12` | **/korea 랜딩 신설**(ja) — 韓国 기사 CTA → /korea · `?s=korea` 프리필. 골격 = diagnosis 문법 재사용(`landing.ts`/`Landing.astro`) | ✅ 200 |
+| `d91bdf7` | /korea 実測의 시장 오귀속 수정(케이스07=대만 → 케이스04=한국시장으로 교체) · **ko/zh 비공개화**(PUBLIC_LANGS) | ✅ |
+| `a941d3b` | 문의 유입 기록 — 전 페이지 최초 referrer 세션 보존 + 폼 `_src` + 통지 메일 「流入:」 줄 | ✅ 테스트 수신 확인 |
+| `f64ad91` | 🔴 **Turnstile sitekey 오타 수정(A×8→A×7)** — 문의 전멸 8일(09-02~10)의 원인 | ✅ 위젯 렌더·송신·수신 3점 |
+| `440687b` | Turnstile 표시 언어를 페이지 언어에 고정(`data-language`) — 기본값은 브라우저 언어라 ja 페이지에 한국어 UI가 떴다 | ✅ 라이브 |
 
-### 2-1. Turnstile
+### 2-1. Turnstile (정정판)
 ```
-Site Key   0x4AAAAAAAEjc0KLvvVj1hxnZ   (공개. Contact.astro 인라인)
-Secret     Cloudflare Pages env → TURNSTILE_SECRET (Secret 타입)
-검증        functions/api/contact.ts 에서 siteverify. SECRET 없으면 검사 skip(폼이 안 죽게)
-허니팟      _gotcha 유지 (2중 방어)
-모드        Managed — 대부분 무클릭 통과
+Site Key   0x4AAAAAAEjc0KLvvVj1hxnZ   ← A 7개. 09-01 판의 A 8개 기재는 오타(그 오타가 코드에도 들어가 사고)
+Hostnames  tag-8.com / www.tag-8.com (CF 대시보드 Turnstile 위젯 tag-8-contact)
+Secret     CF Pages env TURNSTILE_SECRET · 검증 functions/api/contact.ts (success 확인 + 토큰 필수)
+발송        Apps Script(GAS) → Gmail info@tag-8.com (Brevo/Resend 는 예비 경로. CONTACT_SETUP.md)
+표시 언어   data-language = 페이지 언어
 ```
-⚠ 위젯·스크립트 수정 시 **환경변수 추가만으로는 반영 안 됨 — 재배포 필요**(빈 커밋 또는 Retry deployment).
 
-### 2-2. 지도 (`src/components/OfficeMap.astro`)
-```
-타일    MapTiler darkmatter 래스터 (원래 검정 — invert 없음)
-        https://api.maptiler.com/maps/darkmatter/256/{z}/{x}/{y}{r}.png?key=…
-필터    grayscale(1) brightness(.95) contrast(1.02)
-핀      SVG · fill #F37021 · 28x40
-```
-- MapTiler 무료 = **월 10만 로드**. 컨택트 지도로는 초과 불가. Analytics 탭에서 확인.
-- 키는 공개 키. MapTiler 대시보드 Allowed Origins: tag-8.com / *.tag-8.com / tag-eight-web.pages.dev.
-- 🔴 이전 이유: **CARTO 무료 베이스맵이 API키(도메인 등록) 요구로 바뀌어** 「API KEY REQUIRED」 워터마크가 박혔다. 08-28 판 4.4-q 의 「CARTO Dark」 기재는 폐기.
-- 🔴 좌표는 잠정값(麹町一丁目 블록 중심) — 정확한 건물 좌표로 교체 과제 유지.
+### 2-2. SEO 상태 (09-07 GSC 실측)
+- 등록 74 / 미등록 40 — 미등록 사유 5건 전부 판정 완료: 代替ページ14(수정 전 잔상, 재크롤로 해소 예정) / 리다이렉트9(영구 정상) / 404 2(의도) / 検出未登録13(대기열) / クロール済未登録2. **고칠 것 0건.**
+- 「代替ページ」 GSC 메일(09-07 수신)은 09-04 수정의 지연 통지 — 대응 불요.
+- ko/zh 가림 반영으로 앞으로 미등록 수가 늘어난다(「noindexにより除外」) — 의도된 결과.
+- GSC 월 1회: 타깃 6키워드(韓国人観光客 集客 등) 노출·순위 추적. 10월 초 「tageight」 AI 검색 재확인.
 
-### 2-3. og.jpg
-```
-이전   사무실 사진 + "Cross-Border Marketing & Creative Agency" (폐기 어휘가 그림으로)
-현재   검정 배경 + #8 로고 + L1 + L1-J
-```
-🔴 **Facebook 캐시 삭제 미완** — developers.facebook.com/tools/debug → tag-8.com → Scrape Again. 기존 게시물은 지우고 재업로드해야 바뀐다. X·LINE 도 각자 캐시.
-⚠ 폐기 어휘 점검은 **이미지 자산 내부까지** — 명함 / 메일 서명 / 회사소개서 PPTX 미점검.
+### 2-3. 검색 공략 (정본: 프로젝트 `claude/TAG8_검색공략계획_v1.md`)
+- /korea 라이브(348cd12). **/taiwan 은 카피 재작성 대기** — 대표 지적 「매번 같은 패턴」으로 v1 기각, 문체 후보 6종(대화체~정의체) 제시 후 회신 대기. 규칙: **카피성 산출물은 전체 집필 전에 문체 샘플 2~3개 승인 먼저.**
+- GBP 완료(마케팅 에이전시 심사 통과분·설명·주소 정비). 잔손질: 웹사이트 http→https / 서비스 6항목.
+
+### 2-4. 자료 배포·메일 매거진 (09-07 대표 결정 — 착수 확정)
+- 구조: **2층 게이트** — 요약판 웹 공개 + 완전판 PDF 는 메일 등록 → 링크 발송. 독트린 ③과의 정리: 세미나=무대는 안 서지만, 실측 자료 배포=증거 배포는 OK(일반론 금지 조건).
+- PDF 1호 「訪日韓国人マーケティング実測レポート2026」 **v0.3 완성** — 표지+14p, 비주얼 중심, 팩트체크 게이트 통과(FIX 3 반영). **대표 확인 대기 3건**: ①＋98%維持 게재 유지 ②p.08 모식 봉 ③7枠 점유. 파일은 대화 전달분이 최신(클라우드 `report/pdf/`).
+- 미착수: 요약판 추출 / `/api/subscribe`(GAS 또는 Brevo 더블 옵트인) / 프라이버시 폴리시 갱신(特定電子メール法 옵트인·配信停止).
+
+### 2-5. PDF 제작 파이프라인 (재현 절차)
+- 클라우드 컨테이너에서 HTML(A4 페이지·인라인 SVG 차트) → playwright + `/opt/pw-browsers/chromium` 로 인쇄. 원본 `report/pdf/report.html`.
+- 수치는 기공개 검증분만. 시장 통계는 리포트에는 3점 세트로 싣고, **랜딩에는 0건**(원칙 분리).
+
+### 2-6. 문의 유입 기록 (GA4 대체)
+통지 메일 하단 「流入: s=… | prev=… | entry=…」 = ?s= 파라미터 / 직전 페이지 / 최초 외부 referrer(세션 보존). 쿠키·외부 전송 없음 → 배너 불요. 이게 「검색→랜딩→문의」 KPI 의 원시 데이터.
 
 ---
 
@@ -110,15 +95,15 @@ Secret     Cloudflare Pages env → TURNSTILE_SECRET (Secret 타입)
 
 | # | 항목 | 비고 |
 |---|---|---|
-| 1 | 🔴 **Facebook Scrape Again + 게시물 재업로드** | 2-3 |
-| 2 | **규칙서 v2.1** | 미반영 4건 (8-3) |
-| 3 | 자료 배포·메일 매거진 착수 | 프라이버시 폴리시 개정으로 가능해짐 — PDF 1호 목차(韓国 먼저 권장) / DL 폼 체크박스 2개 분리 / Brevo(EU) / 동의 기록 Sheets |
-| 4 | 실명 사례 1건 공개 승인 절차 | 독트린 v1 의 대표 결정 3건 중 하나 (9장) |
-| 5 | ko·zh-TW 케이스 카피 — **zh-TW Hester 사인오프 필수** / 프라이버시 zh-TW Hester 확인 | |
-| 6 | 台湾 1호 cover 교체 판단(_muted → 컬러) / CLS 개선 / 戦略設計 vs 戦略立案 결정(사이트 택소노미+덱 동시 영향) | |
-| ⏸ | GUIDE 전략 전환 · 話者 구현 · 포스터 v2(멤버 AI 동의 후) | 보류·결정 사항은 9장 |
+| 1 | PDF 리포트 대표 확인 3건 → 확정판 | 2-4 |
+| 2 | 요약판 추출 + 메일 등록 장치(`/api/subscribe`) + 프라이버시 폴리시 갱신 | 2-4 |
+| 3 | /taiwan 카피 — 문체 회신 대기 → 재작성 | 2-3 |
+| 4 | GSC: /works/·/capabilities/ 색인 수동 요청(대표) · /korea 색인 요청 | |
+| 5 | 🔴 Facebook Scrape Again + 게시물 재업로드 (09-01 이월) | |
+| 6 | 규칙서 v2.1 (8-3) / 실명 공개 승인 절차 | |
+| ⏸ | GUIDE 전환 · 話者 구현 · 포스터 v2 · ko/zh 전면 수정(가림 해제 조건) | |
 
-⚠️ 확인 미완 2건: Cloudflare Web Analytics 에 `tag-8.com` 호스트 등록 여부 / Google Search Console 등록·사이트맵 제출.
+⚠️ 확인 미완: CF Web Analytics 에 tag-8.com 호스트 등록 여부 (GSC 는 완료로 판명 — 09-01 판의 「미확인」은 해소).
 
 ---
 
@@ -803,14 +788,19 @@ tag-8.com/admin → GitHub 로그인 → 작성 → 保存 → 저장소 커밋 
 | 연재 번호 | **Vol.N 없음, 시장별 시리즈명(=category)만** |
 | GUIDE 전략 | **보류.** 재개 시 「NAVERブログとは」는 폐기(선점됨), 韓国×台湾 비교 / 繁体字 / 실행 실측 축으로 |
 
-### 9-4. 독트린 가동에 필요한 대표 결정 3건 (미회신)
-1. 4단 모델의 이름 (「クロスボーダー」 계열 사용 불가)
-2. 1단 유료 진단의 가격대
-3. 실명 공개를 요청할 1건 — 中部(공공) vs 메이커 반복 거래처
+### 9-4. 독트린 대표 결정 (🆕 09-01·09-07 확정 반영)
+1. ✅ 4단 모델명 = **「置き場所設計」** (09-01)
+2. ✅ 現地実測診断 가격대 = **80~100만엔(税別)** (09-01) · 웹에는 가격 비공개
+3. ⏳ 실명 공개 요청 1건 — 미결 (中部 먼저 방침)
+4. ✅ 🆕 자료 배포 = 진행(2층 게이트, 09-07) — 2-4 참조. 독트린 ③은 「무대」 금지이고 「증거 배포」는 허용으로 정리
 
 ---
 
-## 10. 사고·주의 누적 (08-27~09-01)
+## 10. 사고·주의 누적 (08-27~09-10)
+
+🔴 🆕 **Turnstile sitekey 오타(A×8) → 문의 전멸 8일**(09-02~10). 교훈 3개: ①키·주소 손타이핑 금지(정본 복사만) ②차단 장치는 봇 차단+사람 통과 양방향 테스트 ③「메일이 안 온다」는 Gmail 이력 실측부터(마지막 수신일이 원인 시점을 좁힌다).
+🔴 🆕 **/korea 実測 시장 오귀속** — 대만 케이스(07)의 675件을 한국 랜딩에 실을 뻔(카피 v1.1 내 오류, 라이브에 1일 노출 후 수정). 実測 행은 케이스 번호와 노선을 주석으로 고정한다.
+🔴 🆕 **커밋 타이밍 사고** — 파일 수정(팩트 수정)과 대표의 커밋 실행이 엇갈려 구판이 배포됨. 수정 후에는 「수정판이 디스크에 있다」를 커맨드 블록에 명기한다.
 
 🔴 **브랜드 어휘 점검은 이미지 내부까지** — og.jpg 사고(08-28). 남은 대상: 명함 / 메일 서명 / 소개서 PPTX.
 🔴 **404 하나로 「삭제됐다」 결론 금지** — guide 카테고리 오판 이력(08-28).
@@ -833,10 +823,16 @@ tag-8.com/admin → GitHub 로그인 → 작성 → 保存 → 저장소 커밋 
 - [ ] 규칙서 v2.1 (8-3)
 - [ ] CLS 개선 (Core Web Vitals)
 - [ ] 지도 좌표 정확화 (건물 좌표)
-- [ ] CF Web Analytics 호스트 등록 확인 / Search Console 등록
+- [ ] CF Web Analytics 호스트 등록 확인 (GSC 는 ✅ 완료 판명)
+- [ ] GSC 색인 수동 요청: /works/ · /capabilities/ · /korea/ (대표)
+- [ ] /taiwan 랜딩 (문체 승인 후)
 
-**자료 배포·메일 매거진**
-- [ ] PDF 1호 목차 (韓国 먼저) / DL 폼 체크박스 2개 분리 / Brevo(EU) 연동 / 동의 기록 Sheets
+**자료 배포·메일 매거진** (🆕 09-07 착수 확정 — 2-4)
+- [x] PDF 1호 본문·조판 v0.3 (팩트체크 통과)
+- [ ] 대표 확인 3건 → 확정판
+- [ ] 요약판(웹 공개층) 추출
+- [ ] `/api/subscribe` 더블 옵트인 + 프라이버시 폴리시 갱신(옵트인·配信停止)
+- [ ] PDF 배치(추측 불가 URL) + 등록 UI(/korea 하단)
 
 **브랜드·전략**
 - [ ] 戦略設計 vs 戦略立案 결정
