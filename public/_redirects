@@ -39,3 +39,7 @@
 /contact_us/    /contact/       301
 /network        /company/       301
 /network/       /company/       301
+
+# /korea 랜딩 폐지 (2026-09-16 대표 판단). 색인 요청 직후라 404 대신 홈으로.
+/korea          /               301
+/korea/         /               301
