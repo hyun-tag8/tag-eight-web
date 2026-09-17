@@ -1,0 +1,15 @@
+---
+import Base from '../layouts/Base.astro';
+import Korea from '../sections/Korea.astro';
+/**
+ * /korea — ja 전용 서비스 랜딩. 검색공략계획 v1 의 1·2순위 키워드 착지 페이지.
+ * ko/zh-tw 판 없음(검색자는 일본 기업 담당자) → langs={['ja']} 로 hreflang 미출력.
+ * 공개 시: _redirects 의 /korea 301 해제(동시 커밋) + GSC 색인 요청.
+ */
+const lang = 'ja' as const;
+const title = '韓国人観光客の集客・訪日韓国人向けプロモーション｜TAG EIGHT';
+const description = '旅行前の「気になる」を、日本での「体験したい」「買いたい」へ。訪日韓国人向けのブランド・購買プロモーションを、SNS・NAVER検索・店頭・帰国後の発信までひとつの設計でつなぎます。';
+---
+<Base lang={lang} title={title} description={description} path="/korea" langs={['ja']}>
+  <Korea />
+</Base>

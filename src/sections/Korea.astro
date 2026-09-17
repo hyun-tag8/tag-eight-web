@@ -1,0 +1,169 @@
+---
+/**
+ * KOREA — 訪日韓国人向け 서비스 랜딩 (ja 전용).
+ * 검색공략계획 v1 의 착지 페이지: 韓国人観光客 集客 / 韓国 インバウンド 集客.
+ * 카피 정본: 대표 원고(2026-09-17) + 승인 수정 4건
+ *   ① 히어로 = 「気になる」 문장 승격  ② NAVER 명명  ③ 04 보고 규율 한 줄  ④ 帰国後(旅アト) 블록 추가.
+ * 수치 3건은 観光庁 2025年暦年(確報) 図表3・6 대조 완료(2026-09-17). 수치 변경 시 팩트체크 게이트 필수.
+ */
+import T from '../components/T.astro';
+import Sentences from '../components/Sentences.astro';
+import Arrow from '../components/Arrow.astro';
+const lang = 'ja' as const;
+
+const facts = [
+  { n: '2,423', u: '億円', l: '訪日韓国人の年間買物代', c: '2025年・全目的・クルーズ客含む' },
+  { n: '25,556', u: '円', l: '1人当たりの買物代', c: '2025年・観光・レジャー目的・一般客' },
+  { n: '3.4', u: '泊', l: '平均宿泊数', c: '2025年・観光・レジャー目的・一般客' },
+];
+
+const journey = [
+  { stage: '旅行前', phase: '発見・検討', title: '行く理由を、つくる。',
+    body: '日本で試せること、店舗で出会える商品。その魅力を韓国語のSNSとNAVER検索コンテンツで伝え、旅行の候補に入る接点をつくります。',
+    tools: '商品訴求の設計・SNS・インフルエンサー' },
+  { stage: '日本滞在中', phase: '来店・体験', title: '体験までを、つなぐ。',
+    body: '興味を持った瞬間に、場所・価格・所要時間・予約方法が分かる。お客様が予定に組み込みやすい情報と導線を整えます。',
+    tools: '韓国語ページ・地図・予約案内' },
+  { stage: '店頭・施設内', phase: '購入・利用', title: '選ぶ一歩を、後押しする。',
+    body: '試す、比べる、相談する。商品の違いや利用方法を分かりやすく伝え、納得して購入・利用できる体験を設計します。',
+    tools: '店頭ツール・商品比較・接客支援' },
+  { stage: '帰国後', phase: '発信・共有', title: '旅の記憶を、次の理由に。',
+    body: '帰国後のレビューやSNS投稿は、次のお客様が最初に出会う情報になります。購入後の発信までを設計に含め、一度の露出を循環に変えます。',
+    tools: 'レビュー導線・UGC循環の設計' },
+];
+
+const apps = [
+  { cat: 'コスメ・ファッション', title: '日本の店舗で、自分に合うものを選ぶ。',
+    body: '色やサイズを比較するコンテンツで関心をつくり、取扱店舗へ案内。店頭では韓国語の比較ガイドで試用・試着を支えます。' },
+  { cat: '食品・飲食ブランド', title: '味わって、気に入って、持ち帰る。',
+    body: '味・食べ方・楽しむ場面を具体的に紹介。試食や食事の体験から、持ち帰り商品やギフトの選択へつなげます。' },
+  { cat: '商業施設・体験型施設', title: '旅の予定に入れたくなる体験を。',
+    body: '目的別の店舗選びや体験の流れを紹介し、アクセス・料金・所要時間を明示。予約・入場・館内での買物までを分かりやすく案内します。' },
+];
+---
+
+<section class="sec sec--flush page-head">
+  <div class="wrap">
+    <p class="label k-label">韓国市場戦略</p>
+    <h1 class="h-lg" style="margin-top:clamp(1.75rem,4vh,2.5rem)">
+      <span class="jp-line"><T text="旅行前の「気になる」を、" lang={lang} /></span>
+      <span class="jp-line"><T text="日本での「体験したい」「買いたい」へ。" lang={lang} /></span>
+    </h1>
+    <p class="lead">
+      <Sentences text={'訪日韓国人向けの、ブランド・購買プロモーション。その魅力を、韓国のお客様が選ぶ理由に変え、来店・体験・購入へつなげます。'} lang={lang} />
+    </p>
+    <p class="k-target">対象:メーカー／小売・商業施設／飲食ブランド／体験型施設</p>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <p class="num">01</p>
+    <h2 class="k-h">数字で見る、<wbr>韓国市場。</h2>
+    <div class="facts k-facts">
+      {facts.map((f) => (
+        <div>
+          <p class="facts__n">{f.n}<span class="k-unit">{f.u}</span></p>
+          <p class="facts__l k-fl">{f.l}<span class="k-cond">{f.c}</span></p>
+        </div>
+      ))}
+    </div>
+    <p class="k-msg"><T text="限られた旅の時間に、訪れる理由と、選びやすさを。" lang={lang} /></p>
+    <p class="k-src">
+      出典:観光庁「<a class="link" href="https://www.mlit.go.jp/kankocho/content/001992584.pdf" target="_blank" rel="noopener">訪日外国人消費動向調査 2025年暦年(確報)</a>」図表3・6(2026年3月31日公表)。一般客はクルーズ客を除く。年間総額と1人当たり指標は対象が異なります。上記の戦略メッセージは当社の提案です。
+    </p>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <p class="num">02</p>
+    <h2 class="k-h">選ばれるまでを、<wbr>ひとつの設計に。</h2>
+    <div class="srows k-journey">
+      {journey.map((j) => (
+        <div class="srow">
+          <div class="srow__head">
+            <p class="k-stage">{j.stage}</p>
+            <p class="k-phase">{j.phase}</p>
+          </div>
+          <div>
+            <h3 class="k-jt"><T text={j.title} lang={lang} /></h3>
+            <p class="k-jb"><Sentences text={j.body} lang={lang} /></p>
+            <p class="k-jtools">{j.tools}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <p class="num">03</p>
+    <h2 class="k-h">私たちなら、<wbr>どんな理由をつくるか。</h2>
+    <p class="k-note">以下は施策の企画例です。実施実績や効果を示すものではありません。</p>
+    <div class="srows k-journey">
+      {apps.map((a) => (
+        <div class="srow">
+          <div class="srow__head">
+            <p class="k-stage">{a.cat}</p>
+          </div>
+          <div>
+            <h3 class="k-jt"><T text={a.title} lang={lang} /></h3>
+            <p class="k-jb"><Sentences text={a.body} lang={lang} /></p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <p class="num">04</p>
+    <h2 class="k-h">発信の反応から、<wbr>事業の成果へ。</h2>
+    <p class="k-mb"><Sentences text={'閲覧や保存に加えて、取得できる指標を施策前に設定します。予約・クーポン利用・来店時アンケート・対象商品の売上まで。来店・購入につながる条件を検証し、改善を重ねます。'} lang={lang} /></p>
+    <p class="k-rule"><T text="出典と取得方法を示せない数字は、ご報告に使いません。" lang={lang} /></p>
+  </div>
+</section>
+
+<section class="sec invert closing">
+  <div class="wrap">
+    <h2 class="closing__answer">
+      <span class="jp-line"><T text="貴社の魅力を、" lang={lang} /></span>
+      <span class="jp-line"><T text="韓国のお客様が選ぶ理由へ。" lang={lang} /></span>
+    </h2>
+    <p class="closing__invite"><T text="商品・店舗・施設の強みと課題に合わせて、韓国市場に向けた集客・購買プロモーションを企画・設計します。" lang={lang} /></p>
+    <p class="closing__cta">
+      <a class="btn btn--on-dark" href="/contact?s=korea"><span>韓国市場向けプロモーションについて相談する</span><span class="btn__slot"><Arrow variant="chev" cls="btn__arrow" /></span></a>
+    </p>
+  </div>
+</section>
+
+<style>
+  /* 일본어 대형 라벨 — 전역 label/seclabel 은 Inter(--sans)라 CJK 가 폴백으로 빠진다 */
+  .k-label { font-family: var(--cjk); letter-spacing: 0.08em; }
+  /* 섹션 헤딩 — 문장 자체를 헤딩으로. 한 줄이 원칙, 줄바꿈은 콤마 뒤 <wbr> 하나만(모바일).
+     BudouX(T) 를 안 쓰는 이유: 문절마다 꺾이면 헤딩의 호흡이 깨진다 */
+  .k-h { margin-top: .9rem; font-family: var(--cjk); font-weight: 300;
+         font-size: clamp(1.9rem, 4.2vw, 3.2rem); line-height: 1.4; letter-spacing: 0.02em; max-width: none; }
+  .k-target { margin-top: clamp(1.25rem, 3vh, 1.75rem); font-size: var(--step--1); color: var(--ink-55); }
+  /* facts 는 2열 기본 — 지표가 3개라 좁은 화면 1열, 넓은 화면 3열로 재정의.
+     (.facts.k-facts 2클래스: 전역 .facts 보다 명시도를 올려 로드 순서와 무관하게 이긴다) */
+  .facts.k-facts { grid-template-columns: 1fr; }
+  @media (min-width: 52rem) { .facts.k-facts { grid-template-columns: repeat(3, 1fr); } }
+  .k-unit { font-size: 0.45em; font-weight: 300; margin-left: 0.15em; letter-spacing: 0; }
+  .k-fl { letter-spacing: 0.06em; line-height: 1.7; }
+  .k-cond { display: block; margin-top: 0.25rem; font-size: 0.85em; color: var(--ink-25); letter-spacing: 0.04em; }
+  .k-msg { margin-top: clamp(2rem, 5vh, 3rem); font-size: var(--step-1); font-weight: 300; }
+  .k-src { margin-top: 1.25rem; font-size: var(--step--1); line-height: 1.9; color: var(--ink-55); max-width: 46em; }
+  .k-note { margin-top: 1rem; font-size: var(--step--1); color: var(--ink-55); }
+  .k-journey { margin-top: clamp(2.25rem, 5.5vh, 3.5rem); }
+  .k-stage { font-size: var(--step-0); font-weight: 500; letter-spacing: 0.04em; }
+  .k-phase { margin-top: 0.3rem; font-size: var(--step--1); color: var(--ink-55); letter-spacing: 0.08em; }
+  .k-jt { font-size: var(--step-1); font-weight: 400; letter-spacing: 0.02em; line-height: 1.55; }
+  .k-jb { margin-top: 0.8rem; font-size: var(--step-0); line-height: 1.9; color: var(--ink-55); max-width: 40em; }
+  .k-jtools { margin-top: 1.1rem; font-size: var(--step--1); color: var(--ink-55); letter-spacing: 0.06em; }
+  .k-mb { margin-top: clamp(1.5rem, 3.5vh, 2rem); font-size: var(--step-0); line-height: 1.9; color: var(--ink-55); max-width: 46em; }
+  .k-rule { margin-top: 1.5rem; font-size: var(--step-0); font-weight: 500; }
+</style>
