@@ -1,0 +1,218 @@
+---
+/**
+ * KOREA STRATEGY — 韓国市場 攻略設計図 (/korea/strategy, ja 전용).
+ * /korea 랜딩의 하위 사상 페이지. 정본: Korea Behavior Strategy 덱(2026-09-18 대표 제공) + 시안 v3.1 승인.
+ * 어휘: Behavior System = 상위 OS / 置き場所設計 = BRIDGE 공정의 대표 전술 (2026-09-18 확정).
+ * 수치는 팩트체크 게이트 통과분만(+143%·55件·2.9倍). 7枠·+98%는 미확정이라 미게재 — 확정 시 게이트 통과 후 추가.
+ */
+import T from '../components/T.astro';
+import Sentences from '../components/Sentences.astro';
+import Arrow from '../components/Arrow.astro';
+const lang = 'ja' as const;
+
+const kotei = [
+  { no: '01', en: 'TRACE',  body: '検索・投稿・レビューから、迷いの兆候を拾う', out: 'Signal Map' },
+  { no: '02', en: 'MAP',    body: '接点の一覧を、購入までの行動の流れに変える', out: 'Decision Journey' },
+  { no: '03', en: 'GAP',    body: '7つの問いで、優先して解く断絶を特定する', out: 'Gap Priority' },
+  { no: '04', en: 'BRIDGE', body: '断絶ごとに役割を定め、接点を組み合わせて施工する', out: 'Action Plan' },
+  { no: '05', en: 'GROW',   body: '「見られたか」に加え、「行動が進んだか」を測る', out: 'Learning Report' },
+];
+
+const rules = [
+  { t: '施工の順序', b: '受け皿(B)と保存カード(C)は、露出(A)より先に完了させます。「あれは何?」は、放送の夜に検索されるからです。' },
+  { t: '複製自由', b: 'この設計図は、持ち帰って構いません。ただし施工には毎回、現場判断が要ります。番組の文脈選定、検索語の読み、ブロガーへの指示 — そこが私たちの仕事です。' },
+  { t: '数値の規律', b: '出典と取得方法を示せない数字は、設計図にも報告にも使いません。今月の売上が必要な案件には、この工法は向きません。' },
+];
+---
+
+<section class="sec sec--flush page-head">
+  <div class="wrap">
+    <p class="label k-label">韓国市場 攻略設計図</p>
+    <h1 class="h-lg" style="margin-top:clamp(1.75rem,4vh,2.5rem);max-width:none">「何本つくるか」から、<wbr>戦略を始めない。</h1>
+    <p class="lead">
+      <Sentences text={'NAVER記事○本、投稿○本、インフルエンサー○名。本数から始めた施策は、どの行動も前に進めません。私たちは逆から引きます — 消費者の動線を測り、止まっている場所に施工する。'} lang={lang} />
+    </p>
+    <p class="k-open">この設計図は公開しています。複製自由。実行が、私たちの仕事です。</p>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <p class="num">01</p>
+    <h2 class="k-h">消費者は、<wbr>七つの場所で止まる。</h2>
+    <p class="k-lead"><Sentences text={'知ってから買うまで、行動は八つ。その間の七つの断絶が、購買を止めます。施工物は、断絶の真下に置きます。'} lang={lang} /></p>
+    <figure class="k-fig">
+      <figcaption class="k-figcap">FIG.1 — 動線・断絶・施工物</figcaption>
+      <svg viewBox="0 0 1000 545" width="100%" role="img" aria-label="消費者の動線と7つの断絶、その真下に置く施工物A〜Dの配置図">
+        <g font-size="11.5" fill="rgba(11,11,10,.38)">
+          <path d="M60 34 V26 H520 V34" stroke="rgba(11,11,10,.3)" fill="none"/>
+          <text x="290" y="18" text-anchor="middle">韓国 / 渡航前</text>
+          <path d="M560 34 V26 H940 V34" stroke="rgba(11,11,10,.3)" fill="none"/>
+          <text x="750" y="18" text-anchor="middle">日本 / 店頭・購入後</text>
+        </g>
+        <path d="M50 80 H950" stroke="#0b0b0a" stroke-width="1.1" stroke-dasharray="6 5" fill="none"/>
+        <path d="M950 80 L938 74 M950 80 L938 86" stroke="#0b0b0a" stroke-width="1.1" fill="none"/>
+        <g font-size="13" fill="#0b0b0a">
+          <circle cx="100" cy="80" r="4" fill="#0b0b0a"/><text x="100" y="112" text-anchor="middle">知る</text>
+          <circle cx="215" cy="80" r="4" fill="#0b0b0a"/><text x="215" y="112" text-anchor="middle">調べる</text>
+          <circle cx="330" cy="80" r="4" fill="#0b0b0a"/><text x="330" y="112" text-anchor="middle">確かめる</text>
+          <circle cx="445" cy="80" r="4" fill="#0b0b0a"/><text x="445" y="112" text-anchor="middle">選ぶ</text>
+          <circle cx="560" cy="80" r="4" fill="#0b0b0a"/><text x="560" y="112" text-anchor="middle">保存する</text>
+          <circle cx="690" cy="80" r="4" fill="#0b0b0a"/><text x="690" y="112" text-anchor="middle">売場で探す</text>
+          <circle cx="810" cy="80" r="4" fill="#0b0b0a"/><text x="810" y="112" text-anchor="middle">買う</text>
+          <circle cx="920" cy="80" r="4" fill="#0b0b0a"/><text x="920" y="112" text-anchor="middle">共有する</text>
+        </g>
+        <g stroke="#F37021" stroke-width="1.7" fill="none">
+          <path d="M70 68 L82 92 M78 68 L90 92"/><path d="M155 68 L167 92 M163 68 L175 92"/>
+          <path d="M300 68 L312 92 M308 68 L320 92"/><path d="M415 68 L427 92 M423 68 L435 92"/>
+          <path d="M530 68 L542 92 M538 68 L550 92"/><path d="M660 68 L672 92 M668 68 L680 92"/>
+          <path d="M780 68 L792 92 M788 68 L800 92"/>
+        </g>
+        <g font-size="11" fill="#F37021" font-weight="500">
+          <text x="80" y="52" text-anchor="middle">①知らない</text>
+          <text x="167" y="140" text-anchor="middle">②自分ごとにならない</text>
+          <text x="311" y="52" text-anchor="middle">③信頼情報がない</text>
+          <text x="426" y="140" text-anchor="middle">④種類を選べない</text>
+          <text x="541" y="52" text-anchor="middle">⑤候補に残らない</text>
+          <text x="671" y="140" text-anchor="middle">⑥売場で見つからない</text>
+          <text x="791" y="52" text-anchor="middle">⑦直前で迷う</text>
+        </g>
+        <g>
+          <rect x="55" y="205" width="185" height="98" fill="none" stroke="#0b0b0a" stroke-width="1.4"/>
+          <text x="147" y="234" text-anchor="middle" font-size="13.5" font-weight="700" fill="#0b0b0a">A 出会いの施工</text>
+          <text x="147" y="258" text-anchor="middle" font-size="11" fill="rgba(11,11,10,.55)">クリエイター / Reels / Shorts</text>
+          <text x="147" y="277" text-anchor="middle" font-size="11" fill="rgba(11,11,10,.55)">広告ではない文脈で設置</text>
+          <rect x="270" y="205" width="200" height="98" fill="none" stroke="#0b0b0a" stroke-width="1.4"/>
+          <text x="370" y="234" text-anchor="middle" font-size="13.5" font-weight="700" fill="#0b0b0a">B 受け皿の施工</text>
+          <text x="370" y="258" text-anchor="middle" font-size="11" fill="rgba(11,11,10,.55)">比較・検証コンテンツ / NAVER</text>
+          <text x="370" y="277" text-anchor="middle" font-size="11" fill="rgba(11,11,10,.55)">SEO・FAQ・AI回答向け整備</text>
+          <rect x="500" y="205" width="170" height="98" fill="none" stroke="#0b0b0a" stroke-width="1.4"/>
+          <text x="585" y="234" text-anchor="middle" font-size="13.5" font-weight="700" fill="#0b0b0a">C 保存カード</text>
+          <text x="585" y="258" text-anchor="middle" font-size="11" fill="rgba(11,11,10,.55)">商品名・パッケージ・</text>
+          <text x="585" y="277" text-anchor="middle" font-size="11" fill="rgba(11,11,10,.55)">購入先を1枚に</text>
+          <rect x="700" y="205" width="245" height="98" fill="none" stroke="#0b0b0a" stroke-width="1.4"/>
+          <text x="822" y="234" text-anchor="middle" font-size="13.5" font-weight="700" fill="#0b0b0a">D 店頭への接続</text>
+          <text x="822" y="258" text-anchor="middle" font-size="11" fill="rgba(11,11,10,.55)">売場ガイド / POP / 価格・容量の説明</text>
+          <text x="822" y="277" text-anchor="middle" font-size="11" fill="rgba(11,11,10,.55)">保存カードと実物を照合させる</text>
+        </g>
+        <g stroke="rgba(11,11,10,.35)" stroke-width="1" stroke-dasharray="3 4">
+          <path d="M147 205 V96"/><path d="M370 205 V96"/><path d="M585 205 V96"/><path d="M822 205 V96"/>
+        </g>
+        <g font-size="10.5" fill="rgba(11,11,10,.38)">
+          <text x="147" y="196" text-anchor="middle">担当:①②</text>
+          <text x="370" y="196" text-anchor="middle">担当:③④</text>
+          <text x="585" y="196" text-anchor="middle">担当:⑤</text>
+          <text x="822" y="196" text-anchor="middle">担当:⑥⑦</text>
+        </g>
+        <g stroke="#0b0b0a" fill="#0b0b0a">
+          <path d="M270 340 H670" stroke-width="1.1"/><path d="M270 334 V346 M670 334 V346" stroke-width="1.1"/>
+          <text x="470" y="368" text-anchor="middle" font-size="12" font-weight="500">先行施工区間 — 露出(A)より先に完了</text>
+        </g>
+        <g font-size="12" fill="#0b0b0a">
+          <text x="470" y="425" text-anchor="middle"><tspan fill="#F37021" font-weight="700">実測 </tspan>受け皿の施工後、NAVER月間検索量 1,800 → 4,371(+143%・2026年1月・自社実施報告)</text>
+          <text x="470" y="452" text-anchor="middle"><tspan fill="#F37021" font-weight="700">実測 </tspan>受け皿55件(NAVER Blog・Instagram)が「あれは何?」を受け止めた</text>
+          <text x="470" y="479" text-anchor="middle"><tspan fill="#F37021" font-weight="700">実測 </tspan>検索関心度 最大2.9倍(放送翌日・通常時比)</text>
+        </g>
+      </svg>
+    </figure>
+    <p class="k-after"><Sentences text={'BとCの工法を、「置き場所設計」と呼んでいます。露出(A)は番組・クリエイターなど、対象に合わせて差し替えます。変わるのは手段だけで、構造は変わりません。'} lang={lang} /></p>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <p class="num">02</p>
+    <h2 class="k-h"><span class="jp-line"><T text="日本の店頭で選ばせない。" lang={lang} /></span><span class="jp-line"><T text="韓国で選択を終わらせる。" lang={lang} /></span></h2>
+    <figure class="k-fig">
+      <figcaption class="k-figcap">FIG.2 — 施工例:訪日購買</figcaption>
+      <svg viewBox="0 0 1000 185" width="100%" role="img" aria-label="渡航前の韓国で比較・保存し、日本の店頭では保存カードで見つける流れ">
+        <rect x="40" y="25" width="400" height="118" fill="none" stroke="#0b0b0a" stroke-width="1.4"/>
+        <text x="60" y="53" font-size="11" fill="rgba(11,11,10,.38)">韓国 / 渡航前</text>
+        <text x="60" y="86" font-size="16" font-weight="700" fill="#0b0b0a">比較して選び、保存する</text>
+        <text x="60" y="114" font-size="11.5" fill="rgba(11,11,10,.55)">用途・種類の違いを理解し、商品名・パッケージ・購入先を1枚に</text>
+        <g stroke="#F37021" stroke-width="1.5" fill="none"><path d="M460 84 H540 M530 76 L540 84 L530 92"/></g>
+        <text x="500" y="66" text-anchor="middle" font-size="10.5" fill="#F37021" font-weight="500">保存カード</text>
+        <rect x="560" y="25" width="400" height="118" fill="none" stroke="#0b0b0a" stroke-width="1.4"/>
+        <text x="580" y="53" font-size="11" fill="rgba(11,11,10,.38)">日本 / 店頭</text>
+        <text x="580" y="86" font-size="16" font-weight="700" fill="#0b0b0a">保存した情報で見つける</text>
+        <text x="580" y="114" font-size="11.5" fill="rgba(11,11,10,.55)">カードと実物を照合し、価格・容量を確認して購入へ</text>
+        <text x="500" y="172" text-anchor="middle" font-size="11" fill="rgba(11,11,10,.38)">対象:複数の商品タイプがあるブランド。選択を支える情報と店頭情報を一致させる</text>
+      </svg>
+    </figure>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <p class="num">03</p>
+    <h2 class="k-h">調査から改善まで、<wbr>五つの工程。</h2>
+    <div class="krows">
+      {kotei.map((k) => (
+        <div class="krow">
+          <span class="krow__no">{k.no}</span>
+          <span class="krow__en">{k.en}</span>
+          <span class="krow__body"><T text={k.body} lang={lang} /></span>
+          <span class="krow__out">{k.out}</span>
+        </div>
+      ))}
+    </div>
+    <p class="k-note">優先度は「兆候の強さ × 購入への影響 × 改善可能性」で判断します。計測できる範囲と分母は、着工前に合意します。</p>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <p class="num">04</p>
+    <h2 class="k-h">隠さない理由と、<wbr>守る規律。</h2>
+    <div class="srows k-rules">
+      {rules.map((r) => (
+        <div class="srow">
+          <div class="srow__head"><p class="k-stage">{r.t}</p></div>
+          <div><p class="k-jb"><Sentences text={r.b} lang={lang} /></p></div>
+        </div>
+      ))}
+    </div>
+    <p class="k-src">実測値の出典:自社実施報告(日本の湿布ブランド・菓子ブランド/韓国市場・匿名)。測定:NAVER月間検索量(比較 2025年4〜11月平均 → 2026年1月)、検索関心度(放送翌日・通常時比)。</p>
+    <p class="k-back">
+      <a class="ulink" href="/korea/"><span>訪日韓国人向けサービスを見る</span><Arrow variant="chev" cls="ulink__arw" /></a>
+    </p>
+  </div>
+</section>
+
+<section class="sec invert closing">
+  <div class="wrap">
+    <h2 class="closing__answer">
+      <span class="jp-line"><T text="貴社の動線で、" lang={lang} /></span>
+      <span class="jp-line"><T text="どこが止まっているか。" lang={lang} /></span>
+    </h2>
+    <p class="closing__invite"><T text="診断(Korea Behavior Scan)から始められます。" lang={lang} /></p>
+    <p class="closing__cta">
+      <a class="btn btn--on-dark" href="/contact?s=korea-strategy"><span>韓国市場の攻略について相談する</span><span class="btn__slot"><Arrow variant="chev" cls="btn__arrow" /></span></a>
+    </p>
+  </div>
+</section>
+
+<style>
+  .k-label { font-family: var(--cjk); letter-spacing: 0.08em; }
+  .k-open { margin-top: 1.25rem; font-size: var(--step--1); color: var(--ink-25); }
+  /* 문장 헤딩 — /korea 랜딩과 같은 문법. 한 줄 원칙, 줄바꿈은 콤마 뒤 <wbr> 만 */
+  .k-h { margin-top: .9rem; font-family: var(--cjk); font-weight: 300;
+         font-size: clamp(1.9rem, 4.2vw, 3.2rem); line-height: 1.4; letter-spacing: 0.02em; max-width: none; }
+  .k-lead { margin-top: clamp(1.5rem, 3.5vh, 2rem); font-size: var(--step-0); line-height: 1.95; color: var(--ink-55); max-width: var(--measure-cjk); }
+  .k-fig { margin-top: clamp(2.5rem, 6vh, 4rem); }
+  .k-figcap { font-family: var(--sans); font-size: .66rem; letter-spacing: .22em; color: var(--ink-25); margin-bottom: 1.6rem; }
+  .k-after { margin-top: clamp(1.75rem, 4vh, 2.5rem); font-size: var(--step-0); line-height: 1.95; color: var(--ink-55); max-width: var(--measure-cjk); }
+  .krows { margin-top: clamp(2.25rem, 5.5vh, 3.5rem); border-top: 1px solid var(--ink); }
+  .krow { display: grid; grid-template-columns: 1fr; gap: .4rem; padding-block: 1.3rem; border-bottom: 1px solid var(--rule); }
+  @media (min-width: 52rem) { .krow { grid-template-columns: 3rem 7.5rem minmax(0, 1fr) 11rem; gap: 0 1.5rem; align-items: baseline; } }
+  .krow__no { font-family: var(--sans); font-weight: 200; color: var(--ink-25); }
+  .krow__en { font-family: var(--sans); font-weight: 600; letter-spacing: .06em; }
+  .krow__body { color: var(--ink-55); font-size: var(--step-0); }
+  .krow__out { font-family: var(--sans); font-size: var(--step--1); color: var(--ink-25); }
+  .k-note { margin-top: 1.25rem; font-size: var(--step--1); color: var(--ink-55); }
+  .k-rules { margin-top: clamp(2.25rem, 5.5vh, 3.5rem); }
+  .k-stage { font-size: var(--step-0); font-weight: 500; letter-spacing: 0.04em; }
+  .k-jb { font-size: var(--step-0); line-height: 1.95; color: var(--ink-55); max-width: 40em; }
+  .k-src { margin-top: clamp(1.75rem, 4vh, 2.5rem); font-size: var(--step--1); line-height: 1.9; color: var(--ink-25); max-width: 46em; }
+  .k-back { margin-top: clamp(1.75rem, 4vh, 2.5rem); }
+</style>

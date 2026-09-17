@@ -1,0 +1,14 @@
+---
+import Base from '../../layouts/Base.astro';
+import KoreaStrategy from '../../sections/KoreaStrategy.astro';
+/**
+ * /korea/strategy — 랜딩(/korea)의 하위 사상 페이지 (2026-09-18 대표 판단: 하위로 묶음).
+ * ja 전용. 상호 링크: 랜딩 02 하단 ↔ 이 페이지 04 하단.
+ */
+const lang = 'ja' as const;
+const title = '韓国市場 攻略設計図 — Korea Behavior Strategy｜TAG EIGHT';
+const description = '「何本つくるか」から戦略を始めない。消費者の動線を測り、七つの断絶の真下に施工する — TAG EIGHTの韓国市場攻略の設計図を、実測値とともに公開しています。';
+---
+<Base lang={lang} title={title} description={description} path="/korea/strategy" langs={['ja']}>
+  <KoreaStrategy />
+</Base>
