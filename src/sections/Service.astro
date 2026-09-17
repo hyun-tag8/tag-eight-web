@@ -107,4 +107,24 @@ const all = getCases(lang);
   </div>
 </section>
 
+{/* 시장별 서비스 — 능력(아코디언)을 본 사람이 「うちの市場では?」로 넘어가는 받이 (2026-09-17).
+    /korea 가 ja 전용 랜딩이라 ja 에서만 노출. /taiwan 랜딩이 생기면 rows 에 한 줄 추가. */}
+{lang === 'ja' && (
+  <section class="sec">
+    <div class="wrap">
+      <h2 class="h-md team__head"><T text="市場別のご支援" lang={lang} /></h2>
+      <div class="guides mkts">
+        <a class="guide" href="/korea/">
+          <span class="guide__no" aria-hidden="true">韓国</span>
+          <span class="guide__body">
+            <span class="guide__title"><T text="訪日韓国人向け ブランド・購買プロモーション" lang={lang} /></span>
+            <span class="guide__ex"><T text="旅行前の「気になる」を、日本での「体験したい」「買いたい」へ。" lang={lang} /></span>
+          </span>
+          <Arrow variant="chev" cls="guide__arw" />
+        </a>
+      </div>
+    </div>
+  </section>
+)}
+
 <ClosingCta lang={lang} />
