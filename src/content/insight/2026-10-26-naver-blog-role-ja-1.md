@@ -12,7 +12,7 @@ tags:
 cover: /img/insight/e8ca4ffa-9308-4232-bea1-3ec35c95a8ae.png
 promo: false
 featured: false
-draft: true
+draft: false
 ---
 「以前は1万PVを超えていたのに、最近は数千PVしか伸びない。」
 
