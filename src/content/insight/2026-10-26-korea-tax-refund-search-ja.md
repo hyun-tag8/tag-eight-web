@@ -12,7 +12,7 @@ tags:
 cover: /img/insight/2026-10-26-korea-tax-refund-cover.webp
 promo: false
 featured: false
-draft: true
+draft: false
 ---
 ## 店頭の準備だけでは、情報は届かない
 
