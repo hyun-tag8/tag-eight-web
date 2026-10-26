@@ -4,7 +4,7 @@ category: korea
 postId: naver-blog-role
 title: NAVERブログは、もう読まれないのか。
 excerpt: 検索流入が減る時代に、韓国向けマーケティングが見直すべきこと。PVではなく、韓国の消費者が「選ぶための理由」を確かめる場所として、何を揃えるか。
-date: 2026-10-27
+date: 2026-10-26
 tags:
   - 訪日韓国人
   - NAVER戦略
